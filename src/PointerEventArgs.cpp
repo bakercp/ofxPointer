@@ -130,7 +130,6 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
     _acceleration(ofVec3f(0,0,0)),
     _timeStamp(ofGetSystemTime())
 {
-    cout << "BUTTONS=" << _buttons << endl;
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
@@ -146,7 +145,7 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
         case ofMouseEventArgs::Released:
             _eventType = EVENT_UP;
             _pressure = 0;
-            _isInContact = false;
+            _isInContact = true;
             break;
         case ofMouseEventArgs::Dragged:
             _eventType = EVENT_MOVE;
@@ -195,8 +194,8 @@ bool PointerEventArgs::isModifierPressed(unsigned int modifier) const
 
 //------------------------------------------------------------------------------
 bool PointerEventArgs::isButtonPressed(unsigned int button) const
-{    
-    return _isInContact && (_buttons & button);
+{
+    return _isInContact && ((_buttons == 0 && button == 0) || (_buttons & button));
 }
 
 //------------------------------------------------------------------------------
