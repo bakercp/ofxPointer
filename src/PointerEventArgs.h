@@ -56,22 +56,6 @@ public:
         DEVICE_PEN   = 2
     };
 
-    enum Modifiers {
-        MODIFIER_1        = 0,
-        MODIFIER_2        = 1,
-        MODIFIER_3        = 2,
-        MODIFIER_4        = 3,
-        MODIFIER_5        = 4,
-        MODIFIER_6        = 5,
-        MODIFIER_7        = 6,
-        MODIFIER_8        = 7,
-        MODIFIER_LAST     = MODIFIER_8,
-        MODIFIER_LEFT     = MODIFIER_1,
-        MODIFIER_RIGHT    = MODIFIER_2,
-        MODIFIER_MIDDLE   = MODIFIER_3,
-        MODIFIER_FINGER   = MODIFIER_1
-    };
-
     PointerEventArgs();
     PointerEventArgs(const ofTouchEventArgs& evt);
     PointerEventArgs(const ofMouseEventArgs& evt);
@@ -93,6 +77,9 @@ public:
     ofVec3f getLastPosition() const;
     ofVec3f getVelocity() const;
     ofVec3f getAcceleration() const;
+
+    bool isModifierPressed(unsigned int modifier) const;
+    bool isButtonPressed(unsigned int button) const;
 
     unsigned long long getTimeStamp() const;
 
@@ -129,6 +116,23 @@ public:
 
 
         ss << evtType << " pos: " << getPosition() << endl;
+
+//#define OF_KEY_CONTROL		(0x200 | OF_KEY_MODIFIER)
+//#define OF_KEY_ALT			(0x400 | OF_KEY_MODIFIER)
+//#define OF_KEY_SHIFT		(0x800 | OF_KEY_MODIFIER)
+//#define OF_KEY_SUPER		(0x1000 | OF_KEY_MODIFIER)
+
+        if(isModifierPressed(OF_KEY_CONTROL)) ss << "\tOF_KEY_CONTROL" << endl;
+        if(isModifierPressed(OF_KEY_ALT)) ss << "\tOF_KEY_ALT" << endl;
+        if(isModifierPressed(OF_KEY_SHIFT)) ss << "\tOF_KEY_SHIFT" << endl;
+        if(isModifierPressed(OF_KEY_SUPER)) ss << "\tOF_KEY_SUPER" << endl;
+
+        if(isButtonPressed(OF_MOUSE_BUTTON_LEFT)) ss << "\tOF_MOUSE_BUTTON_LEFT" << endl;
+        if(isButtonPressed(OF_MOUSE_BUTTON_MIDDLE)) ss << "\tOF_MOUSE_BUTTON_MIDDLE" << endl;
+        if(isButtonPressed(OF_MOUSE_BUTTON_RIGHT)) ss << "\tOF_MOUSE_BUTTON_RIGHT" << endl;
+
+        cout << "IN HERE" << endl;
+
         return ss.str();
     }
 
@@ -160,6 +164,7 @@ private:
     unsigned int _tapCount;
 
     unsigned int _modifiers;
+    unsigned int _buttons;
 
     bool _isInContact;
 

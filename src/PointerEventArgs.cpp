@@ -48,6 +48,7 @@ PointerEventArgs::PointerEventArgs():
     _pressure(0),
     _tapCount(0),
     _modifiers(0),
+    _buttons(0),
     _isInContact(false),
     _position(ofVec3f(0,0,0)),
     _lastPosition(ofVec3f(0,0,0)),
@@ -75,6 +76,7 @@ PointerEventArgs::PointerEventArgs(const ofTouchEventArgs& evt):
     _pressure(evt.pressure),
     _tapCount(0),
     _modifiers(0),
+    _buttons(0),
     _isInContact(true),
     _position(evt),
     _lastPosition(ofVec3f(0,0,0)),
@@ -119,34 +121,37 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
     _minorAxis(0),
     _pressure(0),
     _tapCount(0),
-    _modifiers(0),
-    _isInContact(true),
+    _modifiers(evt.modifiers),
+    _buttons(evt.button),
+    _isInContact(false),
     _position(evt),
     _lastPosition(ofVec3f(0,0,0)),
     _velocity(ofVec3f(0,0,0)),
     _acceleration(ofVec3f(0,0,0)),
     _timeStamp(ofGetSystemTime())
 {
-    cout << evt.type << endl;
+    cout << "BUTTONS=" << _buttons << endl;
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
             _eventType = EVENT_DOWN;
             _pressure = 1;
-            _modifiers |= evt.button;
+            _isInContact = true;
             break;
         case ofMouseEventArgs::Moved:
             _eventType = EVENT_MOVE;
             _pressure = 0;
+            _isInContact = false;
             break;
         case ofMouseEventArgs::Released:
             _eventType = EVENT_UP;
             _pressure = 0;
+            _isInContact = false;
             break;
         case ofMouseEventArgs::Dragged:
             _eventType = EVENT_MOVE;
             _pressure = 1;
-            _modifiers |= evt.button;
+            _isInContact = true;
             break;
     }
 }
@@ -180,6 +185,18 @@ ofVec3f PointerEventArgs::getLastPosition() const
 ofVec3f PointerEventArgs::getVelocity() const
 {
     return _velocity;
+}
+
+//------------------------------------------------------------------------------
+bool PointerEventArgs::isModifierPressed(unsigned int modifier) const
+{
+    return _modifiers & modifier;
+}
+
+//------------------------------------------------------------------------------
+bool PointerEventArgs::isButtonPressed(unsigned int button) const
+{    
+    return _isInContact && (_buttons & button);
 }
 
 //------------------------------------------------------------------------------
