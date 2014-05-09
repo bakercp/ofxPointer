@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2013 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,49 +26,53 @@
 #include "ofApp.h"
 
 
-//------------------------------------------------------------------------------
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
     pointerManager.registerAllPointerEvents(this);
 }
 
-//------------------------------------------------------------------------------
+
 void ofApp::update()
 {
 }
 
-//------------------------------------------------------------------------------
+
 void ofApp::draw()
 {
 }
 
-//------------------------------------------------------------------------------
-void ofApp::onPointerUp(PointerEventArgs& evt)
+
+bool ofApp::onPointerUp(Input::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerUp") << evt.toString();
+    return true;
 }
 
-//------------------------------------------------------------------------------
-void ofApp::onPointerDown(PointerEventArgs& evt)
+
+bool ofApp::onPointerDown(Input::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDown") << evt.toString();
+    return true;
 }
 
-//------------------------------------------------------------------------------
-void ofApp::onPointerMove(PointerEventArgs& evt)
+
+bool ofApp::onPointerMove(Input::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerMove") << evt.toString();
+    return true;
 }
 
-//------------------------------------------------------------------------------
-void ofApp::onPointerDoubleTap(PointerEventArgs& evt)
+
+bool ofApp::onPointerDoubleTap(Input::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDoubleTap") << evt.toString();
+    return true;
 }
 
-//------------------------------------------------------------------------------
-void ofApp::onPointerCancel(PointerEventArgs& evt)
+
+bool ofApp::onPointerCancel(Input::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
+    return true;
 }

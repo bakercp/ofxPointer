@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2013 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,6 @@
 // =============================================================================
 
 
-#pragma once
-
-
-#include "ofMain.h"
-#include "ofxPointer.h"
-
-
-using namespace ofx;
-
-
-class ofApp: public ofBaseApp
-{
-public:
-    void setup();
-    void update();
-    void draw();
-
-    bool onPointerUp(Input::PointerEventArgs& evt);
-    bool onPointerDown(Input::PointerEventArgs& evt);
-    bool onPointerMove(Input::PointerEventArgs& evt);
-    bool onPointerDoubleTap(Input::PointerEventArgs& evt);
-    bool onPointerCancel(Input::PointerEventArgs& evt);
-
-    Input::PointerManager pointerManager;
-    
-};
+#include "ofx/Input/PointerEventArgs.h"
+#include "ofx/Input/PointerEvents.h"
+#include "ofx/Input/PointerManager.h"

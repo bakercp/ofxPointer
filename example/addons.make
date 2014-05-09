@@ -1,2 +1,1 @@
-ofxPointerManager
-ofxTouchPad
+ofxPointer

@@ -59,12 +59,14 @@ PointerManager::~PointerManager()
     ofAddListener(ofEvents().touchCancelled, this, &PointerManager::touchCancelled);
 }
 
+
 void PointerManager::mouseMoved(ofMouseEventArgs& e)
 {
     PointerEventArgs p(e);
     ofNotifyEvent(events.onPointerMove,p);
     // TODO: register events w/ manager rather than just pass on
 }
+
 
 void PointerManager::mouseDragged(ofMouseEventArgs& e)
 {
@@ -73,12 +75,14 @@ void PointerManager::mouseDragged(ofMouseEventArgs& e)
     // TODO: register events w/ manager rather than just pass on
 }
 
+
 void PointerManager::mousePressed(ofMouseEventArgs& e)
 {
     PointerEventArgs p(e);
     ofNotifyEvent(events.onPointerDown,p);
     // TODO: register events w/ manager rather than just pass on
 }
+
 
 void PointerManager::mouseReleased(ofMouseEventArgs& e)
 {
@@ -87,12 +91,14 @@ void PointerManager::mouseReleased(ofMouseEventArgs& e)
     // TODO: register events w/ manager rather than just pass on
 }
 
+
 void PointerManager::touchDown(ofTouchEventArgs& e)
 {
     PointerEventArgs p(e);
     ofNotifyEvent(events.onPointerDown,p);
     // TODO: register events w/ manager rather than just pass on
 }
+
 
 void PointerManager::touchMoved(ofTouchEventArgs& e)
 {
@@ -101,6 +107,7 @@ void PointerManager::touchMoved(ofTouchEventArgs& e)
     // TODO: register events w/ manager rather than just pass on
 }
 
+
 void PointerManager::touchUp(ofTouchEventArgs& e)
 {
     PointerEventArgs p(e);
@@ -108,12 +115,14 @@ void PointerManager::touchUp(ofTouchEventArgs& e)
     // TODO: register events w/ manager rather than just pass on
 }
 
+
 void PointerManager::touchDoubleTap(ofTouchEventArgs& e)
 {
     PointerEventArgs p(e);
     ofNotifyEvent(events.onPointerDoubleTap,p);
     // TODO: register events w/ manager rather than just pass on
 }
+
 
 void PointerManager::touchCancelled(ofTouchEventArgs& e)
 {

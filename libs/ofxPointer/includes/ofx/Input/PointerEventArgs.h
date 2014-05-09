@@ -56,6 +56,23 @@ public:
         DEVICE_PEN   = 2
     };
 
+    enum Buttons
+    {
+        POINTER_BUTTON_1        = 0x00000001,
+        POINTER_BUTTON_2        = 0x00000010,
+        POINTER_BUTTON_3        = 0x00000100,
+        POINTER_BUTTON_4        = 0x00001000,
+        POINTER_BUTTON_5        = 0x00010000,
+        POINTER_BUTTON_6        = 0x00100000,
+        POINTER_BUTTON_7        = 0x01000000,
+        POINTER_BUTTON_8        = 0x10000000,
+        POINTER_BUTTON_LAST     = POINTER_BUTTON_8,
+        POINTER_BUTTON_LEFT     = POINTER_BUTTON_1,
+        POINTER_BUTTON_MIDDLE   = POINTER_BUTTON_2,
+        POINTER_BUTTON_RIGHT    = POINTER_BUTTON_3
+    };
+
+
     PointerEventArgs();
     PointerEventArgs(const ofTouchEventArgs& evt);
     PointerEventArgs(const ofMouseEventArgs& evt);
@@ -114,24 +131,16 @@ public:
                 break;
         }
 
+        ss << evtType << " pos: " << getPosition();
 
-        ss << evtType << " pos: " << getPosition() << endl;
+        if(isModifierPressed(OF_KEY_CONTROL)) ss << endl << "\tOF_KEY_CONTROL";
+        if(isModifierPressed(OF_KEY_ALT)) ss << endl << "\tOF_KEY_ALT";
+        if(isModifierPressed(OF_KEY_SHIFT)) ss << endl << "\tOF_KEY_SHIFT";
+        if(isModifierPressed(OF_KEY_SUPER)) ss << endl << "\tOF_KEY_SUPER";
 
-//#define OF_KEY_CONTROL		(0x200 | OF_KEY_MODIFIER)
-//#define OF_KEY_ALT			(0x400 | OF_KEY_MODIFIER)
-//#define OF_KEY_SHIFT		(0x800 | OF_KEY_MODIFIER)
-//#define OF_KEY_SUPER		(0x1000 | OF_KEY_MODIFIER)
-
-        if(isModifierPressed(OF_KEY_CONTROL)) ss << "\tOF_KEY_CONTROL" << endl;
-        if(isModifierPressed(OF_KEY_ALT)) ss << "\tOF_KEY_ALT" << endl;
-        if(isModifierPressed(OF_KEY_SHIFT)) ss << "\tOF_KEY_SHIFT" << endl;
-        if(isModifierPressed(OF_KEY_SUPER)) ss << "\tOF_KEY_SUPER" << endl;
-
-        if(isButtonPressed(OF_MOUSE_BUTTON_LEFT)) ss << "\tOF_MOUSE_BUTTON_LEFT" << endl;
-        if(isButtonPressed(OF_MOUSE_BUTTON_MIDDLE)) ss << "\tOF_MOUSE_BUTTON_MIDDLE" << endl;
-        if(isButtonPressed(OF_MOUSE_BUTTON_RIGHT)) ss << "\tOF_MOUSE_BUTTON_RIGHT" << endl;
-
-        cout << "IN HERE" << endl;
+        if(isButtonPressed(POINTER_BUTTON_LEFT)) ss << endl << "\tPOINTER_BUTTON_LEFT";
+        if(isButtonPressed(POINTER_BUTTON_MIDDLE)) ss << endl << "\tPOINTER_BUTTON_MIDDLE";
+        if(isButtonPressed(POINTER_BUTTON_RIGHT)) ss << endl << "\tPOINTER_BUTTON_RIGHT";
 
         return ss.str();
     }

@@ -30,7 +30,6 @@ namespace ofx {
 namespace Input {
 
 
-//------------------------------------------------------------------------------
 PointerEventArgs::PointerEventArgs():
     _eventType(EVENT_UNKNOWN),
     _deviceType(DEVICE_UNKNOWN),
@@ -58,7 +57,7 @@ PointerEventArgs::PointerEventArgs():
 {
 }
 
-//------------------------------------------------------------------------------
+
 PointerEventArgs::PointerEventArgs(const ofTouchEventArgs& evt):
     _eventType(EVENT_UNKNOWN),
     _deviceType(DEVICE_UNKNOWN),
@@ -104,7 +103,7 @@ PointerEventArgs::PointerEventArgs(const ofTouchEventArgs& evt):
     }
 }
 
-//------------------------------------------------------------------------------
+
 PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
     _eventType(EVENT_UNKNOWN),
     _deviceType(DEVICE_UNKNOWN),
@@ -121,7 +120,7 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
     _minorAxis(0),
     _pressure(0),
     _tapCount(0),
-    _modifiers(evt.modifiers),
+    //_modifiers(evt.modifiers),
     _buttons(evt.button),
     _isInContact(false),
     _position(evt),
@@ -130,6 +129,8 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
     _acceleration(ofVec3f(0,0,0)),
     _timeStamp(ofGetSystemTime())
 {
+    _buttons = 0;
+
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
@@ -153,77 +154,90 @@ PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
             _isInContact = true;
             break;
     }
+
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_1)) _buttons |= POINTER_BUTTON_1;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_2)) _buttons |= POINTER_BUTTON_2;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_3)) _buttons |= POINTER_BUTTON_3;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_4)) _buttons |= POINTER_BUTTON_4;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_5)) _buttons |= POINTER_BUTTON_5;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_6)) _buttons |= POINTER_BUTTON_6;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_7)) _buttons |= POINTER_BUTTON_7;
+    if(ofGetMousePressed(OF_MOUSE_BUTTON_8)) _buttons |= POINTER_BUTTON_8;
+
 }
 
 PointerEventArgs::~PointerEventArgs()
 {
 }
 
+
 PointerEventArgs::EventType PointerEventArgs::getEventType() const
 {
     return _eventType;
 }
+
 
 PointerEventArgs::DeviceType PointerEventArgs::getDeviceType() const
 {
     return _deviceType;
 }
 
+
 ofVec3f PointerEventArgs::getPosition() const
 {
     return _position;
 }
 
-//------------------------------------------------------------------------------
+
 ofVec3f PointerEventArgs::getLastPosition() const
 {
     return _lastPosition;
 }
 
-//------------------------------------------------------------------------------
+
 ofVec3f PointerEventArgs::getVelocity() const
 {
     return _velocity;
 }
 
-//------------------------------------------------------------------------------
+
 bool PointerEventArgs::isModifierPressed(unsigned int modifier) const
 {
     return _modifiers & modifier;
 }
 
-//------------------------------------------------------------------------------
+
 bool PointerEventArgs::isButtonPressed(unsigned int button) const
 {
-    return _isInContact && ((_buttons == 0 && button == 0) || (_buttons & button));
+    return _buttons & button;
 }
 
-//------------------------------------------------------------------------------
+
 unsigned long long PointerEventArgs::getTimeStamp() const
 {
     return _timeStamp;
 }
 
-//------------------------------------------------------------------------------
+
 unsigned int PointerEventArgs::getId() const
 {
     return _id;
 }
 
-//------------------------------------------------------------------------------
+
 unsigned int PointerEventArgs::getModifiers() const
 {
     return _modifiers;
 }
 
-//------------------------------------------------------------------------------
+
 bool PointerEventArgs::operator == (const PointerEventArgs& other) const
 {
     // TODO::
     return false;
 }
 
-//------------------------------------------------------------------------------
+
 bool PointerEventArgs::operator != (const PointerEventArgs& other) const
 {
     return !(*this == other);
