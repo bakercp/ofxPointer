@@ -89,10 +89,10 @@ public:
     
     bool isInContact() const;
 
-    ofVec3f getPosition() const;
-    ofVec3f getLastPosition() const;
-    ofVec3f getVelocity() const;
-    ofVec3f getAcceleration() const;
+    const ofVec3f& getPosition() const;
+    const ofVec3f& getLastPosition() const;
+    const ofVec3f& getVelocity() const;
+    const ofVec3f& getAcceleration() const;
 
     bool isModifierPressed(unsigned int modifier) const;
     bool isButtonPressed(unsigned int button) const;

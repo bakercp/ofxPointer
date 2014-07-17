@@ -182,19 +182,19 @@ PointerEventArgs::DeviceType PointerEventArgs::getDeviceType() const
 }
 
 
-ofVec3f PointerEventArgs::getPosition() const
+const ofVec3f& PointerEventArgs::getPosition() const
 {
     return _position;
 }
 
 
-ofVec3f PointerEventArgs::getLastPosition() const
+const ofVec3f& PointerEventArgs::getLastPosition() const
 {
     return _lastPosition;
 }
 
 
-ofVec3f PointerEventArgs::getVelocity() const
+const ofVec3f& PointerEventArgs::getVelocity() const
 {
     return _velocity;
 }
