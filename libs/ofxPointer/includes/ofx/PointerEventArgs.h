@@ -32,7 +32,6 @@
 
 
 namespace ofx {
-namespace Input {
 
 
 class PointerEventArgs: public ofEventArgs
@@ -187,4 +186,4 @@ private:
 };
 
 
-} } // namespace ofx::Input
+} // namespace ofx

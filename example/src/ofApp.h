@@ -30,22 +30,20 @@
 #include "ofxPointer.h"
 
 
-using namespace ofx;
-
-
 class ofApp: public ofBaseApp
 {
 public:
     void setup();
     void update();
     void draw();
+    void exit();
 
-    bool onPointerUp(Input::PointerEventArgs& evt);
-    bool onPointerDown(Input::PointerEventArgs& evt);
-    bool onPointerMove(Input::PointerEventArgs& evt);
-    bool onPointerDoubleTap(Input::PointerEventArgs& evt);
-    bool onPointerCancel(Input::PointerEventArgs& evt);
+    bool onPointerUp(ofx::PointerEventArgs& evt);
+    bool onPointerDown(ofx::PointerEventArgs& evt);
+    bool onPointerMove(ofx::PointerEventArgs& evt);
+    bool onPointerDoubleTap(ofx::PointerEventArgs& evt);
+    bool onPointerCancel(ofx::PointerEventArgs& evt);
 
-    Input::PointerManager pointerManager;
+    ofx::PointerManager pointerManager;
     
 };

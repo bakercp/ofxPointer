@@ -23,6 +23,6 @@
 // =============================================================================
 
 
-#include "ofx/Input/PointerEventArgs.h"
-#include "ofx/Input/PointerEvents.h"
-#include "ofx/Input/PointerManager.h"
+#include "ofx/PointerEventArgs.h"
+#include "ofx/PointerEvents.h"
+#include "ofx/PointerManager.h"

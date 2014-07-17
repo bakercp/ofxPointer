@@ -31,7 +31,6 @@
 
 
 namespace ofx {
-namespace Input {
 
 
 class PointerManager
@@ -85,4 +84,4 @@ void PointerManager::unregisterAllPointerEvents(ListenerClass* listener)
 }
 
 
-} } // namespace ofx::Input
+} // namespace ofx

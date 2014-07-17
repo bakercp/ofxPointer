@@ -27,7 +27,6 @@
 
 
 namespace ofx {
-namespace Input {
 
     
 PointerManager::PointerManager()
@@ -132,4 +131,4 @@ void PointerManager::touchCancelled(ofTouchEventArgs& e)
 }
 
 
-} } // namespace ofx::Input
+} // namespace ofx

@@ -43,35 +43,41 @@ void ofApp::draw()
 }
 
 
-bool ofApp::onPointerUp(Input::PointerEventArgs& evt)
+void ofApp::exit()
+{
+    pointerManager.unregisterAllPointerEvents(this);
+}
+
+
+bool ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerUp") << evt.toString();
     return true;
 }
 
 
-bool ofApp::onPointerDown(Input::PointerEventArgs& evt)
+bool ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDown") << evt.toString();
     return true;
 }
 
 
-bool ofApp::onPointerMove(Input::PointerEventArgs& evt)
+bool ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerMove") << evt.toString();
     return true;
 }
 
 
-bool ofApp::onPointerDoubleTap(Input::PointerEventArgs& evt)
+bool ofApp::onPointerDoubleTap(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDoubleTap") << evt.toString();
     return true;
 }
 
 
-bool ofApp::onPointerCancel(Input::PointerEventArgs& evt)
+bool ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
     return true;

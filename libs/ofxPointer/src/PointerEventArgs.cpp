@@ -27,7 +27,6 @@
 
 
 namespace ofx {
-namespace Input {
 
 
 PointerEventArgs::PointerEventArgs():

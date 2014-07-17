@@ -27,7 +27,6 @@
 
 
 namespace ofx {
-namespace Input {
 
 
-} } // namespace ofx::Input
+} // namespace ofx

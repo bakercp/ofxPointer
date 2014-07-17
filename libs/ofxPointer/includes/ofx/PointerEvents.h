@@ -31,7 +31,6 @@
 
 
 namespace ofx {
-namespace Input {
 
     
 // <element onmslostpointercapture = "handler(event)">
@@ -103,4 +102,4 @@ public:
 };
 
 
-} } // namespace ofx::Input
+} // namespace ofx
