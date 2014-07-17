@@ -46,16 +46,16 @@ PointerManager::PointerManager()
 
 PointerManager::~PointerManager()
 {
-    ofAddListener(ofEvents().mouseMoved,    this, &PointerManager::mouseMoved);
-    ofAddListener(ofEvents().mouseDragged,  this, &PointerManager::mouseDragged);
-    ofAddListener(ofEvents().mousePressed,  this, &PointerManager::mousePressed);
-    ofAddListener(ofEvents().mouseReleased, this, &PointerManager::mouseReleased);
+    ofRemoveListener(ofEvents().mouseMoved,    this, &PointerManager::mouseMoved);
+    ofRemoveListener(ofEvents().mouseDragged,  this, &PointerManager::mouseDragged);
+    ofRemoveListener(ofEvents().mousePressed,  this, &PointerManager::mousePressed);
+    ofRemoveListener(ofEvents().mouseReleased, this, &PointerManager::mouseReleased);
 
-    ofAddListener(ofEvents().touchUp,        this, &PointerManager::touchUp);
-    ofAddListener(ofEvents().touchDoubleTap, this, &PointerManager::touchDoubleTap);
-    ofAddListener(ofEvents().touchDown,      this, &PointerManager::touchDown);
-    ofAddListener(ofEvents().touchMoved,     this, &PointerManager::touchMoved);
-    ofAddListener(ofEvents().touchCancelled, this, &PointerManager::touchCancelled);
+    ofRemoveListener(ofEvents().touchUp,        this, &PointerManager::touchUp);
+    ofRemoveListener(ofEvents().touchDoubleTap, this, &PointerManager::touchDoubleTap);
+    ofRemoveListener(ofEvents().touchDown,      this, &PointerManager::touchDown);
+    ofRemoveListener(ofEvents().touchMoved,     this, &PointerManager::touchMoved);
+    ofRemoveListener(ofEvents().touchCancelled, this, &PointerManager::touchCancelled);
 }
 
 

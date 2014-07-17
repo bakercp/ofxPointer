@@ -243,4 +243,4 @@ bool PointerEventArgs::operator != (const PointerEventArgs& other) const
 }
 
 
-} } // namespace ofx::Input
+} // namespace ofx
