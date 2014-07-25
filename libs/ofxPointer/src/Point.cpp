@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2010-2014 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,49 +23,93 @@
 // =============================================================================
 
 
-#include "ofApp.h"
+#include "ofx/Point.h"
 
 
-void ofApp::setup()
-{
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    ofx::RegisterPointerEvents(this);
-}
+namespace ofx {
 
 
-void ofApp::update()
-{
-}
-
-
-void ofApp::draw()
+Point::Point():
+    ofVec2f(0, 0),
+    _shape(PointShape()),
+    _pressure(0),
+    _tiltX(0),
+    _tiltY(0)
 {
 }
 
 
-bool ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+Point::Point(const ofVec2f& position):
+    ofVec2f(position),
+    _shape(PointShape()),
+    _pressure(0),
+    _tiltX(0),
+    _tiltY(0)
 {
-    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerDown(ofx::PointerEventArgs& evt)
+Point::Point(const ofVec2f& position, const PointShape& shape):
+    ofVec2f(position),
+    _shape(shape),
+    _pressure(0),
+    _tiltX(0),
+    _tiltY(0)
 {
-    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerMove(ofx::PointerEventArgs& evt)
+Point::Point(const ofVec2f& position, float pressure, float tiltX, float tiltY):
+    ofVec2f(position),
+    _shape(PointShape()),
+    _pressure(pressure),
+    _tiltX(tiltX),
+    _tiltY(tiltY)
 {
-    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
+Point::Point(const ofVec2f& position,
+             const PointShape& shape,
+             float pressure,
+             float tiltX,
+             float tiltY):
+    ofVec2f(position),
+    _shape(shape),
+    _pressure(pressure),
+    _tiltX(tiltX),
+    _tiltY(tiltY)
 {
-    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
-    return true;
 }
+
+
+Point::~Point()
+{
+}
+
+
+float Point::getPressure() const
+{
+    return _pressure;
+}
+
+
+float Point::getTiltX() const
+{
+    return _tiltX;
+}
+
+
+float Point::getTiltY() const
+{
+    return _tiltY;
+}
+
+
+const PointShape& Point::getShape() const
+{
+    return _shape;
+}
+
+
+} // namespace ofx

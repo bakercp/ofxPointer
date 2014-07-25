@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2013 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,21 +26,55 @@
 #pragma once
 
 
-#include "ofMain.h"
-#include "ofxPointer.h"
+namespace ofx {
 
 
-class ofApp: public ofBaseApp
+class PointShape
 {
 public:
-    void setup();
-    void update();
-    void draw();
+    PointShape();
 
-    // Pointer Events
-    bool onPointerUp(ofx::PointerEventArgs& evt);
-    bool onPointerDown(ofx::PointerEventArgs& evt);
-    bool onPointerMove(ofx::PointerEventArgs& evt);
-    bool onPointerCancel(ofx::PointerEventArgs& evt);
+    PointShape(float width,
+               float height,
+               float ellipseAngle = -1,
+               float ellipseMajorAxis = -1,
+               float ellipseMinorAxis = -1);
+
+    virtual ~PointShape();
+
+    /// \returns the Point width.
+    float getWidth() const;
+
+    /// \returns the Point height.
+    float getHeight() const;
+
+    /// \returns the Point's ellipse angle in radians or -1 if undefined.
+    float getEllipseAngle() const;
+
+    /// \returns the Point's ellipse major axis or -1 if undefined.
+    float getEllipseMajorAxis() const;
+
+    /// \returns the Point's ellipse minor axis or -1 if undefined.
+    float getEllipseMinorAxis() const;
+
+
+protected:
+    /// \brief Bounding box width.
+    float _width;
+
+    /// \brief Bounding box height.
+    float _height;
+
+    /// \brief Ellipse angle, if defined.
+	float _ellipseAngle;
+
+    /// \brief Ellipse major axis, if defined.
+    float _ellipseMajorAxis;
+
+    /// \brief Ellipse minor axis, if defined.
+	float _ellipseMinorAxis;
 
 };
+
+
+} // namespace ofx

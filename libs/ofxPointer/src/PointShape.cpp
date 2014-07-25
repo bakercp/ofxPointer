@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2010-2014 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,70 @@
 // =============================================================================
 
 
-#pragma once
+#include "ofx/PointShape.h"
 
 
-#include "ofMain.h"
-#include "ofxPointer.h"
+namespace ofx {
 
 
-class ofApp: public ofBaseApp
+PointShape::PointShape():
+    _width(0),
+    _height(0),
+    _ellipseAngle(-1),
+    _ellipseMajorAxis(-1),
+    _ellipseMinorAxis(-1)
 {
-public:
-    void setup();
-    void update();
-    void draw();
+}
 
-    // Pointer Events
-    bool onPointerUp(ofx::PointerEventArgs& evt);
-    bool onPointerDown(ofx::PointerEventArgs& evt);
-    bool onPointerMove(ofx::PointerEventArgs& evt);
-    bool onPointerCancel(ofx::PointerEventArgs& evt);
 
-};
+PointShape::PointShape(float width,
+                       float height,
+                       float ellipseAngle,
+                       float ellipseMajorAxis,
+                       float ellipseMinorAxis):
+    _width(width),
+    _height(height),
+    _ellipseAngle(ellipseAngle),
+    _ellipseMajorAxis(ellipseMajorAxis),
+    _ellipseMinorAxis(ellipseMinorAxis)
+{
+}
+
+
+PointShape::~PointShape()
+{
+}
+
+
+float PointShape::getWidth() const
+{
+    return _width;
+}
+
+
+float PointShape::getHeight() const
+{
+    return _height;
+}
+
+
+float PointShape::getEllipseAngle() const
+{
+    return _height;
+}
+
+
+float PointShape::getEllipseMajorAxis() const
+{
+    return _ellipseMajorAxis;
+}
+
+
+float PointShape::getEllipseMinorAxis() const
+{
+    return _ellipseMinorAxis;
+}
+    
+
+
+} // namespace ofx

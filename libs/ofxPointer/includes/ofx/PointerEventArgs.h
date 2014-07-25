@@ -26,9 +26,11 @@
 #pragma once
 
 
+#include <string>
+#include "Poco/Timestamp.h"
 #include "ofEvents.h"
-#include "ofVec3f.h"
 #include "ofUtils.h"
+#include "ofx/Point.h"
 
 
 namespace ofx {
@@ -37,151 +39,115 @@ namespace ofx {
 class PointerEventArgs: public ofEventArgs
 {
 public:
-    enum EventType
-    {
-        EVENT_UNKNOWN,
-        EVENT_DOWN,
-        EVENT_UP,
-        EVENT_MOVE,
-        EVENT_DOUBLE_TAP,
-        EVENT_CANCEL
-	};
+    PointerEventArgs(const Point& point,
+                     long deviceID,
+                     long pointerID,
+                     const std::string& type,
+                     bool isPrimary,
+                     unsigned long button,
+                     unsigned long buttons,
+                     unsigned long modifiers,
+                     unsigned long tapCount,
+                     const Poco::Timestamp& timestamp);
 
-    enum DeviceType
-    {
-        DEVICE_UNKNOWN = -1,
-        DEVICE_MOUSE = 0,
-        DEVICE_TOUCH = 1,
-        DEVICE_PEN   = 2
-    };
-
-    enum Buttons
-    {
-        POINTER_BUTTON_1        = 0x00000001,
-        POINTER_BUTTON_2        = 0x00000010,
-        POINTER_BUTTON_3        = 0x00000100,
-        POINTER_BUTTON_4        = 0x00001000,
-        POINTER_BUTTON_5        = 0x00010000,
-        POINTER_BUTTON_6        = 0x00100000,
-        POINTER_BUTTON_7        = 0x01000000,
-        POINTER_BUTTON_8        = 0x10000000,
-        POINTER_BUTTON_LAST     = POINTER_BUTTON_8,
-        POINTER_BUTTON_LEFT     = POINTER_BUTTON_1,
-        POINTER_BUTTON_MIDDLE   = POINTER_BUTTON_2,
-        POINTER_BUTTON_RIGHT    = POINTER_BUTTON_3
-    };
-
-
-    PointerEventArgs();
-    PointerEventArgs(const ofTouchEventArgs& evt);
-    PointerEventArgs(const ofMouseEventArgs& evt);
     virtual ~PointerEventArgs();
 
-    EventType getEventType() const;
-    DeviceType getDeviceType() const;
+    const Point& getPoint() const;
 
-    unsigned int getFrameId() const;
-    unsigned int getId() const;
-    unsigned int getDeviceId() const;
-    unsigned int getWindowId() const;
+    long getDeviceID() const;
 
-    unsigned int getModifiers() const;
-    
-    bool isInContact() const;
+    long getPointerID() const;
 
-    const ofVec3f& getPosition() const;
-    const ofVec3f& getLastPosition() const;
-    const ofVec3f& getVelocity() const;
-    const ofVec3f& getAcceleration() const;
+    const std::string& getType() const;
 
-    bool isModifierPressed(unsigned int modifier) const;
-    bool isButtonPressed(unsigned int button) const;
+    bool isPrimary() const;
 
-    unsigned long long getTimeStamp() const;
+    unsigned long getButton() const;
 
-    bool operator == (const PointerEventArgs& other) const;
-    bool operator != (const PointerEventArgs& other) const;
+    unsigned long getButtons() const;
+
+    unsigned long getModifiers() const;
+
+    unsigned long getTapCount() const;
+
+    const Poco::Timestamp& getTimestamp() const;
+
+
+    static const std::string TYPE_MOUSE;
+    static const std::string TYPE_PEN;
+    static const std::string TYPE_TOUCH;
+
+
+    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
+    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
 
     std::string toString() const
     {
         std::stringstream ss;
 
-        std::string evtType = "UNKNOWN";
-
-        switch(getEventType())
-        {
-            case EVENT_UNKNOWN:
-                evtType = "UNKNOWN";
-                break;
-            case EVENT_DOWN:
-                evtType = "DOWN";
-                break;
-            case EVENT_UP:
-                evtType = "UP";
-                break;
-            case EVENT_MOVE:
-                evtType = "MOVE";
-                break;
-            case EVENT_DOUBLE_TAP:
-                evtType = "DOUBLE_TAP";
-                break;
-            case EVENT_CANCEL:
-                evtType = "CANCEL";
-                break;
-        }
-
-        ss << evtType << " pos: " << getPosition();
-
-        if(isModifierPressed(OF_KEY_CONTROL)) ss << endl << "\tOF_KEY_CONTROL";
-        if(isModifierPressed(OF_KEY_ALT)) ss << endl << "\tOF_KEY_ALT";
-        if(isModifierPressed(OF_KEY_SHIFT)) ss << endl << "\tOF_KEY_SHIFT";
-        if(isModifierPressed(OF_KEY_SUPER)) ss << endl << "\tOF_KEY_SUPER";
-
-        if(isButtonPressed(POINTER_BUTTON_LEFT)) ss << endl << "\tPOINTER_BUTTON_LEFT";
-        if(isButtonPressed(POINTER_BUTTON_MIDDLE)) ss << endl << "\tPOINTER_BUTTON_MIDDLE";
-        if(isButtonPressed(POINTER_BUTTON_RIGHT)) ss << endl << "\tPOINTER_BUTTON_RIGHT";
+        ss << "----------" << std::endl;
+        ss << "     Type: " << getType() << std::endl;
+        ss << "   Button: " << getButton() << std::endl;
+        ss << "  Buttons: " << ofToBinary(getButtons()) << std::endl;
+        ss << "Modifiers: " << ofToBinary(getModifiers()) << std::endl;
+        ss << "Tap Count: " << getTapCount() << std::endl;
 
         return ss.str();
     }
 
 private:
-    EventType _eventType;
-    DeviceType _deviceType;
+    Point _point;
 
-    unsigned int _frameId;
-    unsigned int _id;
-    unsigned int _deviceId;
-    unsigned int _windowId;
+    long _deviceID;
 
-    // multipointers
-	unsigned int _pointerId;   // number of active pointers
-	unsigned int _pointerCount;   // number of active pointers
+    /// \brief A unique pointer ID.
+    ///
+    /// This value must be unique from all other active pointers at any given
+    /// time.  Pointer IDs can be reused and are implementation specific.
+    long _pointerID;
 
-    // pointer shape
-    float _width;
-    float _height;
 
-    // touch ellipse
-	float _angle;        // radians
-	float _minorAxis;
-    float _majorAxis;
+    /// \brief The type of device that generated this Point.
+    std::string _type;
 
-    // pressure
-	float _pressure;     // pressure
 
+    /// \brief Indicates if the pointer is a primary pointer.
+    ///
+    /// In a multi-pointer (e.g. multi-touch) scenario, the isPrimary property
+    /// is used to identify a master pointer amongst the set of active pointers
+    /// for each pointer type. Only a primary pointer will produce compatibility
+    /// mouse events. Authors who desire single-pointer interaction can achieve
+    /// this by ignoring non-primary pointers.
+    ///
+    /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
+    bool _isPrimary;
+
+    unsigned long _button;
+
+    unsigned long _buttons;
+
+    unsigned long _modifiers;
+
+    unsigned long _tapCount;
+
+    Poco::Timestamp _timestamp;
+
+};
+
+
+
+class PointerGestureEventArgs: public PointerEventArgs
+{
+public:
+    PointerGestureEventArgs(const PointerEventArgs& evt,
+                            unsigned int tapCount);
+
+    virtual ~PointerGestureEventArgs();
+
+    unsigned int getTapCount() const;
+
+private:
     unsigned int _tapCount;
-
-    unsigned int _modifiers;
-    unsigned int _buttons;
-
-    bool _isInContact;
-
-    ofVec3f _position;
-    ofVec3f _lastPosition;
-    ofVec3f _velocity;
-    ofVec3f _acceleration;
-    
-    unsigned long long _timeStamp;
     
 };
 

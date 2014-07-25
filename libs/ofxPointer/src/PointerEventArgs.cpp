@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2013 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2010-2014 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,223 +23,193 @@
 // =============================================================================
 
 
-#include "PointerEventArgs.h"
+#include "ofx/PointerEventArgs.h"
 
 
 namespace ofx {
 
 
-PointerEventArgs::PointerEventArgs():
-    _eventType(EVENT_UNKNOWN),
-    _deviceType(DEVICE_UNKNOWN),
-    _frameId(0),
-    _id(0),
-    _deviceId(0),
-    _windowId(0),
-    _pointerId(0),
-    _pointerCount(0),
-    _width(0),
-    _height(0),
-    _angle(0),
-    _majorAxis(0),
-    _minorAxis(0),
-    _pressure(0),
-    _tapCount(0),
-    _modifiers(0),
-    _buttons(0),
-    _isInContact(false),
-    _position(ofVec3f(0,0,0)),
-    _lastPosition(ofVec3f(0,0,0)),
-    _velocity(ofVec3f(0,0,0)),
-    _acceleration(ofVec3f(0,0,0)),
-    _timeStamp(0)
+const std::string PointerEventArgs::TYPE_MOUSE = "mouse";
+const std::string PointerEventArgs::TYPE_PEN = "pen";
+const std::string PointerEventArgs::TYPE_TOUCH = "touch";
+
+
+PointerEventArgs::PointerEventArgs(const Point& point,
+                                   long deviceID,
+                                   long pointerID,
+                                   const std::string& type,
+                                   bool isPrimary,
+                                   unsigned long button,
+                                   unsigned long buttons,
+                                   unsigned long modifiers,
+                                   unsigned long tapCount,
+                                   const Poco::Timestamp& timestamp):
+    _point(point),
+    _deviceID(deviceID),
+    _pointerID(pointerID),
+    _type(type),
+    _isPrimary(isPrimary),
+    _button(button),
+    _buttons(buttons),
+    _modifiers(modifiers),
+    _tapCount(tapCount),
+    _timestamp(timestamp)
 {
 }
 
-
-PointerEventArgs::PointerEventArgs(const ofTouchEventArgs& evt):
-    _eventType(EVENT_UNKNOWN),
-    _deviceType(DEVICE_UNKNOWN),
-    _frameId(0),
-    _id(evt.id),
-    _deviceId(0),
-    _windowId(0),
-    _pointerId(0),
-    _pointerCount(evt.numTouches),
-    _width(evt.width),
-    _height(evt.height),
-    _angle(evt.angle),
-    _majorAxis(evt.majoraxis),
-    _minorAxis(evt.minoraxis),
-    _pressure(evt.pressure),
-    _tapCount(0),
-    _modifiers(0),
-    _buttons(0),
-    _isInContact(true),
-    _position(evt),
-    _lastPosition(ofVec3f(0,0,0)),
-    _velocity(ofVec2f(evt.xspeed,evt.yspeed)),
-    _acceleration(ofVec2f(evt.xaccel,evt.yaccel)),
-    _timeStamp(evt.time)
-{
-    switch (evt.type)
-    {
-        case ofTouchEventArgs::down:
-            _eventType = EVENT_DOWN;
-            break;
-        case ofTouchEventArgs::up:
-            _eventType = EVENT_UP;
-            break;
-        case ofTouchEventArgs::move:
-            _eventType = EVENT_MOVE;
-            break;
-        case ofTouchEventArgs::doubleTap:
-            _eventType = EVENT_DOUBLE_TAP;
-            break;
-        case ofTouchEventArgs::cancel:
-            _eventType = EVENT_CANCEL;
-            break;
-    }
-}
-
-
-PointerEventArgs::PointerEventArgs(const ofMouseEventArgs& evt):
-    _eventType(EVENT_UNKNOWN),
-    _deviceType(DEVICE_UNKNOWN),
-    _frameId(0),
-    _id(0),
-    _deviceId(0),
-    _windowId(0),
-    _pointerId(0),
-    _pointerCount(0),
-    _width(0),
-    _height(0),
-    _angle(0),
-    _majorAxis(0),
-    _minorAxis(0),
-    _pressure(0),
-    _tapCount(0),
-    //_modifiers(evt.modifiers),
-    _buttons(evt.button),
-    _isInContact(false),
-    _position(evt),
-    _lastPosition(ofVec3f(0,0,0)),
-    _velocity(ofVec3f(0,0,0)),
-    _acceleration(ofVec3f(0,0,0)),
-    _timeStamp(ofGetSystemTime())
-{
-    _buttons = 0;
-
-    switch (evt.type)
-    {
-        case ofMouseEventArgs::Pressed:
-            _eventType = EVENT_DOWN;
-            _pressure = 1;
-            _isInContact = true;
-            break;
-        case ofMouseEventArgs::Moved:
-            _eventType = EVENT_MOVE;
-            _pressure = 0;
-            _isInContact = false;
-            break;
-        case ofMouseEventArgs::Released:
-            _eventType = EVENT_UP;
-            _pressure = 0;
-            _isInContact = true;
-            break;
-        case ofMouseEventArgs::Dragged:
-            _eventType = EVENT_MOVE;
-            _pressure = 1;
-            _isInContact = true;
-            break;
-    }
-
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_1)) _buttons |= POINTER_BUTTON_1;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_2)) _buttons |= POINTER_BUTTON_2;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_3)) _buttons |= POINTER_BUTTON_3;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_4)) _buttons |= POINTER_BUTTON_4;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_5)) _buttons |= POINTER_BUTTON_5;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_6)) _buttons |= POINTER_BUTTON_6;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_7)) _buttons |= POINTER_BUTTON_7;
-    if(ofGetMousePressed(OF_MOUSE_BUTTON_8)) _buttons |= POINTER_BUTTON_8;
-
-}
 
 PointerEventArgs::~PointerEventArgs()
 {
 }
 
 
-PointerEventArgs::EventType PointerEventArgs::getEventType() const
+const Point& PointerEventArgs::getPoint() const
 {
-    return _eventType;
+    return _point;
 }
 
 
-PointerEventArgs::DeviceType PointerEventArgs::getDeviceType() const
+long PointerEventArgs::getDeviceID() const
 {
-    return _deviceType;
+    return _deviceID;
 }
 
 
-const ofVec3f& PointerEventArgs::getPosition() const
+long PointerEventArgs::getPointerID() const
 {
-    return _position;
+    return _pointerID;
 }
 
 
-const ofVec3f& PointerEventArgs::getLastPosition() const
+const std::string& PointerEventArgs::getType() const
 {
-    return _lastPosition;
+    return _type;
 }
 
 
-const ofVec3f& PointerEventArgs::getVelocity() const
+bool PointerEventArgs::isPrimary() const
 {
-    return _velocity;
+    return _isPrimary;
 }
 
 
-bool PointerEventArgs::isModifierPressed(unsigned int modifier) const
+unsigned long PointerEventArgs::getButton() const
 {
-    return _modifiers & modifier;
+    return _button;
 }
 
 
-bool PointerEventArgs::isButtonPressed(unsigned int button) const
+unsigned long PointerEventArgs::getButtons() const
 {
-    return _buttons & button;
+    return _buttons;
 }
 
 
-unsigned long long PointerEventArgs::getTimeStamp() const
-{
-    return _timeStamp;
-}
-
-
-unsigned int PointerEventArgs::getId() const
-{
-    return _id;
-}
-
-
-unsigned int PointerEventArgs::getModifiers() const
+unsigned long PointerEventArgs::getModifiers() const
 {
     return _modifiers;
 }
 
 
-bool PointerEventArgs::operator == (const PointerEventArgs& other) const
+unsigned long PointerEventArgs::getTapCount() const
 {
-    // TODO::
-    return false;
+    return _tapCount;
 }
 
 
-bool PointerEventArgs::operator != (const PointerEventArgs& other) const
+const Poco::Timestamp& PointerEventArgs::getTimestamp() const
 {
-    return !(*this == other);
+    return _timestamp;
+}
+
+
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& evt)
+{
+    PointShape shape(evt.width,
+                     evt.height,
+                     evt.angle,
+                     evt.majoraxis,
+                     evt.minoraxis);
+
+    Point point(evt, shape, evt.pressure, 0, 0);
+
+    unsigned long modifiers = 0;
+
+    modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
+
+    Poco::Timestamp timestamp; // evt.time (?);
+
+    return PointerEventArgs(point,
+                            0,
+                            evt.id,
+                            PointerEventArgs::TYPE_TOUCH,
+                            false,
+                            0,
+                            0,
+                            modifiers,
+                            0,
+                            timestamp);
+}
+
+
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& evt)
+{
+    PointShape shape;
+
+    float pressure = 0;
+
+    unsigned long tapCount = 0;
+
+    switch (evt.type)
+    {
+        case ofMouseEventArgs::Pressed:
+            pressure = 0.5;
+            tapCount = 1;
+            break;
+        case ofMouseEventArgs::Dragged:
+            pressure = 0.5;
+            break;
+        case ofMouseEventArgs::Moved:
+        case ofMouseEventArgs::Released:
+            pressure = 0.0;
+            break;
+    }
+
+    Point point(evt, shape, pressure, 0, 0);
+
+    unsigned long modifiers = 0;
+
+    modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
+
+    unsigned long buttons = 0;
+
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_1) ? (1 << OF_MOUSE_BUTTON_1) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_2) ? (1 << OF_MOUSE_BUTTON_2) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_3) ? (1 << OF_MOUSE_BUTTON_3) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_4) ? (1 << OF_MOUSE_BUTTON_4) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_5) ? (1 << OF_MOUSE_BUTTON_5) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
+    buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
+
+    Poco::Timestamp timestamp;
+
+    return PointerEventArgs::PointerEventArgs(evt,
+                                              0,
+                                              0,
+                                              PointerEventArgs::TYPE_MOUSE,
+                                              true,
+                                              evt.button,
+                                              buttons,
+                                              modifiers,
+                                              tapCount,
+                                              timestamp);
+
 }
 
 
