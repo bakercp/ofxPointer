@@ -30,6 +30,7 @@ void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofx::RegisterPointerEvents(this);
+    ofx::RegisterPointerGestureEvents(this);
 }
 
 
@@ -43,29 +44,38 @@ void ofApp::draw()
 }
 
 
-bool ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerUp") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerDown(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDown") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerMove(ofx::PointerEventArgs& evt)
+void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerMove") << evt.toString();
-    return true;
 }
 
 
-bool ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
-    return true;
 }
+
+
+void ofApp::onPointerDoublePress(ofx::PointerEventArgs& evt)
+{
+    ofLogVerbose("ofApp::onPointerDoubleTap") << evt.toString();
+}
+
+
+void ofApp::onPointerPressAndHold(ofx::PointerEventArgs& evt)
+{
+    ofLogVerbose("ofApp::onPointerPressAndHold") << evt.toString();
+}
+

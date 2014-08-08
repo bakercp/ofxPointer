@@ -38,9 +38,13 @@ public:
     void draw();
 
     // Pointer Events
-    bool onPointerUp(ofx::PointerEventArgs& evt);
-    bool onPointerDown(ofx::PointerEventArgs& evt);
-    bool onPointerMove(ofx::PointerEventArgs& evt);
-    bool onPointerCancel(ofx::PointerEventArgs& evt);
+    void onPointerUp(ofx::PointerEventArgs& evt);
+    void onPointerDown(ofx::PointerEventArgs& evt);
+    void onPointerMove(ofx::PointerEventArgs& evt);
+    void onPointerCancel(ofx::PointerEventArgs& evt);
+
+    // Gesture Events
+    void onPointerDoublePress(ofx::PointerEventArgs& evt);
+    void onPointerPressAndHold(ofx::PointerEventArgs& evt);
 
 };
