@@ -39,7 +39,18 @@ namespace ofx {
 class PointerEventArgs: public ofEventArgs
 {
 public:
-    PointerEventArgs(const Point& point,
+    enum EventType
+    {
+        DOWN,
+        UP,
+        MOVE,
+        CANCEL
+    };
+
+    PointerEventArgs();
+
+    PointerEventArgs(EventType eventType,
+                     const Point& point,
                      long deviceID,
                      long pointerID,
                      const std::string& type,
@@ -52,13 +63,15 @@ public:
 
     virtual ~PointerEventArgs();
 
+    EventType getEventType() const;
+
     const Point& getPoint() const;
 
     long getDeviceID() const;
 
     long getPointerID() const;
 
-    const std::string& getType() const;
+    const std::string& getDeviceType() const;
 
     bool isPrimary() const;
 
@@ -72,11 +85,9 @@ public:
 
     const Poco::Timestamp& getTimestamp() const;
 
-
     static const std::string TYPE_MOUSE;
     static const std::string TYPE_PEN;
     static const std::string TYPE_TOUCH;
-
 
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
     static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
@@ -85,17 +96,19 @@ public:
     {
         std::stringstream ss;
 
-        ss << "----------" << std::endl;
-        ss << "     Type: " << getType() << std::endl;
-        ss << "   Button: " << getButton() << std::endl;
-        ss << "  Buttons: " << ofToBinary(getButtons()) << std::endl;
-        ss << "Modifiers: " << ofToBinary(getModifiers()) << std::endl;
-        ss << "Tap Count: " << getTapCount() << std::endl;
+        ss << "------------" << std::endl;
+        ss << "Device Type: " << getDeviceType() << std::endl;
+        ss << "     Button: " << getButton() << std::endl;
+        ss << "    Buttons: " << ofToBinary(getButtons()) << std::endl;
+        ss << "  Modifiers: " << ofToBinary(getModifiers()) << std::endl;
+        ss << "  Tap Count: " << getTapCount() << std::endl;
 
         return ss.str();
     }
 
 private:
+    EventType _eventType;
+
     Point _point;
 
     long _deviceID;
@@ -108,7 +121,7 @@ private:
 
 
     /// \brief The type of device that generated this Point.
-    std::string _type;
+    std::string _deviceType;
 
 
     /// \brief Indicates if the pointer is a primary pointer.
@@ -136,20 +149,20 @@ private:
 
 
 
-class PointerGestureEventArgs: public PointerEventArgs
-{
-public:
-    PointerGestureEventArgs(const PointerEventArgs& evt,
-                            unsigned int tapCount);
-
-    virtual ~PointerGestureEventArgs();
-
-    unsigned int getTapCount() const;
-
-private:
-    unsigned int _tapCount;
-    
-};
+//class PointerDoubleTapEventArgs: public PointerEventArgs
+//{
+//public:
+//    PointerDoubleTapEventArgs(const PointerEventArgs& evt,
+//                              unsigned int tapCount);
+//
+//    virtual ~PointerGestureEventArgs();
+//
+//    unsigned int getTapCount() const;
+//
+//private:
+//    unsigned int _tapCount;
+//    
+//};
 
 
 } // namespace ofx

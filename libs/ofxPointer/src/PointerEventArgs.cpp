@@ -34,10 +34,27 @@ const std::string PointerEventArgs::TYPE_PEN = "pen";
 const std::string PointerEventArgs::TYPE_TOUCH = "touch";
 
 
-PointerEventArgs::PointerEventArgs(const Point& point,
+PointerEventArgs::PointerEventArgs():
+    _eventType(MOVE),
+    _point(Point()),
+    _deviceID(-1),
+    _pointerID(-1),
+    _deviceType("unknown"),
+    _isPrimary(false),
+    _button(0),
+    _buttons(0),
+    _modifiers(0),
+    _tapCount(0),
+    _timestamp(Poco::Timestamp())
+{
+}
+
+
+PointerEventArgs::PointerEventArgs(EventType eventType,
+                                   const Point& point,
                                    long deviceID,
                                    long pointerID,
-                                   const std::string& type,
+                                   const std::string& deviceType,
                                    bool isPrimary,
                                    unsigned long button,
                                    unsigned long buttons,
@@ -45,9 +62,10 @@ PointerEventArgs::PointerEventArgs(const Point& point,
                                    unsigned long tapCount,
                                    const Poco::Timestamp& timestamp):
     _point(point),
+    _eventType(eventType),
     _deviceID(deviceID),
     _pointerID(pointerID),
-    _type(type),
+    _deviceType(deviceType),
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
@@ -60,6 +78,12 @@ PointerEventArgs::PointerEventArgs(const Point& point,
 
 PointerEventArgs::~PointerEventArgs()
 {
+}
+
+
+PointerEventArgs::EventType PointerEventArgs::getEventType() const
+{
+    return _eventType;
 }
 
 
@@ -81,9 +105,9 @@ long PointerEventArgs::getPointerID() const
 }
 
 
-const std::string& PointerEventArgs::getType() const
+const std::string& PointerEventArgs::getDeviceType() const
 {
-    return _type;
+    return _deviceType;
 }
 
 
@@ -127,11 +151,11 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 {
     PointShape shape(evt.width,
                      evt.height,
-                     evt.angle,
                      evt.majoraxis,
-                     evt.minoraxis);
+                     evt.minoraxis,
+                     evt.angle);
 
-    Point point(evt, shape, evt.pressure, 0, 0);
+    Point point(evt, evt, shape, evt.pressure, 0, 0, 0, 0);
 
     unsigned long modifiers = 0;
 
@@ -142,7 +166,27 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     Poco::Timestamp timestamp; // evt.time (?);
 
-    return PointerEventArgs(point,
+    EventType type = MOVE;
+
+    switch (evt.type)
+    {
+        case ofTouchEventArgs::down:
+        case ofTouchEventArgs::doubleTap:
+            type = DOWN;
+            break;
+        case ofTouchEventArgs::up:
+            type = UP;
+            break;
+        case ofTouchEventArgs::move:
+            type = MOVE;
+            break;
+        case ofTouchEventArgs::cancel:
+            type = CANCEL;
+            break;
+    }
+
+    return PointerEventArgs(type,
+                            point,
                             0,
                             evt.id,
                             PointerEventArgs::TYPE_TOUCH,
@@ -163,22 +207,30 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     unsigned long tapCount = 0;
 
+    EventType type = MOVE;
+
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
+            type = DOWN;
             pressure = 0.5;
             tapCount = 1;
             break;
         case ofMouseEventArgs::Dragged:
+            type = MOVE;
             pressure = 0.5;
             break;
         case ofMouseEventArgs::Moved:
+            type = MOVE;
+            pressure = 0.0;
+            break;
         case ofMouseEventArgs::Released:
+            type = UP;
             pressure = 0.0;
             break;
     }
 
-    Point point(evt, shape, pressure, 0, 0);
+    Point point(evt, evt, shape, pressure, 0, 0, 0 , 0);
 
     unsigned long modifiers = 0;
 
@@ -199,7 +251,8 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     Poco::Timestamp timestamp;
 
-    return PointerEventArgs::PointerEventArgs(evt,
+    return PointerEventArgs::PointerEventArgs(type,
+                                              point,
                                               0,
                                               0,
                                               PointerEventArgs::TYPE_MOUSE,

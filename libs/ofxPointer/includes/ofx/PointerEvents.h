@@ -27,6 +27,9 @@
 
 
 #include <map>
+#include "Poco/Timespan.h"
+#include "Poco/Timestamp.h"
+#include "Poco/Tuple.h"
 #include "ofEvents.h"
 #include "ofTypes.h"
 #include "PointerEventArgs.h"
@@ -48,11 +51,20 @@ public:
 void SetPointerEventProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor);
 
 
+class DefaultGestureEventProcessor
+{
+public:
+
+};
+
+
 class DefaultPointerEventProcessor: public AbstractPointerEventProcessor
 {
 public:
     DefaultPointerEventProcessor();
     virtual ~DefaultPointerEventProcessor();
+
+    void update(ofEventArgs& evt);
 
 	void mouseMoved(ofMouseEventArgs& e);
 	void mouseDragged(ofMouseEventArgs& e);
@@ -65,27 +77,18 @@ public:
 	void touchDoubleTap(ofTouchEventArgs& e);
 	void touchCancelled(ofTouchEventArgs& e);
 
-//private:
-//    std::map<std::pair<long, unsigned long>, std::pair<unsigned long, Poco::Timestamp> > _clickHistory;
-//    std::map<std::pair<long, unsigned long>, std::pair<unsigned long, Poco::Timestamp> > _tapHistory;
-//
-//    /// \brief Record a mouse click.
-//    /// \param id The mouse id.
-//    /// \param id The button id.
-//    /// \returns The number of clicks recorded for this mouse button.
-//    unsigned long click(long id, unsigned long);
-//
-//    /// \brief Record a touch tap click.
-//    /// \param id The mouse id.
-//    /// \param id The button id.
-//    /// \returns The number of taps recorded for this touch.
-//    unsigned long tap(long id, unsigned long);
-//
-//    enum
-//    {
-//        DEFAULT_TAP_THRESHOLD = 500
-//    };
-//
+    static const Poco::Timespan DEFAULT_TAP_DELAY;
+
+protected:
+    typedef Poco::Tuple<long, long, unsigned long> PointerDownEventArgsKey;
+    typedef std::map<PointerDownEventArgsKey, PointerEventArgs> PointerDownEvents;
+
+    PointerDownEvents _pointerDownEvents;
+
+    void handlePointerDown(const PointerEventArgs& evt);
+
+    Poco::Timespan _tapThreshold;
+
 };
 
 
@@ -121,7 +124,19 @@ public:
 };
 
 
+class CorePointerGestureEvents
+{
+public:
+    /// \brief Event that is triggered on the second succesive tap or click.
+    ofEvent<PointerEventArgs> onPointerDoublePress;
+
+    ofEvent<PointerEventArgs> onPointerPressAndHold;
+
+};
+
+
 CorePointerEvents& PointerEvents();
+CorePointerGestureEvents& PointerGestureEvents();
 
 
 template<class ListenerClass>
@@ -142,6 +157,23 @@ void UnregisterPointerEvents(ListenerClass* listener)
     ofRemoveListener(PointerEvents().onPointerUp, listener, &ListenerClass::onPointerUp);
     ofRemoveListener(PointerEvents().onPointerMove, listener, &ListenerClass::onPointerMove);
     ofRemoveListener(PointerEvents().onPointerCancel, listener, &ListenerClass::onPointerCancel);
+}
+
+
+template<class ListenerClass>
+void RegisterPointerGestureEvents(ListenerClass* listener,
+                                  int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    ofAddListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress, prio);
+    ofAddListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerDoublePress, prio);
+}
+
+
+template<class ListenerClass>
+void UnregisterPointerGestureEvents(ListenerClass* listener)
+{
+    ofRemoveListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress);
+    ofRemoveListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerDoublePress);
 }
 
 
