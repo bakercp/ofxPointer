@@ -29,34 +29,70 @@
 namespace ofx {
 
 
+/// \brief A PointShape describes the shape of a pointer.
+///
+/// For standard pointers, such as a mouse or a pen, the width and height of the
+/// PointShape will be set to zero while some touch pointers may define the
+/// size of the touch or even an ellipse describing the size and angle of a
+/// finger tip.
+///
+/// When the ellipse is defined, the width and height should describe and axis-
+/// aligned bounding box of the ellipse.
 class PointShape
 {
 public:
+    /// \brief Create a default PointShape.
     PointShape();
 
+    /// \brief Create a PointShape with parameters.
     PointShape(float width,
                float height,
-               float ellipseAngle = -1,
-               float ellipseMajorAxis = -1,
-               float ellipseMinorAxis = -1);
+               float ellipseMajorAxis = 0,
+               float ellipseMinorAxis = 0,
+               float ellipseAngle = 0);
 
+    /// \brief Destroy the PointShape.
     virtual ~PointShape();
 
+    /// \brief Get the width of the PointShape.
+    ///
+    /// When an ellipse is defined, this represents the width of the ellipse's
+    /// axis-aligned bounding box.
+    ///
     /// \returns the Point width.
     float getWidth() const;
 
+    /// \brief Get the height of the PointShape.
+    ///
+    /// When an ellipse is defined, this represents the height of the ellipse's
+    /// axis-aligned bounding box.
+    ///
     /// \returns the Point height.
     float getHeight() const;
 
-    /// \returns the Point's ellipse angle in radians or -1 if undefined.
+    /// \brief Get the angle of the PointShape ellipse.
+    ///
+    /// Some touch pointers may define the elliptical shape and angle of a
+    /// contact point.
+    ///
+    /// \returns the Point's ellipse angle in degrees.
     float getEllipseAngle() const;
 
-    /// \returns the Point's ellipse major axis or -1 if undefined.
+    /// \brief Get the major axis of the PointShape ellipse.
+    ///
+    /// Some touch pointers may define the elliptical shape and angle of a
+    /// contact point.
+    ///
+    /// \returns the Point's ellipse major axis.
     float getEllipseMajorAxis() const;
 
-    /// \returns the Point's ellipse minor axis or -1 if undefined.
+    /// \brief Get the minor axis of the PointShape ellipse.
+    ///
+    /// Some touch pointers may define the elliptical shape and angle of a
+    /// contact point.
+    ///
+    /// \returns the Point's ellipse minor axis.
     float getEllipseMinorAxis() const;
-
 
 protected:
     /// \brief Bounding box width.
@@ -65,14 +101,14 @@ protected:
     /// \brief Bounding box height.
     float _height;
 
-    /// \brief Ellipse angle, if defined.
-	float _ellipseAngle;
-
-    /// \brief Ellipse major axis, if defined.
+    /// \brief Ellipse major axis.
     float _ellipseMajorAxis;
 
-    /// \brief Ellipse minor axis, if defined.
+    /// \brief Ellipse minor axis.
 	float _ellipseMinorAxis;
+
+    /// \brief Ellipse angle in degrees.
+	float _ellipseAngle;
 
 };
 

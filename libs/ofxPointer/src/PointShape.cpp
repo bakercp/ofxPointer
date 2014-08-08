@@ -32,23 +32,23 @@ namespace ofx {
 PointShape::PointShape():
     _width(0),
     _height(0),
-    _ellipseAngle(-1),
-    _ellipseMajorAxis(-1),
-    _ellipseMinorAxis(-1)
+    _ellipseMajorAxis(0),
+    _ellipseMinorAxis(0),
+    _ellipseAngle(0)
 {
 }
 
 
 PointShape::PointShape(float width,
                        float height,
-                       float ellipseAngle,
                        float ellipseMajorAxis,
-                       float ellipseMinorAxis):
+                       float ellipseMinorAxis,
+                       float ellipseAngle):
     _width(width),
     _height(height),
-    _ellipseAngle(ellipseAngle),
     _ellipseMajorAxis(ellipseMajorAxis),
-    _ellipseMinorAxis(ellipseMinorAxis)
+    _ellipseMinorAxis(ellipseMinorAxis),
+    _ellipseAngle(ellipseAngle)
 {
 }
 
@@ -70,12 +70,6 @@ float PointShape::getHeight() const
 }
 
 
-float PointShape::getEllipseAngle() const
-{
-    return _height;
-}
-
-
 float PointShape::getEllipseMajorAxis() const
 {
     return _ellipseMajorAxis;
@@ -87,6 +81,11 @@ float PointShape::getEllipseMinorAxis() const
     return _ellipseMinorAxis;
 }
     
+
+float PointShape::getEllipseAngle() const
+{
+    return _ellipseAngle;
+}
 
 
 } // namespace ofx
