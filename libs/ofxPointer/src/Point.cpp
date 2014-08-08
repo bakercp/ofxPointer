@@ -30,53 +30,71 @@ namespace ofx {
 
 
 Point::Point():
-    ofVec2f(0, 0),
+    ofVec3f(0, 0, 0),
+    _absolutePosition(0, 0, 0),
     _shape(PointShape()),
     _pressure(0),
+    _tangentialPressure(0),
+    _rotation(0),
     _tiltX(0),
     _tiltY(0)
 {
 }
 
 
-Point::Point(const ofVec2f& position):
-    ofVec2f(position),
+Point::Point(const ofVec3f& position):
+    ofVec3f(position),
+    _absolutePosition(position),
     _shape(PointShape()),
     _pressure(0),
+    _tangentialPressure(0),
+    _rotation(0),
     _tiltX(0),
     _tiltY(0)
 {
 }
 
 
-Point::Point(const ofVec2f& position, const PointShape& shape):
-    ofVec2f(position),
+Point::Point(const ofVec3f& position, const PointShape& shape):
+    ofVec3f(position),
+    _absolutePosition(position),
     _shape(shape),
     _pressure(0),
+    _tangentialPressure(0),
+    _rotation(0),
     _tiltX(0),
     _tiltY(0)
 {
 }
 
 
-Point::Point(const ofVec2f& position, float pressure, float tiltX, float tiltY):
-    ofVec2f(position),
+Point::Point(const ofVec3f& position, float pressure, float tiltX, float tiltY):
+    ofVec3f(position),
+    _absolutePosition(position),
     _shape(PointShape()),
     _pressure(pressure),
+    _tangentialPressure(0),
+    _rotation(0),
     _tiltX(tiltX),
     _tiltY(tiltY)
 {
 }
 
 
-Point::Point(const ofVec2f& position,
+Point::Point(const ofVec3f& position,
+             const ofVec3f& absolutePosition,
              const PointShape& shape,
              float pressure,
+             float tangentialPressure,
+             float rotation,
              float tiltX,
              float tiltY):
-    ofVec2f(position),
+    ofVec3f(position),
+    _absolutePosition(absolutePosition),
     _shape(shape),
     _pressure(pressure),
+    _tangentialPressure(tangentialPressure),
+    _rotation(rotation),
     _tiltX(tiltX),
     _tiltY(tiltY)
 {
@@ -88,9 +106,27 @@ Point::~Point()
 }
 
 
+const ofVec3f& Point::getAbsolutePosition() const
+{
+    return _absolutePosition;
+}
+
+
 float Point::getPressure() const
 {
     return _pressure;
+}
+
+
+float Point::getTangentialPressure() const
+{
+    return _tangentialPressure;
+}
+
+
+float Point::getRotation() const
+{
+    return _rotation;
 }
 
 
