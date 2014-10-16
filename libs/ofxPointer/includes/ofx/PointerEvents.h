@@ -66,22 +66,28 @@ public:
 
     void update(ofEventArgs& evt);
 
-	void mouseMoved(ofMouseEventArgs& e);
-	void mouseDragged(ofMouseEventArgs& e);
-	void mousePressed(ofMouseEventArgs& e);
-	void mouseReleased(ofMouseEventArgs& e);
+	bool mouseMoved(ofMouseEventArgs& e);
+	bool mouseDragged(ofMouseEventArgs& e);
+	bool mousePressed(ofMouseEventArgs& e);
+	bool mouseReleased(ofMouseEventArgs& e);
 
-    void touchDown(ofTouchEventArgs& e);
-    void touchMoved(ofTouchEventArgs& e);
-	void touchUp(ofTouchEventArgs& e);
-	void touchDoubleTap(ofTouchEventArgs& e);
-	void touchCancelled(ofTouchEventArgs& e);
+    bool touchDown(ofTouchEventArgs& e);
+    bool touchMoved(ofTouchEventArgs& e);
+	bool touchUp(ofTouchEventArgs& e);
+	bool touchDoubleTap(ofTouchEventArgs& e);
+	bool touchCancelled(ofTouchEventArgs& e);
+
+    void setConsumeMouseEvents(bool consumeMouseEvents);
+    void setConsumeTouchEvents(bool consumeTouchEvents);
 
     static const Poco::Timespan DEFAULT_TAP_DELAY;
 
 protected:
     typedef Poco::Tuple<long, long, unsigned long> PointerDownEventArgsKey;
     typedef std::map<PointerDownEventArgsKey, PointerEventArgs> PointerDownEvents;
+
+    bool _consumeMouseEvents;
+    bool _consumeTouchEvents;
 
     PointerDownEvents _pointerDownEvents;
 
@@ -165,7 +171,7 @@ void RegisterPointerGestureEvents(ListenerClass* listener,
                                   int prio = OF_EVENT_ORDER_AFTER_APP)
 {
     ofAddListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress, prio);
-    ofAddListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerDoublePress, prio);
+    ofAddListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerPressAndHold, prio);
 }
 
 
@@ -173,7 +179,7 @@ template<class ListenerClass>
 void UnregisterPointerGestureEvents(ListenerClass* listener)
 {
     ofRemoveListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress);
-    ofRemoveListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerDoublePress);
+    ofRemoveListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerPressAndHold);
 }
 
 
