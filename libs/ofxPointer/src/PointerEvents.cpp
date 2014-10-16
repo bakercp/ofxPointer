@@ -23,17 +23,19 @@
 // =============================================================================
 
 
-#include "PointerEvents.h"
+#include "ofx/PointerEvents.h"
+#include "ofx/PointerUtilities.h"
 #include "Poco/SingletonHolder.h"
+#include "ofConstants.h"
+#include "ofLog.h"
 
 
 namespace ofx {
 
-const Poco::Timespan DefaultPointerEventProcessor::DEFAULT_TAP_DELAY = Poco::Timespan::MILLISECONDS * 500;
 
 
 DefaultPointerEventProcessor::DefaultPointerEventProcessor():
-    _tapThreshold(DEFAULT_TAP_DELAY),
+    _multiTapInterval(PointerUtilities::getSystemMultiTapInterval()),
     _consumeMouseEvents(true),
     _consumeTouchEvents(true)
 {
@@ -49,6 +51,8 @@ DefaultPointerEventProcessor::DefaultPointerEventProcessor():
     ofAddListener(ofEvents().touchMoved, this, &DefaultPointerEventProcessor::touchMoved, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().touchDoubleTap, this, &DefaultPointerEventProcessor::touchDoubleTap, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().touchCancelled, this, &DefaultPointerEventProcessor::touchCancelled, OF_EVENT_ORDER_BEFORE_APP);
+
+    std::cout << "Total MS: " << _multiTapInterval.totalMilliseconds() << endl;
 }
 
 
@@ -173,7 +177,7 @@ void DefaultPointerEventProcessor::handlePointerDown(const PointerEventArgs& evt
     {
         PointerEventArgs& lastEvent = (*iter).second;
 
-        if (p.getTimestamp() <= (lastEvent.getTimestamp() + _tapThreshold.totalMicroseconds()))
+        if (p.getTimestamp() <= (lastEvent.getTimestamp() + _multiTapInterval.totalMicroseconds()))
         {
             tapCount += lastEvent.getTapCount();
         }

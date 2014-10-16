@@ -32,7 +32,7 @@
 #include "Poco/Tuple.h"
 #include "ofEvents.h"
 #include "ofTypes.h"
-#include "PointerEventArgs.h"
+#include "ofx/PointerEventArgs.h"
 
 
 namespace ofx {
@@ -80,7 +80,7 @@ public:
     void setConsumeMouseEvents(bool consumeMouseEvents);
     void setConsumeTouchEvents(bool consumeTouchEvents);
 
-    static const Poco::Timespan DEFAULT_TAP_DELAY;
+    static const Poco::Timespan DEFAULT_MULTI_TAP_INTERVAL;
 
 protected:
     typedef Poco::Tuple<long, long, unsigned long> PointerDownEventArgsKey;
@@ -93,7 +93,7 @@ protected:
 
     void handlePointerDown(const PointerEventArgs& evt);
 
-    Poco::Timespan _tapThreshold;
+    Poco::Timespan _multiTapInterval;
 
 };
 
