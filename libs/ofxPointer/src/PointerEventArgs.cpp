@@ -32,6 +32,7 @@ namespace ofx {
 const std::string PointerEventArgs::TYPE_MOUSE = "mouse";
 const std::string PointerEventArgs::TYPE_PEN = "pen";
 const std::string PointerEventArgs::TYPE_TOUCH = "touch";
+const std::string PointerEventArgs::TYPE_UNKNOWN = "unknown";
 
 
 PointerEventArgs::PointerEventArgs():
@@ -39,7 +40,7 @@ PointerEventArgs::PointerEventArgs():
     _point(Point()),
     _deviceID(-1),
     _pointerID(-1),
-    _deviceType("unknown"),
+    _deviceType(TYPE_UNKNOWN),
     _isPrimary(false),
     _button(0),
     _buttons(0),
@@ -103,6 +104,13 @@ long PointerEventArgs::getPointerID() const
 {
     return _pointerID;
 }
+
+
+PointerEventArgs::PointerID PointerEventArgs::getID() const
+{
+    return std::pair<long, long>(_deviceID, _pointerID);
+}
+
 
 
 const std::string& PointerEventArgs::getDeviceType() const

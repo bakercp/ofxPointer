@@ -39,6 +39,8 @@ namespace ofx {
 class PointerEventArgs: public ofEventArgs
 {
 public:
+    typedef std::pair<long, long> PointerID;
+
     enum EventType
     {
         DOWN,
@@ -67,10 +69,26 @@ public:
 
     const Point& getPoint() const;
 
+    /// \brief Get the unique input device ID.
+    /// \returns the unique input device ID.
     long getDeviceID() const;
 
+    /// \brief Get the unique pointer ID for the given device ID.
+    ///
+    /// This ID should correspend to different touches for a multi-touch device.
+    ///
+    /// \returns the unique pointer ID for the given device ID.
     long getPointerID() const;
 
+    /// \brief Get a single unique ID for a device ID and Pointer ID.
+    /// \returns a single unique ID for a device ID and Pointer ID.
+    PointerID getID() const;
+
+    /// \brief Get the device type string.
+    ///
+    /// This string may be TYPE_MOUSE, TYPE_TOUCH, TYPE_PEN, or a custom string.
+    ///
+    /// \returns a device description string.
     const std::string& getDeviceType() const;
 
     bool isPrimary() const;
@@ -84,10 +102,6 @@ public:
     unsigned long getTapCount() const;
 
     const Poco::Timestamp& getTimestamp() const;
-
-    static const std::string TYPE_MOUSE;
-    static const std::string TYPE_PEN;
-    static const std::string TYPE_TOUCH;
 
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
     static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
@@ -105,6 +119,11 @@ public:
 
         return ss.str();
     }
+
+    static const std::string TYPE_MOUSE;
+    static const std::string TYPE_PEN;
+    static const std::string TYPE_TOUCH;
+    static const std::string TYPE_UNKNOWN;
 
 private:
     EventType _eventType;
