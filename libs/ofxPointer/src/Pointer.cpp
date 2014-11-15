@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2010-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,103 @@
 // =============================================================================
 
 
-#include "PointerEvents.h"
+#include "ofx/Pointer.h"
 #include "Poco/SingletonHolder.h"
 
 
 namespace ofx {
 
-const Poco::Timespan DefaultPointerEventProcessor::DEFAULT_TAP_DELAY = Poco::Timespan::MILLISECONDS * 500;
+
+const unsigned long long DefaultGestureEventProcessor::DEFAULT_TAP_DELAY = 500;
+
+
+DefaultGestureEventProcessor::DefaultGestureEventProcessor():
+    _tapThreshold(DEFAULT_TAP_DELAY)
+{
+    ofx::RegisterPointerEvents(this);
+}
+
+
+DefaultGestureEventProcessor::~DefaultGestureEventProcessor()
+{
+    ofx::UnregisterPointerEvents(this);
+}
+
+
+bool DefaultGestureEventProcessor::onPointerUp(PointerEvent& evt)
+{
+    ofLogVerbose("DefaultGestureEventProcessor::onPointerUp") << evt.toString();
+    return false;
+}
+
+
+bool DefaultGestureEventProcessor::onPointerDown(PointerEvent& evt)
+{
+    handlePointerDown(evt);
+    ofLogVerbose("DefaultGestureEventProcessor::onPointerDown") << evt.toString();
+    return false;
+}
+
+
+bool DefaultGestureEventProcessor::onPointerMove(PointerEvent& evt)
+{
+    ofLogVerbose("DefaultGestureEventProcessor::onPointerMove") << evt.toString();
+    return false;
+}
+
+
+bool DefaultGestureEventProcessor::onPointerCancel(PointerEvent& evt)
+{
+    ofLogVerbose("DefaultGestureEventProcessor::onPointerCancel") << evt.toString();
+    return false;
+}
+
+
+void DefaultGestureEventProcessor::handlePointerDown(const PointerEvent& evt)
+{
+    PointerEvent p(evt);
+
+    PointerDownEventKey key(p.getDeviceID(),
+                            p.getPointerID(),
+                            p.getButton());
+
+    unsigned long tapCount = 1;
+
+    PointerDownEvents::iterator iter = _pointerDownEvents.find(key);
+
+    if (iter != _pointerDownEvents.end())
+    {
+        PointerEvent& lastEvent = (*iter).second;
+
+        if (p.getTimestamp() <= (lastEvent.getTimestamp() + _tapThreshold))
+        {
+//            tapCount += lastEvent.getTapCount();
+        }
+    }
+
+    p = PointerEvent(p.getEventType(),
+                     p.getPoint(),
+                     p.getDeviceID(),
+                     p.getPointerID(),
+                     p.getDeviceType(),
+                     p.isPrimary(),
+                     p.getButton(),
+                     p.getButtons(),
+                     p.getModifiers(),
+                     p.getTimestamp());
+
+    _pointerDownEvents[key] = p;
+
+    if (2 == tapCount)
+    {
+        ofNotifyEvent(PointerGestureEvents().onPointerDoublePress, p, this);
+    }
+}
 
 
 DefaultPointerEventProcessor::DefaultPointerEventProcessor():
-    _tapThreshold(DEFAULT_TAP_DELAY),
-    _consumeMouseEvents(true),
-    _consumeTouchEvents(true)
+    _consumeMouseEvents(false),
+    _consumeTouchEvents(false)
 {
     ofAddListener(ofEvents().update, this, &DefaultPointerEventProcessor::update);
 
@@ -71,13 +155,12 @@ DefaultPointerEventProcessor::~DefaultPointerEventProcessor()
 
 void DefaultPointerEventProcessor::update(ofEventArgs& evt)
 {
-    // updating.
 }
 
 
 bool DefaultPointerEventProcessor::mouseMoved(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerMove, p, this);
     return _consumeMouseEvents;
 }
@@ -85,7 +168,7 @@ bool DefaultPointerEventProcessor::mouseMoved(ofMouseEventArgs& e)
 
 bool DefaultPointerEventProcessor::mouseDragged(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerMove, p, this);
     return _consumeMouseEvents;
 }
@@ -93,14 +176,15 @@ bool DefaultPointerEventProcessor::mouseDragged(ofMouseEventArgs& e)
 
 bool DefaultPointerEventProcessor::mousePressed(ofMouseEventArgs& e)
 {
-    handlePointerDown(PointerEventArgs::toPointerEventArgs(e));
+    PointerEvent p = PointerEvent::toPointerEvent(e);
+    ofNotifyEvent(PointerEvents().onPointerDown, p, this);
     return _consumeMouseEvents;
 }
 
 
 bool DefaultPointerEventProcessor::mouseReleased(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerUp, p, this);
     return _consumeMouseEvents;
 }
@@ -108,14 +192,15 @@ bool DefaultPointerEventProcessor::mouseReleased(ofMouseEventArgs& e)
 
 bool DefaultPointerEventProcessor::touchDown(ofTouchEventArgs& e)
 {
-    handlePointerDown(PointerEventArgs::toPointerEventArgs(e));
+    PointerEvent p = PointerEvent::toPointerEvent(e);
+    ofNotifyEvent(PointerEvents().onPointerDown, p, this);
     return _consumeTouchEvents;
 }
 
 
 bool DefaultPointerEventProcessor::touchMoved(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerMove, p, this);
     return _consumeTouchEvents;
 }
@@ -123,7 +208,7 @@ bool DefaultPointerEventProcessor::touchMoved(ofTouchEventArgs& e)
 
 bool DefaultPointerEventProcessor::touchUp(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerUp, p, this);
     return _consumeTouchEvents;
 }
@@ -131,7 +216,7 @@ bool DefaultPointerEventProcessor::touchUp(ofTouchEventArgs& e)
 
 bool DefaultPointerEventProcessor::touchDoubleTap(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerGestureEvents().onPointerDoublePress, p, this);
     return _consumeTouchEvents;
 }
@@ -139,7 +224,7 @@ bool DefaultPointerEventProcessor::touchDoubleTap(ofTouchEventArgs& e)
 
 bool DefaultPointerEventProcessor::touchCancelled(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    PointerEvent p = PointerEvent::toPointerEvent(e);
     ofNotifyEvent(PointerEvents().onPointerCancel, p, this);
     return _consumeTouchEvents;
 }
@@ -154,51 +239,6 @@ void DefaultPointerEventProcessor::setConsumeMouseEvents(bool consumeMouseEvents
 void DefaultPointerEventProcessor::setConsumeTouchEvents(bool consumeTouchEvents)
 {
     _consumeTouchEvents = consumeTouchEvents;
-}
-
-
-void DefaultPointerEventProcessor::handlePointerDown(const PointerEventArgs& evt)
-{
-    PointerEventArgs p(evt);
-
-    PointerDownEventArgsKey key(p.getDeviceID(),
-                                p.getPointerID(),
-                                p.getButton());
-
-    unsigned long tapCount = 1;
-
-    PointerDownEvents::iterator iter = _pointerDownEvents.find(key);
-
-    if (iter != _pointerDownEvents.end())
-    {
-        PointerEventArgs& lastEvent = (*iter).second;
-
-        if (p.getTimestamp() <= (lastEvent.getTimestamp() + _tapThreshold.totalMicroseconds()))
-        {
-            tapCount += lastEvent.getTapCount();
-        }
-    }
-
-    p = PointerEventArgs(p.getEventType(),
-                         p.getPoint(),
-                         p.getDeviceID(),
-                         p.getPointerID(),
-                         p.getDeviceType(),
-                         p.isPrimary(),
-                         p.getButton(),
-                         p.getButtons(),
-                         p.getModifiers(),
-                         tapCount,
-                         p.getTimestamp());
-
-    _pointerDownEvents[key] = p;
-
-    ofNotifyEvent(PointerEvents().onPointerDown, p, this);
-    
-    if (2 == tapCount)
-    {
-        ofNotifyEvent(PointerGestureEvents().onPointerDoublePress, p, this);
-    }
 }
 
 
@@ -219,9 +259,18 @@ CorePointerGestureEvents& PointerGestureEvents()
 static std::shared_ptr<AbstractPointerEventProcessor> pPointerEventProcessor = std::shared_ptr<AbstractPointerEventProcessor>(new DefaultPointerEventProcessor());
 
 
+static std::shared_ptr<AbstractPointerEventProcessor> pPointerGestureProcessor = std::shared_ptr<AbstractPointerEventProcessor>(new DefaultGestureEventProcessor());
+
+
 void SetPointerEventProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor)
 {
     pPointerEventProcessor = processor;
+}
+
+
+void SetPointerGestureProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor)
+{
+    pPointerGestureProcessor = processor;
 }
 
 
