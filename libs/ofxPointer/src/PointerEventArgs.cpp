@@ -259,17 +259,17 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     Poco::Timestamp timestamp;
 
-    return PointerEventArgs::PointerEventArgs(type,
-                                              point,
-                                              0,
-                                              0,
-                                              PointerEventArgs::TYPE_MOUSE,
-                                              true,
-                                              evt.button,
-                                              buttons,
-                                              modifiers,
-                                              tapCount,
-                                              timestamp);
+    return PointerEventArgs(type,
+                            point,
+                            0,
+                            0,
+                            PointerEventArgs::TYPE_MOUSE,
+                            true,
+                            evt.button,
+                            buttons,
+                            modifiers,
+                            tapCount,
+                            timestamp);
 
 }
 
