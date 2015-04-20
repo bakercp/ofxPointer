@@ -101,6 +101,7 @@ PointShape PointShape::fromJSON(const Json::Value& json)
 Json::Value PointShape::toJSON(const PointShape& pointShape)
 {
     Json::Value json;
+    
     json["width"] = pointShape._width;
     json["height"] = pointShape._height;
     json["ellipseMajorAxis"] = pointShape._ellipseMajorAxis;
@@ -311,15 +312,15 @@ PointerEvent::PointerEvent():
 
 
 PointerEvent::PointerEvent(const EventType& eventType,
-                                   const Point& point,
-                                   long deviceID,
-                                   long pointerID,
-                                   const DeviceType& deviceType,
-                                   bool isPrimary,
-                                   unsigned long button,
-                                   unsigned long buttons,
-                                   unsigned long modifiers,
-                                   unsigned long long timestamp):
+                           const Point& point,
+                           long deviceID,
+                           long pointerID,
+                           const DeviceType& deviceType,
+                           bool isPrimary,
+                           unsigned long button,
+                           unsigned long buttons,
+                           unsigned long modifiers,
+                           unsigned long long timestamp):
     _point(point),
     _eventType(eventType),
     _deviceID(deviceID),
@@ -462,8 +463,6 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
 
     float pressure = 0;
 
-    unsigned long tapCount = 0;
-
     EventType type = POINTER_MOVE;
 
     switch (evt.type)
@@ -471,7 +470,6 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
         case ofMouseEventArgs::Pressed:
             type = POINTER_DOWN;
             pressure = 0.5;
-            tapCount = 1;
             break;
         case ofMouseEventArgs::Dragged:
             type = POINTER_MOVE;
@@ -513,15 +511,15 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
     unsigned long long timestamp = ofGetElapsedTimeMillis();
 
     return PointerEvent::PointerEvent(type,
-                                              point,
-                                              0,
-                                              0,
-                                              PointerEvent::TYPE_MOUSE,
-                                              true,
-                                              evt.button,
-                                              buttons,
-                                              modifiers,
-                                              timestamp);
+                                      point,
+                                      0,
+                                      0,
+                                      PointerEvent::TYPE_MOUSE,
+                                      true,
+                                      evt.button,
+                                      buttons,
+                                      modifiers,
+                                      timestamp);
 
 }
 
@@ -529,15 +527,15 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
 PointerEvent PointerEvent::fromJSON(const Json::Value& json)
 {
     return PointerEvent(json.get("eventType", POINTER_MOVE).asString(),
-                            Point::fromJSON(json.get("point", Json::Value())),
-                            json.get("deviceID", 0).asLargestInt(),
-                            json.get("pointerID", 0).asLargestInt(),
-                            json.get("deviceType", TYPE_UNKNOWN).asString(),
-                            json.get("isPrimary", false).asBool(),
-                            json.get("button", 0).asLargestInt(),
-                            json.get("buttons", 0).asLargestInt(),
-                            json.get("modifiers", 0).asLargestInt(),
-                            json.get("timestamp", 0).asLargestUInt());
+                        Point::fromJSON(json.get("point", Json::Value())),
+                        json.get("deviceID", 0).asLargestInt(),
+                        json.get("pointerID", 0).asLargestInt(),
+                        json.get("deviceType", TYPE_UNKNOWN).asString(),
+                        json.get("isPrimary", false).asBool(),
+                        json.get("button", 0).asLargestInt(),
+                        json.get("buttons", 0).asLargestInt(),
+                        json.get("modifiers", 0).asLargestInt(),
+                        json.get("timestamp", 0).asLargestUInt());
 }
 
 

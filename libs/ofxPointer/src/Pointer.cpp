@@ -30,19 +30,15 @@
 namespace ofx {
 
 
-const unsigned long long PointerGestureEventProcessor::DEFAULT_TAP_DELAY = 500;
-
-
-PointerGestureEventProcessor::PointerGestureEventProcessor():
-    _tapThreshold(DEFAULT_TAP_DELAY)
+PointerGestureEventProcessor::PointerGestureEventProcessor()
 {
-    ofx::RegisterPointerEvents(this);
+    RegisterPointerEvents(this);
 }
 
 
 PointerGestureEventProcessor::~PointerGestureEventProcessor()
 {
-    ofx::UnregisterPointerEvents(this);
+    UnregisterPointerEvents(this);
 }
 
 

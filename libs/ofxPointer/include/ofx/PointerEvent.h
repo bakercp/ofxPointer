@@ -277,7 +277,6 @@ public:
                  unsigned long button,
                  unsigned long buttons,
                  unsigned long modifiers,
-//                 unsigned long tapCount,
                  unsigned long long timestamp);
 
     virtual ~PointerEvent();
@@ -316,8 +315,6 @@ public:
 
     unsigned long getModifiers() const;
 
-//    unsigned long getTapCount() const;
-
     unsigned long long getTimestamp() const;
 
     static PointerEvent toPointerEvent(const ofTouchEventArgs& evt);
@@ -334,7 +331,6 @@ public:
         ss << "      Event: " << getEventType() << std::endl;
         ss << "    Buttons: " << ofToBinary(getButtons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(getModifiers()) << std::endl;
-//        ss << "  Tap Count: " << getTapCount() << std::endl;
         ss << "   Touch ID: " << getPointerID() << std::endl;
 
         return ss.str();
@@ -374,10 +370,8 @@ private:
     /// time.  Pointer IDs can be reused and are implementation specific.
     long _pointerID;
 
-
     /// \brief The type of device that generated this Point.
     DeviceType _deviceType;
-
 
     /// \brief Indicates if the pointer is a primary pointer.
     ///
@@ -396,21 +390,18 @@ private:
 
     unsigned long _modifiers;
 
-//    unsigned long _tapCount;
-
     unsigned long long _timestamp;
 
 };
 
 
-
-//class PointerDoubleTapEventArgs: public PointerEventArgs
+//class PointerDoubleTapEvent: public PointerEvent
 //{
 //public:
-//    PointerDoubleTapEventArgs(const PointerEventArgs& evt,
-//                              unsigned int tapCount);
+//    PointerDoubleTapEvent(const PointerEvent& evt,
+//                          unsigned int tapCount);
 //
-//    virtual ~PointerGestureEventArgs();
+//    virtual ~PointerDoubleTapEvent();
 //
 //    unsigned int getTapCount() const;
 //

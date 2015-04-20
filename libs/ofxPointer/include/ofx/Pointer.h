@@ -58,8 +58,6 @@ public:
     bool onPointerMove(PointerEvent& evt);
     bool onPointerCancel(PointerEvent& evt);
 
-    static const unsigned long long DEFAULT_TAP_DELAY;
-
 protected:
     typedef Poco::Tuple<long, long, unsigned long> PointerDownEventKey;
     typedef std::map<PointerDownEventKey, PointerEvent> PointerDownEvents;
