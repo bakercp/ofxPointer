@@ -495,4 +495,18 @@ void PointerEvents::unregisterPointerEvents(ListenerClass* listener)
 }
 
 
+template<class ListenerClass>
+void RegisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    PointerEvents::instance().registerPointerEvents(listener, prio);
+}
+
+
+template<class ListenerClass>
+void UnregisterPointerEvents(ListenerClass* listener)
+{
+    PointerEvents::instance().unregisterPointerEvents(listener);
+}
+
+
 } // namespace ofx

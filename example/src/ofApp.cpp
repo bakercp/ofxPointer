@@ -30,8 +30,7 @@ void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
 
-    // Use the default instance until we can associate them with a window.
-    ofx::PointerEvents::instance().registerPointerEvents(this);
+    ofx::RegisterPointerEvents(this);
 }
 
 
