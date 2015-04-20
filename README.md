@@ -28,8 +28,8 @@ class ofApp: public ofBaseApp
 public:
     void setup()
     {
-      ofx::RegisterPointerEvents(this);
-      ofx::RegisterPointerGestureEvents(this);
+      // Use the default instance until we can associate them with a window.
+      ofx::PointerEvents::instance().registerPointerEvents(this);
     }
 
     void update()
@@ -41,28 +41,19 @@ public:
     }
 
     // Pointer Events
-    void onPointerUp(ofx::PointerEvent& evt)
+    void onPointerUp(ofx::PointerEventArgs& evt)
     {
     }
 
-    void onPointerDown(ofx::PointerEvent& evt)
+    void onPointerDown(ofx::PointerEventArgs& evt)
     {
     }
 
-    void onPointerMove(ofx::PointerEvent& evt)
+    void onPointerMove(ofx::PointerEventArgs& evt)
     {
     }
 
-    void onPointerCancel(ofx::PointerEvent& evt)
-    {
-    }
-
-    // Gesture Events
-    void onPointerDoublePress(ofx::PointerEvent& evt)
-    {
-    }
-
-    void onPointerPressAndHold(ofx::PointerEvent& evt)
+    void onPointerCancel(ofx::PointerEventArgs& evt)
     {
     }
 
