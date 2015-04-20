@@ -236,7 +236,10 @@ public:
 private:
     /// \brief The Point's absolute position in device coordinates.
     ofVec3f _absolutePosition;
-    
+
+    /// \brief The Point shape.
+    PointShape _shape;
+
     /// \brief The Point's normalized pressure.
     float _pressure;
     
@@ -251,10 +254,7 @@ private:
     
     /// \brief The Point tilt Y angle.
     float _tiltY;
-    
-    /// \brief The Point shape.
-    PointShape _shape;
-    
+
 };
 
 
