@@ -26,6 +26,5 @@
 #pragma once
 
 
-#include "ofx/Point.h"
-#include "ofx/PointerEventArgs.h"
-#include "ofx/PointerEvents.h"
+#include "ofx/Pointer.h"
+#include "ofx/PointerEvent.h"

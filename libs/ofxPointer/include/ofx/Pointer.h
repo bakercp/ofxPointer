@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2010-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2015 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,12 +27,11 @@
 
 
 #include <map>
-#include "Poco/Timespan.h"
-#include "Poco/Timestamp.h"
+#include <json/json.h>
 #include "Poco/Tuple.h"
 #include "ofEvents.h"
 #include "ofTypes.h"
-#include "ofx/PointerEventArgs.h"
+#include "ofx/PointerEvent.h"
 
 
 namespace ofx {
@@ -47,22 +46,38 @@ public:
 
 };
 
-
-void SetPointerEventProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor);
-
-
-class DefaultGestureEventProcessor
+    
+class PointerGestureEventProcessor: public AbstractPointerEventProcessor
 {
 public:
+    PointerGestureEventProcessor();
+    virtual ~PointerGestureEventProcessor();
+
+    bool onPointerUp(PointerEvent& evt);
+    bool onPointerDown(PointerEvent& evt);
+    bool onPointerMove(PointerEvent& evt);
+    bool onPointerCancel(PointerEvent& evt);
+
+    static const unsigned long long DEFAULT_TAP_DELAY;
+
+protected:
+    typedef Poco::Tuple<long, long, unsigned long> PointerDownEventKey;
+    typedef std::map<PointerDownEventKey, PointerEvent> PointerDownEvents;
+
+    void handlePointerDown(const PointerEvent& evt);
+
+    unsigned long long _tapThreshold;
+
+    PointerDownEvents _pointerDownEvents;
 
 };
 
 
-class DefaultPointerEventProcessor: public AbstractPointerEventProcessor
+class PointerEventProcessor: public AbstractPointerEventProcessor
 {
 public:
-    DefaultPointerEventProcessor();
-    virtual ~DefaultPointerEventProcessor();
+    PointerEventProcessor();
+    virtual ~PointerEventProcessor();
 
     void update(ofEventArgs& evt);
 
@@ -80,20 +95,9 @@ public:
     void setConsumeMouseEvents(bool consumeMouseEvents);
     void setConsumeTouchEvents(bool consumeTouchEvents);
 
-    static const Poco::Timespan DEFAULT_MULTI_TAP_INTERVAL;
-
 protected:
-    typedef Poco::Tuple<long, long, unsigned long> PointerDownEventArgsKey;
-    typedef std::map<PointerDownEventArgsKey, PointerEventArgs> PointerDownEvents;
-
     bool _consumeMouseEvents;
     bool _consumeTouchEvents;
-
-    PointerDownEvents _pointerDownEvents;
-
-    void handlePointerDown(const PointerEventArgs& evt);
-
-    Poco::Timespan _multiTapInterval;
 
 };
 
@@ -102,13 +106,13 @@ class CorePointerEvents
 {
 public:
     /// \brief Event that is triggered when a point is introduced.
-    ofEvent<PointerEventArgs> onPointerDown;
+    ofEvent<PointerEvent> onPointerDown;
 
     /// \brief Event that is triggered when a point is removed.
-    ofEvent<PointerEventArgs> onPointerUp;
+    ofEvent<PointerEvent> onPointerUp;
 
     /// \brief Event that is triggered when a point moves.
-	ofEvent<PointerEventArgs> onPointerMove;
+	ofEvent<PointerEvent> onPointerMove;
 
     ///  \brief Event when the system cancels a pointer event.
     ///
@@ -125,7 +129,7 @@ public:
     ///     device can support. For example, if a device supports only two
     ///     contact points, if the user has two fingers on a surface, and then
     ///     touches it with a third finger, this event is raised.
-    ofEvent<PointerEventArgs> onPointerCancel;
+    ofEvent<PointerEvent> onPointerCancel;
 
 };
 
@@ -134,21 +138,27 @@ class CorePointerGestureEvents
 {
 public:
     /// \brief Event that is triggered on the second succesive tap or click.
-    ofEvent<PointerEventArgs> onPointerDoublePress;
+    ofEvent<PointerEvent> onPointerDoublePress;
 
-    ofEvent<PointerEventArgs> onPointerPressAndHold;
+    ofEvent<PointerEvent> onPointerPressAndHold;
 
 };
 
 
 CorePointerEvents& PointerEvents();
+
 CorePointerGestureEvents& PointerGestureEvents();
+
+PointerEventProcessor& GetPointerEventProcessor();
+
+PointerGestureEventProcessor& GetPointerGestureEventProcessor();
 
 
 template<class ListenerClass>
-void RegisterPointerEvents(ListenerClass* listener,
-                           int prio = OF_EVENT_ORDER_AFTER_APP)
+void RegisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
+    GetPointerEventProcessor(); // Initialize defaults;
+
     ofAddListener(PointerEvents().onPointerDown, listener, &ListenerClass::onPointerDown, prio);
     ofAddListener(PointerEvents().onPointerUp, listener, &ListenerClass::onPointerUp, prio);
     ofAddListener(PointerEvents().onPointerMove, listener, &ListenerClass::onPointerMove, prio);
@@ -167,9 +177,10 @@ void UnregisterPointerEvents(ListenerClass* listener)
 
 
 template<class ListenerClass>
-void RegisterPointerGestureEvents(ListenerClass* listener,
-                                  int prio = OF_EVENT_ORDER_AFTER_APP)
+void RegisterPointerGestureEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
+    GetPointerGestureEventProcessor(); // Initialize defaults;
+
     ofAddListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress, prio);
     ofAddListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerPressAndHold, prio);
 }

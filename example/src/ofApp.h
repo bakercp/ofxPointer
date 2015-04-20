@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2015 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,13 +38,13 @@ public:
     void draw();
 
     // Pointer Events
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
+    void onPointerUp(ofx::PointerEvent& evt);
+    void onPointerDown(ofx::PointerEvent& evt);
+    void onPointerMove(ofx::PointerEvent& evt);
+    void onPointerCancel(ofx::PointerEvent& evt);
 
     // Gesture Events
-    void onPointerDoublePress(ofx::PointerEventArgs& evt);
-    void onPointerPressAndHold(ofx::PointerEventArgs& evt);
+    void onPointerDoublePress(ofx::PointerEvent& evt);
+    void onPointerPressAndHold(ofx::PointerEvent& evt);
 
 };

@@ -16,6 +16,8 @@
 		<string>ssh://github.com/bakercp/openFrameworks.git</string>
 		<key>492865C2A2C9F78B4532E109B3CDB8C7620559E2</key>
 		<string>github.com:bakercp/ofxPointer.git</string>
+		<key>5DB7C332A3A89035E93556A2A38BF414005BA671</key>
+		<string>github.com:bakercp/ofxJSON.git</string>
 		<key>DE2FF963-AF23-418E-8E6B-17E993EF7284</key>
 		<string>ssh://github.com/bakercp/ofxPointer.git</string>
 	</dict>
@@ -29,6 +31,8 @@
 		<string>../../../../openFrameworks</string>
 		<key>492865C2A2C9F78B4532E109B3CDB8C7620559E2</key>
 		<string>../../..</string>
+		<key>5DB7C332A3A89035E93556A2A38BF414005BA671</key>
+		<string>../../../../ofxJSON</string>
 		<key>DE2FF963-AF23-418E-8E6B-17E993EF7284</key>
 		<string>../../../..</string>
 	</dict>
@@ -44,6 +48,14 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DE2FF963-AF23-418E-8E6B-17E993EF7284</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
 			<string>2DE9C8846D9375EAACFABA8963120E8E7719BAF5</string>
 			<key>IDESourceControlWCCName</key>
 			<string></string>
@@ -52,9 +64,9 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>DE2FF963-AF23-418E-8E6B-17E993EF7284</string>
+			<string>5DB7C332A3A89035E93556A2A38BF414005BA671</string>
 			<key>IDESourceControlWCCName</key>
-			<string></string>
+			<string>ofxJSON</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

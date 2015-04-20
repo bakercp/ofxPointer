@@ -1,6 +1,6 @@
 // =============================================================================
 //
-// Copyright (c) 2009-2014 Christopher Baker <http://christopherbaker.net>
+// Copyright (c) 2009-2015 Christopher Baker <http://christopherbaker.net>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,38 +44,37 @@ void ofApp::draw()
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerUp(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerUp") << evt.toString();
 }
 
 
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDown(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerDown") << evt.toString();
 }
 
 
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
+void ofApp::onPointerMove(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerMove") << evt.toString();
 }
 
 
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::onPointerCancel(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
 }
 
 
-void ofApp::onPointerDoublePress(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDoublePress(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerDoubleTap") << evt.toString();
 }
 
 
-void ofApp::onPointerPressAndHold(ofx::PointerEventArgs& evt)
+void ofApp::onPointerPressAndHold(ofx::PointerEvent& evt)
 {
     ofLogVerbose("ofApp::onPointerPressAndHold") << evt.toString();
 }
-
