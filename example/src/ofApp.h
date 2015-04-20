@@ -43,8 +43,4 @@ public:
     void onPointerMove(ofx::PointerEventArgs& evt);
     void onPointerCancel(ofx::PointerEventArgs& evt);
 
-    // Gesture Events
-    void onPointerDoublePress(ofx::PointerEventArgs& evt);
-    void onPointerPressAndHold(ofx::PointerEventArgs& evt);
-
 };
