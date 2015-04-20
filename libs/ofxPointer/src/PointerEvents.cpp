@@ -298,8 +298,8 @@ const PointerEventArgs::EventType PointerEventArgs::POINTER_SCROLL = "scroll";
 
 
 PointerEventArgs::PointerEventArgs():
-    _eventType(POINTER_MOVE),
     _point(Point()),
+    _eventType(POINTER_MOVE),
     _deviceID(-1),
     _pointerID(-1),
     _deviceType(TYPE_UNKNOWN),
