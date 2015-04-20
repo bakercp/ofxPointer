@@ -36,7 +36,7 @@ namespace ofx {
 class PointerUtilities
 {
 public:
-    static Poco::Timespan getSystemMultiTapInterval();
+    static Poco::Timespan getSystemDoublePressInterval();
 
     enum
     {

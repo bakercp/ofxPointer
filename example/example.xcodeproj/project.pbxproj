@@ -26,10 +26,12 @@
 		E7E077E515D3B63C0020DFD4 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7E077E415D3B63C0020DFD4 /* CoreVideo.framework */; };
 		E7E077E815D3B6510020DFD4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7E077E715D3B6510020DFD4 /* QTKit.framework */; };
 		E7F985F815E0DEA3003869B5 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7F985F515E0DE99003869B5 /* Accelerate.framework */; };
+		FD59A8381AE4A267003AAC2B /* Pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59A8331AE4A267003AAC2B /* Pointer.cpp */; };
+		FD59A8391AE4A267003AAC2B /* PointerEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59A8341AE4A267003AAC2B /* PointerEvent.cpp */; };
+		FD59A83B1AE4A267003AAC2B /* PointerUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD59A8361AE4A267003AAC2B /* PointerUtilities.cpp */; };
+		FD59A83C1AE4A267003AAC2B /* PointerUtilities_OSX.mm in Sources */ = {isa = PBXBuildFile; fileRef = FD59A8371AE4A267003AAC2B /* PointerUtilities_OSX.mm */; };
 		FD8725561A16459A006A3BF5 /* ofxJSONElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD87254C1A16459A006A3BF5 /* ofxJSONElement.cpp */; };
 		FD8725571A16459A006A3BF5 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD8725551A16459A006A3BF5 /* jsoncpp.cpp */; };
-		FDD10D0A1A179381003D6C4F /* Pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD10D081A179381003D6C4F /* Pointer.cpp */; };
-		FDD10D0B1A179381003D6C4F /* PointerEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD10D091A179381003D6C4F /* PointerEvent.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,17 +88,20 @@
 		E7E077E415D3B63C0020DFD4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		E7E077E715D3B6510020DFD4 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		E7F985F515E0DE99003869B5 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
+		FD59A82A1AE4A267003AAC2B /* ofxPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxPointer.h; sourceTree = "<group>"; };
+		FD59A82F1AE4A267003AAC2B /* Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pointer.h; sourceTree = "<group>"; };
+		FD59A8301AE4A267003AAC2B /* PointerEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PointerEvent.h; sourceTree = "<group>"; };
+		FD59A8311AE4A267003AAC2B /* PointerUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PointerUtilities.h; sourceTree = "<group>"; };
+		FD59A8331AE4A267003AAC2B /* Pointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pointer.cpp; sourceTree = "<group>"; };
+		FD59A8341AE4A267003AAC2B /* PointerEvent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PointerEvent.cpp; sourceTree = "<group>"; };
+		FD59A8361AE4A267003AAC2B /* PointerUtilities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PointerUtilities.cpp; sourceTree = "<group>"; };
+		FD59A8371AE4A267003AAC2B /* PointerUtilities_OSX.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PointerUtilities_OSX.mm; sourceTree = "<group>"; };
 		FD87254B1A16459A006A3BF5 /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
 		FD87254C1A16459A006A3BF5 /* ofxJSONElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxJSONElement.cpp; sourceTree = "<group>"; };
 		FD87254D1A16459A006A3BF5 /* ofxJSONElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSONElement.h; sourceTree = "<group>"; };
 		FD8725521A16459A006A3BF5 /* json-forwards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
 		FD8725531A16459A006A3BF5 /* json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
 		FD8725551A16459A006A3BF5 /* jsoncpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
-		FDD10D001A179381003D6C4F /* ofxPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxPointer.h; sourceTree = "<group>"; };
-		FDD10D051A179381003D6C4F /* Pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pointer.h; sourceTree = "<group>"; };
-		FDD10D061A179381003D6C4F /* PointerEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PointerEvent.h; sourceTree = "<group>"; };
-		FDD10D081A179381003D6C4F /* Pointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pointer.cpp; sourceTree = "<group>"; };
-		FDD10D091A179381003D6C4F /* PointerEvent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PointerEvent.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,8 +134,8 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				FDD10CFE1A179381003D6C4F /* ofxPointer */,
 				FD8725491A16459A006A3BF5 /* ofxJSON */,
+				FD59A8281AE4A267003AAC2B /* ofxPointer */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -213,6 +218,71 @@
 			name = openFrameworks;
 			sourceTree = "<group>";
 		};
+		FD59A8281AE4A267003AAC2B /* ofxPointer */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A8291AE4A267003AAC2B /* src */,
+				FD59A82B1AE4A267003AAC2B /* libs */,
+			);
+			name = ofxPointer;
+			sourceTree = "<group>";
+		};
+		FD59A8291AE4A267003AAC2B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A82A1AE4A267003AAC2B /* ofxPointer.h */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		FD59A82B1AE4A267003AAC2B /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A82C1AE4A267003AAC2B /* ofxPointer */,
+			);
+			name = libs;
+			path = ../libs;
+			sourceTree = "<group>";
+		};
+		FD59A82C1AE4A267003AAC2B /* ofxPointer */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A82D1AE4A267003AAC2B /* include */,
+				FD59A8321AE4A267003AAC2B /* src */,
+			);
+			path = ofxPointer;
+			sourceTree = "<group>";
+		};
+		FD59A82D1AE4A267003AAC2B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A82E1AE4A267003AAC2B /* ofx */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		FD59A82E1AE4A267003AAC2B /* ofx */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A82F1AE4A267003AAC2B /* Pointer.h */,
+				FD59A8301AE4A267003AAC2B /* PointerEvent.h */,
+				FD59A8311AE4A267003AAC2B /* PointerUtilities.h */,
+			);
+			path = ofx;
+			sourceTree = "<group>";
+		};
+		FD59A8321AE4A267003AAC2B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				FD59A8331AE4A267003AAC2B /* Pointer.cpp */,
+				FD59A8341AE4A267003AAC2B /* PointerEvent.cpp */,
+				FD59A8361AE4A267003AAC2B /* PointerUtilities.cpp */,
+				FD59A8371AE4A267003AAC2B /* PointerUtilities_OSX.mm */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		FD8725491A16459A006A3BF5 /* ofxJSON */ = {
 			isa = PBXGroup;
 			children = (
@@ -272,68 +342,6 @@
 			isa = PBXGroup;
 			children = (
 				FD8725551A16459A006A3BF5 /* jsoncpp.cpp */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		FDD10CFE1A179381003D6C4F /* ofxPointer */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10CFF1A179381003D6C4F /* src */,
-				FDD10D011A179381003D6C4F /* libs */,
-			);
-			name = ofxPointer;
-			sourceTree = "<group>";
-		};
-		FDD10CFF1A179381003D6C4F /* src */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D001A179381003D6C4F /* ofxPointer.h */,
-			);
-			name = src;
-			path = ../src;
-			sourceTree = "<group>";
-		};
-		FDD10D011A179381003D6C4F /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D021A179381003D6C4F /* ofxPointer */,
-			);
-			name = libs;
-			path = ../libs;
-			sourceTree = "<group>";
-		};
-		FDD10D021A179381003D6C4F /* ofxPointer */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D031A179381003D6C4F /* include */,
-				FDD10D071A179381003D6C4F /* src */,
-			);
-			path = ofxPointer;
-			sourceTree = "<group>";
-		};
-		FDD10D031A179381003D6C4F /* include */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D041A179381003D6C4F /* ofx */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		FDD10D041A179381003D6C4F /* ofx */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D051A179381003D6C4F /* Pointer.h */,
-				FDD10D061A179381003D6C4F /* PointerEvent.h */,
-			);
-			path = ofx;
-			sourceTree = "<group>";
-		};
-		FDD10D071A179381003D6C4F /* src */ = {
-			isa = PBXGroup;
-			children = (
-				FDD10D081A179381003D6C4F /* Pointer.cpp */,
-				FDD10D091A179381003D6C4F /* PointerEvent.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -427,10 +435,12 @@
 			files = (
 				FD8725571A16459A006A3BF5 /* jsoncpp.cpp in Sources */,
 				FD8725561A16459A006A3BF5 /* ofxJSONElement.cpp in Sources */,
+				FD59A83C1AE4A267003AAC2B /* PointerUtilities_OSX.mm in Sources */,
+				FD59A83B1AE4A267003AAC2B /* PointerUtilities.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				FDD10D0B1A179381003D6C4F /* PointerEvent.cpp in Sources */,
-				FDD10D0A1A179381003D6C4F /* Pointer.cpp in Sources */,
+				FD59A8391AE4A267003AAC2B /* PointerEvent.cpp in Sources */,
+				FD59A8381AE4A267003AAC2B /* Pointer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

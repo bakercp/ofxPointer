@@ -35,7 +35,7 @@ namespace ofx {
 
 #if !defined(TARGET_OSX)
 
-Poco::Timespan PointerUtilities::getSystemMultiTapInterval()
+Poco::Timespan PointerUtilities::getSystemDoublePressInterval()
 {
     int timeMS = 0;
 #if defined(TARGET_LINUX)

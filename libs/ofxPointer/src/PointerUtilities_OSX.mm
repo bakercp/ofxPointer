@@ -26,13 +26,15 @@
 
 
 #if defined(TARGET_OSX)
+
+
 #import <AppKit/NSEvent.h> 
 
 
 namespace ofx {
 
 
-Poco::Timespan PointerUtilities::getSystemMultiTapInterval()
+Poco::Timespan PointerUtilities::getSystemDoublePressInterval()
 {
     return Poco::Timespan(Poco::Timespan::SECONDS * [NSEvent doubleClickInterval]);
 }
