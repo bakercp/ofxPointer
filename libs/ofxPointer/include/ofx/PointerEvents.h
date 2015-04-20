@@ -362,9 +362,9 @@ public:
     static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
 private:
-    EventType _eventType;
-
     Point _point;
+
+    EventType _eventType;
 
     long _deviceID;
 
