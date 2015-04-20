@@ -29,8 +29,9 @@
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
-    ofx::RegisterPointerEvents(this);
-    ofx::RegisterPointerGestureEvents(this);
+
+    // Use the default instance until we can associate them with a window.
+    ofx::PointerEvents::instance().registerPointerEvents(this);
 }
 
 
@@ -44,37 +45,25 @@ void ofApp::draw()
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEvent& evt)
+void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerUp") << evt.toString();
 }
 
 
-void ofApp::onPointerDown(ofx::PointerEvent& evt)
+void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerDown") << evt.toString();
 }
 
 
-void ofApp::onPointerMove(ofx::PointerEvent& evt)
+void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerMove") << evt.toString();
 }
 
 
-void ofApp::onPointerCancel(ofx::PointerEvent& evt)
+void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
-}
-
-
-void ofApp::onPointerDoublePress(ofx::PointerEvent& evt)
-{
-    ofLogVerbose("ofApp::onPointerDoublePress") << evt.toString();
-}
-
-
-void ofApp::onPointerPressAndHold(ofx::PointerEvent& evt)
-{
-    ofLogVerbose("ofApp::onPointerPressAndHold") << evt.toString();
 }

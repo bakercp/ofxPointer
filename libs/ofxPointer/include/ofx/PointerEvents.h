@@ -258,7 +258,7 @@ private:
 };
 
 
-class PointerEvent: public ofEventArgs
+class PointerEventArgs: public ofEventArgs
 {
 public:
     typedef std::string EventType;
@@ -266,21 +266,21 @@ public:
     typedef std::pair<long, long> PointerID;
     typedef std::vector<PointerID> PointerList;
 
-    PointerEvent();
+    PointerEventArgs();
 
-    PointerEvent(const EventType& eventType,
-                 const Point& point,
-                 long deviceID,
-                 long pointerID,
-                 const DeviceType& deviceType,
-                 bool isPrimary,
-                 unsigned long button,
-                 unsigned long buttons,
-                 unsigned long modifiers,
-                 unsigned int pressCount,
-                 unsigned long long timestamp);
+    PointerEventArgs(const EventType& eventType,
+                     const Point& point,
+                     long deviceID,
+                     long pointerID,
+                     const DeviceType& deviceType,
+                     bool isPrimary,
+                     unsigned long button,
+                     unsigned long buttons,
+                     unsigned long modifiers,
+                     unsigned int pressCount,
+                     unsigned long long timestamp);
 
-    virtual ~PointerEvent();
+    virtual ~PointerEventArgs();
 
     const EventType& getEventType() const;
 
@@ -320,8 +320,8 @@ public:
 
     unsigned int getPressCount() const;
 
-    static PointerEvent toPointerEvent(const ofTouchEventArgs& evt);
-    static PointerEvent toPointerEvent(const ofMouseEventArgs& evt);
+    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
+    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
 
     std::string toString() const
     {
@@ -354,12 +354,12 @@ public:
     /// \brief Deserialize a PointerEventArgs from JSON.
     /// \param json The json to deserialize.
     /// \returns the deserized PointerEventArgs.
-    static PointerEvent fromJSON(const Json::Value& json);
+    static PointerEventArgs fromJSON(const Json::Value& json);
 
     /// \brief Serialize a PointerEventArgs as JSON.
     /// \param point the PointerEventArgs to serialize.
     /// \returns the PointerEventArgs as serialized JSON.
-    static Json::Value toJSON(const PointerEvent& pointerEventArgs);
+    static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
 private:
     EventType _eventType;
@@ -398,9 +398,101 @@ private:
 
     unsigned long long _timestamp;
 
-    friend class PointerGestureEventProcessor;
+    friend class PointerEvents;
 
 };
+
+
+class PointerEvents
+{
+public:
+    PointerEvents();
+    virtual ~PointerEvents();
+
+    bool mouseMoved(ofMouseEventArgs& e);
+    bool mouseDragged(ofMouseEventArgs& e);
+    bool mousePressed(ofMouseEventArgs& e);
+    bool mouseReleased(ofMouseEventArgs& e);
+
+    bool touchDown(ofTouchEventArgs& e);
+    bool touchMoved(ofTouchEventArgs& e);
+    bool touchUp(ofTouchEventArgs& e);
+    bool touchDoubleTap(ofTouchEventArgs& e);
+    bool touchCancelled(ofTouchEventArgs& e);
+
+    void setConsumeMouseEvents(bool consumeMouseEvents);
+    void setConsumeTouchEvents(bool consumeTouchEvents);
+
+    template<class ListenerClass>
+    void registerPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
+
+    template<class ListenerClass>
+    void unregisterPointerEvents(ListenerClass* listener);
+
+    /// \brief Event that is triggered when a point is introduced.
+    ofEvent<PointerEventArgs> onPointerDown;
+
+    /// \brief Event that is triggered when a point is removed.
+    ofEvent<PointerEventArgs> onPointerUp;
+
+    /// \brief Event that is triggered when a point moves.
+    ofEvent<PointerEventArgs> onPointerMove;
+
+    ///  \brief Event when the system cancels a pointer event.
+    ///
+    /// This event occurs when the pointer (touch or pen contact) is removed
+    /// from the system. Here are common reasons why this might happen:
+    ///     - A touch contact is canceled by a pen coming into range of the
+    ///     surface.
+    ///     - The device doesn't report an active contact for more than 100ms.
+    ///     - A mapping for a device's monitor changes while contacts are
+    ///     active. For example, the user changes the position of a screen in a
+    ///     two screen configuration.
+    ///     - The desktop is locked or the user logged off.
+    ///     - The number of simultaneous contacts exceeds the number that the
+    ///     device can support. For example, if a device supports only two
+    ///     contact points, if the user has two fingers on a surface, and then
+    ///     touches it with a third finger, this event is raised.
+    ofEvent<PointerEventArgs> onPointerCancel;
+
+    static PointerEvents& instance()
+    {
+        static Poco::SingletonHolder<PointerEvents> sh;
+        return *sh.get();
+    }
+
+protected:
+    typedef std::pair<PointerEventArgs::PointerID, unsigned long> PointerPressEventKey;
+    typedef std::map<PointerPressEventKey, PointerEventArgs> PointerPressEvents;
+
+    bool _consumeMouseEvents;
+    bool _consumeTouchEvents;
+
+    void handleMultiPress(PointerEventArgs& evt);
+
+    PointerPressEvents _pointerDownEvents;
+
+};
+
+
+template<class ListenerClass>
+void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
+{
+    ofAddListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
+    ofAddListener(onPointerUp, listener, &ListenerClass::onPointerUp, prio);
+    ofAddListener(onPointerMove, listener, &ListenerClass::onPointerMove, prio);
+    ofAddListener(onPointerCancel, listener, &ListenerClass::onPointerCancel, prio);
+}
+
+
+template<class ListenerClass>
+void PointerEvents::unregisterPointerEvents(ListenerClass* listener)
+{
+    ofRemoveListener(onPointerDown, listener, &ListenerClass::onPointerDown);
+    ofRemoveListener(onPointerUp, listener, &ListenerClass::onPointerUp);
+    ofRemoveListener(onPointerMove, listener, &ListenerClass::onPointerMove);
+    ofRemoveListener(onPointerCancel, listener, &ListenerClass::onPointerCancel);
+}
 
 
 } // namespace ofx
