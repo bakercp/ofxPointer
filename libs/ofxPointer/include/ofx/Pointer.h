@@ -46,17 +46,12 @@ public:
 
 };
 
-
-void SetPointerEventProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor);
-
-void SetPointerGestureProcessor(std::shared_ptr<AbstractPointerEventProcessor> processor);
-
-
-class DefaultGestureEventProcessor: public AbstractPointerEventProcessor
+    
+class GestureEventProcessor: public AbstractPointerEventProcessor
 {
 public:
-    DefaultGestureEventProcessor();
-    virtual ~DefaultGestureEventProcessor();
+    GestureEventProcessor();
+    virtual ~GestureEventProcessor();
 
     bool onPointerUp(PointerEvent& evt);
     bool onPointerDown(PointerEvent& evt);
@@ -78,11 +73,11 @@ protected:
 };
 
 
-class DefaultPointerEventProcessor: public AbstractPointerEventProcessor
+class PointerEventProcessor: public AbstractPointerEventProcessor
 {
 public:
-    DefaultPointerEventProcessor();
-    virtual ~DefaultPointerEventProcessor();
+    PointerEventProcessor();
+    virtual ~PointerEventProcessor();
 
     void update(ofEventArgs& evt);
 
@@ -151,7 +146,12 @@ public:
 
 
 CorePointerEvents& PointerEvents();
+
 CorePointerGestureEvents& PointerGestureEvents();
+
+PointerEventProcessor& GetPointerEventProcessor();
+
+GestureEventProcessor& GetGestureEventProcessor();
 
 
 template<class ListenerClass>
@@ -177,6 +177,8 @@ void UnregisterPointerEvents(ListenerClass* listener)
 template<class ListenerClass>
 void RegisterPointerGestureEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
+    GetPointerEventProcessor(); // Initialize defaults;
+
     ofAddListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress, prio);
     ofAddListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerPressAndHold, prio);
 }
@@ -185,6 +187,8 @@ void RegisterPointerGestureEvents(ListenerClass* listener, int prio = OF_EVENT_O
 template<class ListenerClass>
 void UnregisterPointerGestureEvents(ListenerClass* listener)
 {
+    GetGestureEventProcessor(); // Initialize defaults;
+
     ofRemoveListener(PointerGestureEvents().onPointerDoublePress, listener, &ListenerClass::onPointerDoublePress);
     ofRemoveListener(PointerGestureEvents().onPointerPressAndHold, listener, &ListenerClass::onPointerPressAndHold);
 }
