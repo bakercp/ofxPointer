@@ -30,30 +30,30 @@
 namespace ofx {
 
 
-const unsigned long long GestureEventProcessor::DEFAULT_TAP_DELAY = 500;
+const unsigned long long PointerGestureEventProcessor::DEFAULT_TAP_DELAY = 500;
 
 
-GestureEventProcessor::GestureEventProcessor():
+PointerGestureEventProcessor::PointerGestureEventProcessor():
     _tapThreshold(DEFAULT_TAP_DELAY)
 {
     ofx::RegisterPointerEvents(this);
 }
 
 
-GestureEventProcessor::~GestureEventProcessor()
+PointerGestureEventProcessor::~PointerGestureEventProcessor()
 {
     ofx::UnregisterPointerEvents(this);
 }
 
 
-bool GestureEventProcessor::onPointerUp(PointerEvent& evt)
+bool PointerGestureEventProcessor::onPointerUp(PointerEvent& evt)
 {
     ofLogVerbose("GestureEventProcessor::onPointerUp") << evt.toString();
     return false;
 }
 
 
-bool GestureEventProcessor::onPointerDown(PointerEvent& evt)
+bool PointerGestureEventProcessor::onPointerDown(PointerEvent& evt)
 {
     handlePointerDown(evt);
     ofLogVerbose("GestureEventProcessor::onPointerDown") << evt.toString();
@@ -61,21 +61,21 @@ bool GestureEventProcessor::onPointerDown(PointerEvent& evt)
 }
 
 
-bool GestureEventProcessor::onPointerMove(PointerEvent& evt)
+bool PointerGestureEventProcessor::onPointerMove(PointerEvent& evt)
 {
     ofLogVerbose("GestureEventProcessor::onPointerMove") << evt.toString();
     return false;
 }
 
 
-bool GestureEventProcessor::onPointerCancel(PointerEvent& evt)
+bool PointerGestureEventProcessor::onPointerCancel(PointerEvent& evt)
 {
     ofLogVerbose("GestureEventProcessor::onPointerCancel") << evt.toString();
     return false;
 }
 
 
-void GestureEventProcessor::handlePointerDown(const PointerEvent& evt)
+void PointerGestureEventProcessor::handlePointerDown(const PointerEvent& evt)
 {
     PointerEvent p(evt);
 
@@ -263,9 +263,9 @@ PointerEventProcessor& GetPointerEventProcessor()
 }
 
 
-GestureEventProcessor& GetGestureEventProcessor()
+PointerGestureEventProcessor& GetPointerGestureEventProcessor()
 {
-    static Poco::SingletonHolder<GestureEventProcessor> sh;
+    static Poco::SingletonHolder<PointerGestureEventProcessor> sh;
     return *sh.get();
 }
 
