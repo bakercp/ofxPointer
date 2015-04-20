@@ -267,31 +267,31 @@ Point Point::fromJSON(const Json::Value& json)
 Json::Value Point::toJSON(const Point& point)
 {
     Json::Value json;
-    json["position"]["x"] = point.x;
-    json["position"]["y"] = point.y;
-    json["position"]["z"] = point.z;
+    json["position"]["x"] =         point.x;
+    json["position"]["y"] =         point.y;
+    json["position"]["z"] =         point.z;
     json["absolutePosition"]["x"] = point._absolutePosition.x;
     json["absolutePosition"]["y"] = point._absolutePosition.y;
     json["absolutePosition"]["z"] = point._absolutePosition.z;
-    json["pointShape"] = PointShape::toJSON(point._shape);
-    json["pressure"] = point._pressure;
-    json["tangentialPressure"] = point._tangentialPressure;
-    json["rotation"] = point._rotation;
-    json["tiltX"] = point._tiltX;
-    json["tiltY"] = point._tiltY;
+    json["pointShape"] =            PointShape::toJSON(point._shape);
+    json["pressure"] =              point._pressure;
+    json["tangentialPressure"] =    point._tangentialPressure;
+    json["rotation"] =              point._rotation;
+    json["tiltX"] =                 point._tiltX;
+    json["tiltY"] =                 point._tiltY;
     
     return json;
 }
 
 
-const PointerEvent::DeviceType PointerEvent::TYPE_MOUSE = "mouse";
-const PointerEvent::DeviceType PointerEvent::TYPE_PEN = "pen";
-const PointerEvent::DeviceType PointerEvent::TYPE_TOUCH = "touch";
-const PointerEvent::DeviceType PointerEvent::TYPE_UNKNOWN = "unknown";
+const PointerEvent::DeviceType PointerEvent::TYPE_MOUSE    = "mouse";
+const PointerEvent::DeviceType PointerEvent::TYPE_PEN      = "pen";
+const PointerEvent::DeviceType PointerEvent::TYPE_TOUCH    = "touch";
+const PointerEvent::DeviceType PointerEvent::TYPE_UNKNOWN  = "unknown";
 
-const PointerEvent::EventType PointerEvent::POINTER_DOWN = "down";
-const PointerEvent::EventType PointerEvent::POINTER_UP = "up";
-const PointerEvent::EventType PointerEvent::POINTER_MOVE = "move";
+const PointerEvent::EventType PointerEvent::POINTER_DOWN   = "down";
+const PointerEvent::EventType PointerEvent::POINTER_UP     = "up";
+const PointerEvent::EventType PointerEvent::POINTER_MOVE   = "move";
 const PointerEvent::EventType PointerEvent::POINTER_CANCEL = "cancel";
 const PointerEvent::EventType PointerEvent::POINTER_SCROLL = "scroll";
 
@@ -306,6 +306,7 @@ PointerEvent::PointerEvent():
     _button(0),
     _buttons(0),
     _modifiers(0),
+    _pressCount(0),
     _timestamp(0)
 {
 }
@@ -320,6 +321,7 @@ PointerEvent::PointerEvent(const EventType& eventType,
                            unsigned long button,
                            unsigned long buttons,
                            unsigned long modifiers,
+                           unsigned int pressCount,
                            unsigned long long timestamp):
     _point(point),
     _eventType(eventType),
@@ -330,6 +332,7 @@ PointerEvent::PointerEvent(const EventType& eventType,
     _button(button),
     _buttons(buttons),
     _modifiers(modifiers),
+    _pressCount(pressCount),
     _timestamp(timestamp)
 {
 }
@@ -400,6 +403,12 @@ unsigned long PointerEvent::getModifiers() const
 }
 
 
+unsigned int PointerEvent::getPressCount() const
+{
+    return _pressCount;
+}
+
+
 unsigned long long PointerEvent::getTimestamp() const
 {
     return _timestamp;
@@ -427,11 +436,14 @@ PointerEvent PointerEvent::toPointerEvent(const ofTouchEventArgs& evt)
 
     EventType type = POINTER_MOVE;
 
+    unsigned int pressCount = 0;
+
     switch (evt.type)
     {
         case ofTouchEventArgs::down:
         case ofTouchEventArgs::doubleTap:
             type = POINTER_DOWN;
+            pressCount = 1;
             break;
         case ofTouchEventArgs::up:
             type = POINTER_UP;
@@ -453,6 +465,7 @@ PointerEvent PointerEvent::toPointerEvent(const ofTouchEventArgs& evt)
                         0,
                         0,
                         modifiers,
+                        pressCount,
                         timestamp);
 }
 
@@ -465,10 +478,13 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
 
     EventType type = POINTER_MOVE;
 
+    unsigned int pressCount = 0;
+
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
             type = POINTER_DOWN;
+            pressCount = 1;
             pressure = 0.5;
             break;
         case ofMouseEventArgs::Dragged:
@@ -519,6 +535,7 @@ PointerEvent PointerEvent::toPointerEvent(const ofMouseEventArgs& evt)
                                       evt.button,
                                       buttons,
                                       modifiers,
+                                      pressCount,
                                       timestamp);
 
 }
@@ -535,24 +552,26 @@ PointerEvent PointerEvent::fromJSON(const Json::Value& json)
                         json.get("button", 0).asLargestInt(),
                         json.get("buttons", 0).asLargestInt(),
                         json.get("modifiers", 0).asLargestInt(),
+                        json.get("pressCount", 0).asLargestInt(),
                         json.get("timestamp", 0).asLargestUInt());
 }
 
 
-Json::Value PointerEvent::toJSON(const PointerEvent& pointerEventArgs)
+Json::Value PointerEvent::toJSON(const PointerEvent& evt)
 {
     Json::Value json;
 
-    json["eventType"] = pointerEventArgs._eventType;
-    json["point"] = Point::toJSON(pointerEventArgs._point);
-    json["deviceID"] = (Json::Int64)pointerEventArgs._deviceID;
-    json["pointerID"] = (Json::Int64)pointerEventArgs._pointerID;
-    json["deviceType"] = pointerEventArgs._deviceType;
-    json["isPrimary"] = pointerEventArgs._isPrimary;
-    json["button"] = (Json::Int64)pointerEventArgs._button;
-    json["buttons"] = (Json::Int64)pointerEventArgs._buttons;
-    json["modifiers"] = (Json::Int64)pointerEventArgs._modifiers;
-    json["timestamp"] = (Json::Int64)pointerEventArgs._timestamp;
+    json["eventType"]  = evt._eventType;
+    json["point"]      = Point::toJSON(evt._point);
+    json["deviceID"]   = (Json::Int64)evt._deviceID;
+    json["pointerID"]  = (Json::Int64)evt._pointerID;
+    json["deviceType"] = evt._deviceType;
+    json["isPrimary"]  = evt._isPrimary;
+    json["button"]     = (Json::Int64)evt._button;
+    json["buttons"]    = (Json::Int64)evt._buttons;
+    json["modifiers"]  = (Json::Int64)evt._modifiers;
+    json["pressCount"] = (Json::Int64)evt._pressCount;
+    json["timestamp"]  = (Json::Int64)evt._timestamp;
 
     return json;
 }

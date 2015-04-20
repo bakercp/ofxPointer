@@ -277,6 +277,7 @@ public:
                  unsigned long button,
                  unsigned long buttons,
                  unsigned long modifiers,
+                 unsigned int pressCount,
                  unsigned long long timestamp);
 
     virtual ~PointerEvent();
@@ -317,6 +318,8 @@ public:
 
     unsigned long long getTimestamp() const;
 
+    unsigned int getPressCount() const;
+
     static PointerEvent toPointerEvent(const ofTouchEventArgs& evt);
     static PointerEvent toPointerEvent(const ofMouseEventArgs& evt);
 
@@ -331,6 +334,7 @@ public:
         ss << "      Event: " << getEventType() << std::endl;
         ss << "    Buttons: " << ofToBinary(getButtons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(getModifiers()) << std::endl;
+        ss << "Press Count: " << getPressCount() << std::endl;
         ss << "   Touch ID: " << getPointerID() << std::endl;
 
         return ss.str();
@@ -390,25 +394,13 @@ private:
 
     unsigned long _modifiers;
 
+    unsigned int _pressCount;
+
     unsigned long long _timestamp;
 
+    friend class PointerGestureEventProcessor;
+
 };
-
-
-//class PointerDoubleTapEvent: public PointerEvent
-//{
-//public:
-//    PointerDoubleTapEvent(const PointerEvent& evt,
-//                          unsigned int tapCount);
-//
-//    virtual ~PointerDoubleTapEvent();
-//
-//    unsigned int getTapCount() const;
-//
-//private:
-//    unsigned int _tapCount;
-//    
-//};
 
 
 } // namespace ofx

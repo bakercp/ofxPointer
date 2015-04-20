@@ -70,7 +70,7 @@ void ofApp::onPointerCancel(ofx::PointerEvent& evt)
 
 void ofApp::onPointerDoublePress(ofx::PointerEvent& evt)
 {
-    ofLogVerbose("ofApp::onPointerDoubleTap") << evt.toString();
+    ofLogVerbose("ofApp::onPointerDoublePress") << evt.toString();
 }
 
 

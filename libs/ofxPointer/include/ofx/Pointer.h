@@ -53,20 +53,26 @@ public:
     PointerGestureEventProcessor();
     virtual ~PointerGestureEventProcessor();
 
+    void update(ofEventArgs& evt);
+
     bool onPointerUp(PointerEvent& evt);
     bool onPointerDown(PointerEvent& evt);
     bool onPointerMove(PointerEvent& evt);
     bool onPointerCancel(PointerEvent& evt);
 
 protected:
-    typedef Poco::Tuple<long, long, unsigned long> PointerDownEventKey;
-    typedef std::map<PointerDownEventKey, PointerEvent> PointerDownEvents;
+    typedef std::pair<PointerEvent::PointerID, unsigned long> PointerPressEventKey;
+    typedef std::map<PointerPressEventKey, PointerEvent> PointerPressEvents;
 
-    void handlePointerDown(const PointerEvent& evt);
+    void handlePointerDown(PointerEvent& evt);
+    void handlePointerUp(PointerEvent& evt);
+    void handlePointerMove(PointerEvent& evt);
+    void handlePointerCancel(PointerEvent& evt);
 
-    unsigned long long _tapThreshold;
+    void handleMultiPress(PointerEvent& evt);
 
-    PointerDownEvents _pointerDownEvents;
+    PointerPressEvents _pointerDownEvents;
+    PointerPressEvents _pointerUpEvents;
 
 };
 
