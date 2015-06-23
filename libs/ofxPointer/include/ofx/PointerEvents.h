@@ -28,7 +28,7 @@
 
 #include <set>
 #include <string>
-#include <json/json.h>
+#include "json/json.h"
 #include "ofEvents.h"
 #include "ofUtils.h"
 
