@@ -370,7 +370,7 @@ long PointerEventArgs::getPointerID() const
 
 PointerEventArgs::PointerID PointerEventArgs::getID() const
 {
-    return std::pair<long, long>(_deviceID, _pointerID);
+    return std::tuple<long, long, DeviceType>(_deviceID, _pointerID, _deviceType);
 }
 
 

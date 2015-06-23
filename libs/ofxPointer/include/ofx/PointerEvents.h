@@ -262,7 +262,7 @@ class PointerEventArgs: public ofEventArgs
 public:
     typedef std::string EventType;
     typedef std::string DeviceType;
-    typedef std::pair<long, long> PointerID;
+    typedef std::tuple<long, long, DeviceType> PointerID;
     typedef std::vector<PointerID> PointerList;
 
     PointerEventArgs();
