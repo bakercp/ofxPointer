@@ -504,6 +504,9 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
             type = POINTER_SCROLL;
             pressure = 0.0;
             break;
+        case ofMouseEventArgs::Entered:
+        case ofMouseEventArgs::Exited:
+            break;
     }
 
     Point point(evt, evt, shape, pressure, 0, 0, 0 , 0);
