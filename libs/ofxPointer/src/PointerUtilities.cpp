@@ -25,6 +25,7 @@
 
 #include "ofx/PointerUtilities.h"
 
+
 #ifdef TARGET_LINUX
 #include <gio/gio.h>
 #endif
@@ -35,7 +36,7 @@ namespace ofx {
 
 #if !defined(TARGET_OSX)
 
-Poco::Timespan PointerUtilities::getSystemDoublePressInterval()
+unsigned long long PointerUtilities::getSystemDoublePressInterval()
 {
     int timeMS = 0;
 #if defined(TARGET_LINUX)
@@ -47,7 +48,7 @@ Poco::Timespan PointerUtilities::getSystemDoublePressInterval()
 #else
     timeMS = DEFAULT_DOUBLE_TAP_INTERVAL;
 #endif
-    return Poco::Timespan(timeMS * Poco::Timespan::MILLISECONDS);
+    return timeMS;
 }
 
 #endif

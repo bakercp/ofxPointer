@@ -29,7 +29,6 @@
 #include <set>
 #include <string>
 #include <json/json.h>
-#include "Poco/Timestamp.h"
 #include "ofEvents.h"
 #include "ofUtils.h"
 
@@ -457,8 +456,8 @@ public:
 
     static PointerEvents& instance()
     {
-        static Poco::SingletonHolder<PointerEvents> sh;
-        return *sh.get();
+        static PointerEvents instance;
+        return instance;
     }
 
 protected:

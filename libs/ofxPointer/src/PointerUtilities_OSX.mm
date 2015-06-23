@@ -34,9 +34,9 @@
 namespace ofx {
 
 
-Poco::Timespan PointerUtilities::getSystemDoublePressInterval()
+unsigned long long PointerUtilities::getSystemDoublePressInterval()
 {
-    return Poco::Timespan(Poco::Timespan::SECONDS * [NSEvent doubleClickInterval]);
+    return 1000 * [NSEvent doubleClickInterval]; // Returns time in seconds.
 }
 
 

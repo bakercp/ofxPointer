@@ -700,7 +700,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
 {
     PointerPressEventKey key(evt.getID(), evt.getButton());
 
-    Poco::Timespan _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
+    unsigned long long _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
     
     PointerPressEvents::iterator iter = _pointerDownEvents.find(key);
     
@@ -708,7 +708,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
     {
         PointerEventArgs& lastEvent = (*iter).second;
         
-        if (evt.getTimestamp() <= (lastEvent.getTimestamp() + _doublePressThreshold.totalMilliseconds()))
+        if (evt.getTimestamp() <= (lastEvent.getTimestamp() + _doublePressThreshold))
         {
             evt._pressCount += lastEvent.getPressCount();
         }
