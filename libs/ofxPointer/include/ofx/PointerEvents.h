@@ -426,7 +426,7 @@ public:
     void registerPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
     template<class ListenerClass>
-    void unregisterPointerEvents(ListenerClass* listener);
+    void unregisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
     /// \brief Event that is triggered when a point is introduced.
     ofEvent<PointerEventArgs> onPointerDown;
@@ -485,12 +485,12 @@ void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
 
 
 template<class ListenerClass>
-void PointerEvents::unregisterPointerEvents(ListenerClass* listener)
+void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 {
-    ofRemoveListener(onPointerDown, listener, &ListenerClass::onPointerDown);
-    ofRemoveListener(onPointerUp, listener, &ListenerClass::onPointerUp);
-    ofRemoveListener(onPointerMove, listener, &ListenerClass::onPointerMove);
-    ofRemoveListener(onPointerCancel, listener, &ListenerClass::onPointerCancel);
+    ofRemoveListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
+    ofRemoveListener(onPointerUp, listener, &ListenerClass::onPointerUp, prio);
+    ofRemoveListener(onPointerMove, listener, &ListenerClass::onPointerMove, prio);
+    ofRemoveListener(onPointerCancel, listener, &ListenerClass::onPointerCancel, prio);
 }
 
 
