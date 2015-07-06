@@ -113,19 +113,19 @@ public:
     
 protected:
     /// \brief Bounding box width.
-    float _width;
+    float _width = 0;
     
     /// \brief Bounding box height.
-    float _height;
+    float _height = 0;
     
     /// \brief Ellipse major axis.
-    float _ellipseMajorAxis;
+    float _ellipseMajorAxis = 0;
     
     /// \brief Ellipse minor axis.
-    float _ellipseMinorAxis;
+    float _ellipseMinorAxis = 0;
     
     /// \brief Ellipse angle in degrees.
-    float _ellipseAngle;
+    float _ellipseAngle = 0;
     
 };
 
@@ -240,19 +240,19 @@ private:
     PointShape _shape;
 
     /// \brief The Point's normalized pressure.
-    float _pressure;
+    float _pressure = 0;
     
     /// \brief The Point's tangential pressure (aka barrel pressure).
-    float _tangentialPressure;
+    float _tangentialPressure = 0;
     
     /// \brief The Point's rotation.
-    float _rotation;
+    float _rotation = 0;
     
     /// \brief The Point tilt X angle.
-    float _tiltX;
+    float _tiltX = 0;
     
     /// \brief The Point tilt Y angle.
-    float _tiltY;
+    float _tiltY = 0;
 
 };
 
