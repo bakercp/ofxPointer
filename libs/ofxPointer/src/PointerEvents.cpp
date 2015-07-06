@@ -255,11 +255,11 @@ const PointerEventArgs::DeviceType PointerEventArgs::TYPE_PEN      = "pen";
 const PointerEventArgs::DeviceType PointerEventArgs::TYPE_TOUCH    = "touch";
 const PointerEventArgs::DeviceType PointerEventArgs::TYPE_UNKNOWN  = "unknown";
 
-const PointerEventArgs::EventType PointerEventArgs::POINTER_DOWN   = "down";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_UP     = "up";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_MOVE   = "move";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_CANCEL = "cancel";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_SCROLL = "scroll";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_DOWN   = "pointerdown";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_UP     = "pointerup";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_MOVE   = "pointermove";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_CANCEL = "pointercancel";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_SCROLL = "pointerscroll";
 
 
 PointerEventArgs::PointerEventArgs():
