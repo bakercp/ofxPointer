@@ -30,12 +30,7 @@
 namespace ofx {
 
 
-PointShape::PointShape():
-    _width(0),
-    _height(0),
-    _ellipseMajorAxis(0),
-    _ellipseMinorAxis(0),
-    _ellipseAngle(0)
+PointShape::PointShape(): PointShape(0, 0, 0, 0, 0)
 {
 }
 
@@ -112,54 +107,24 @@ Json::Value PointShape::toJSON(const PointShape& pointShape)
     return json;
 }
 
-Point::Point():
-    ofVec3f(0, 0, 0),
-    _absolutePosition(0, 0, 0),
-    _shape(PointShape()),
-    _pressure(0),
-    _tangentialPressure(0),
-    _rotation(0),
-    _tiltX(0),
-    _tiltY(0)
+Point::Point(): Point(ofVec3f(0,0,0))
 {
 }
 
 
-Point::Point(const ofVec3f& position):
-    ofVec3f(position),
-    _absolutePosition(position),
-    _shape(PointShape()),
-    _pressure(0),
-    _tangentialPressure(0),
-    _rotation(0),
-    _tiltX(0),
-    _tiltY(0)
+Point::Point(const ofVec3f& position): Point(position, PointShape())
 {
 }
 
 
 Point::Point(const ofVec3f& position, const PointShape& shape):
-    ofVec3f(position),
-    _absolutePosition(position),
-    _shape(shape),
-    _pressure(0),
-    _tangentialPressure(0),
-    _rotation(0),
-    _tiltX(0),
-    _tiltY(0)
+    Point(position, position, PointShape(), 0, 0, 0, 0, 0)
 {
 }
 
 
 Point::Point(const ofVec3f& position, float pressure, float tiltX, float tiltY):
-    ofVec3f(position),
-    _absolutePosition(position),
-    _shape(PointShape()),
-    _pressure(pressure),
-    _tangentialPressure(0),
-    _rotation(0),
-    _tiltX(tiltX),
-    _tiltY(tiltY)
+    Point(position, position, PointShape(), pressure, 0, 0, tiltX, tiltY)
 {
 }
 
