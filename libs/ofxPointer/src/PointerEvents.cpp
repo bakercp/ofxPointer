@@ -255,13 +255,20 @@ const PointerEventArgs::DeviceType PointerEventArgs::TYPE_PEN      = "pen";
 const PointerEventArgs::DeviceType PointerEventArgs::TYPE_TOUCH    = "touch";
 const PointerEventArgs::DeviceType PointerEventArgs::TYPE_UNKNOWN  = "unknown";
 
+const PointerEventArgs::EventType PointerEventArgs::POINTER_OVER   = "pointerover";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_ENTER  = "pointerenter";
 const PointerEventArgs::EventType PointerEventArgs::POINTER_DOWN   = "pointerdown";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_UP     = "pointerup";
 const PointerEventArgs::EventType PointerEventArgs::POINTER_MOVE   = "pointermove";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_UP     = "pointerup";
 const PointerEventArgs::EventType PointerEventArgs::POINTER_CANCEL = "pointercancel";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_OUT    = "pointerout";
+const PointerEventArgs::EventType PointerEventArgs::POINTER_LEAVE  = "pointerleave";
 const PointerEventArgs::EventType PointerEventArgs::POINTER_SCROLL = "pointerscroll";
+    
+const PointerEventArgs::EventType PointerEventArgs::GOT_POINTER_CAPTURE  = "gotpointercapture";
+const PointerEventArgs::EventType PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 
-
+    
 PointerEventArgs::PointerEventArgs():
     _point(Point()),
     _eventType(POINTER_MOVE),

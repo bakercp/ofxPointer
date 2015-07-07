@@ -344,11 +344,21 @@ public:
     static const std::string TYPE_TOUCH;
     static const std::string TYPE_UNKNOWN;
 
+    static const std::string POINTER_OVER;
+    static const std::string POINTER_ENTER;
     static const std::string POINTER_DOWN;
-    static const std::string POINTER_UP;
     static const std::string POINTER_MOVE;
+    static const std::string POINTER_UP;
     static const std::string POINTER_CANCEL;
+    static const std::string POINTER_OUT;
+    static const std::string POINTER_LEAVE;
+
+    /// \todo This is not part of the PointerEvents spec.
+    /// Should be an extension of a mouse event.
     static const std::string POINTER_SCROLL;
+
+    static const std::string GOT_POINTER_CAPTURE;
+    static const std::string LOST_POINTER_CAPTURE;
 
     /// \brief Deserialize a PointerEventArgs from JSON.
     /// \param json The json to deserialize.
@@ -453,6 +463,9 @@ public:
     ///     contact points, if the user has two fingers on a surface, and then
     ///     touches it with a third finger, this event is raised.
     ofEvent<PointerEventArgs> onPointerCancel;
+
+    /// \todo Remaining element-related methods don't apply to the same event
+    /// structure because they depend on the target.
 
     static PointerEvents& instance()
     {
