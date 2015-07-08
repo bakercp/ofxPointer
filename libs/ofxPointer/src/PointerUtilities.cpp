@@ -44,7 +44,7 @@ unsigned long long PointerUtilities::getSystemDoublePressInterval()
     timeMS = g_settings_get_int(mouseSettings, "double-click");
     g_object_unref(mouseSettings);
 #elif defined(TARGET_WIN32)
-    timeMS = GetDoubleClickTime();
+    timeMS = static_cast<unsigned long long>(GetDoubleClickTime());
 #else
     timeMS = DEFAULT_DOUBLE_TAP_INTERVAL;
 #endif
