@@ -250,57 +250,58 @@ Json::Value Point::toJSON(const Point& point)
 }
 
 
-const PointerEventArgs::DeviceType PointerEventArgs::TYPE_MOUSE    = "mouse";
-const PointerEventArgs::DeviceType PointerEventArgs::TYPE_PEN      = "pen";
-const PointerEventArgs::DeviceType PointerEventArgs::TYPE_TOUCH    = "touch";
-const PointerEventArgs::DeviceType PointerEventArgs::TYPE_UNKNOWN  = "unknown";
+const std::string PointerEventArgs::TYPE_MOUSE    = "mouse";
+const std::string PointerEventArgs::TYPE_PEN      = "pen";
+const std::string PointerEventArgs::TYPE_TOUCH    = "touch";
+const std::string PointerEventArgs::TYPE_UNKNOWN  = "unknown";
 
-const PointerEventArgs::EventType PointerEventArgs::POINTER_OVER   = "pointerover";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_ENTER  = "pointerenter";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_DOWN   = "pointerdown";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_MOVE   = "pointermove";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_UP     = "pointerup";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_CANCEL = "pointercancel";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_OUT    = "pointerout";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_LEAVE  = "pointerleave";
-const PointerEventArgs::EventType PointerEventArgs::POINTER_SCROLL = "pointerscroll";
+const std::string PointerEventArgs::POINTER_OVER   = "pointerover";
+const std::string PointerEventArgs::POINTER_ENTER  = "pointerenter";
+const std::string PointerEventArgs::POINTER_DOWN   = "pointerdown";
+const std::string PointerEventArgs::POINTER_MOVE   = "pointermove";
+const std::string PointerEventArgs::POINTER_UP     = "pointerup";
+const std::string PointerEventArgs::POINTER_CANCEL = "pointercancel";
+const std::string PointerEventArgs::POINTER_OUT    = "pointerout";
+const std::string PointerEventArgs::POINTER_LEAVE  = "pointerleave";
+const std::string PointerEventArgs::POINTER_SCROLL = "pointerscroll";
     
-const PointerEventArgs::EventType PointerEventArgs::GOT_POINTER_CAPTURE  = "gotpointercapture";
-const PointerEventArgs::EventType PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
+const std::string PointerEventArgs::GOT_POINTER_CAPTURE  = "gotpointercapture";
+const std::string PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 
-    
+
 PointerEventArgs::PointerEventArgs():
-    _point(Point()),
-    _eventType(POINTER_MOVE),
-    _deviceID(-1),
-    _pointerID(-1),
-    _deviceType(TYPE_UNKNOWN),
-    _isPrimary(false),
-    _button(0),
-    _buttons(0),
-    _modifiers(0),
-    _pressCount(0),
-    _timestamp(0)
+    PointerEventArgs(POINTER_MOVE,
+                     Point(),
+                     -1,
+                     -1,
+                     TYPE_UNKNOWN,
+                     false,
+                     0,
+                     0,
+                     0,
+                     0,
+                     0)
 {
 }
 
 
-PointerEventArgs::PointerEventArgs(const EventType& eventType,
+PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    const Point& point,
-                                   long deviceID,
-                                   long pointerID,
-                                   const DeviceType& deviceType,
+                                   long deviceId,
+                                   long pointerIndex,
+                                   const std::string& deviceType,
                                    bool isPrimary,
                                    unsigned long button,
                                    unsigned long buttons,
                                    unsigned long modifiers,
                                    unsigned int pressCount,
                                    unsigned long long timestamp):
-    _point(point),
     _eventType(eventType),
-    _deviceID(deviceID),
-    _pointerID(pointerID),
+    _id(0),
+    _deviceId(deviceId),
+    _pointerIndex(pointerIndex),
     _deviceType(deviceType),
+    _point(point),
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
@@ -308,6 +309,9 @@ PointerEventArgs::PointerEventArgs(const EventType& eventType,
     _pressCount(pressCount),
     _timestamp(timestamp)
 {
+    hash_combine(_id, _deviceId);
+    hash_combine(_id, _pointerIndex);
+    hash_combine(_id, _deviceType);
 }
 
 
@@ -316,37 +320,37 @@ PointerEventArgs::~PointerEventArgs()
 }
 
 
-const PointerEventArgs::EventType& PointerEventArgs::getEventType() const
+std::string PointerEventArgs::eventType() const
 {
     return _eventType;
 }
 
 
-const Point& PointerEventArgs::getPoint() const
+Point PointerEventArgs::point() const
 {
     return _point;
 }
 
 
-long PointerEventArgs::getDeviceID() const
+long PointerEventArgs::deviceId() const
 {
-    return _deviceID;
+    return _deviceId;
 }
 
 
-long PointerEventArgs::getPointerID() const
+long PointerEventArgs::index() const
 {
-    return _pointerID;
+    return _pointerIndex;
 }
 
 
-PointerEventArgs::PointerID PointerEventArgs::getID() const
+std::size_t PointerEventArgs::id() const
 {
-    return std::tuple<long, long, DeviceType>(_deviceID, _pointerID, _deviceType);
+    return _id;
 }
 
 
-const PointerEventArgs::DeviceType& PointerEventArgs::getDeviceType() const
+std::string PointerEventArgs::deviceType() const
 {
     return _deviceType;
 }
@@ -358,31 +362,31 @@ bool PointerEventArgs::isPrimary() const
 }
 
 
-unsigned long PointerEventArgs::getButton() const
+unsigned long PointerEventArgs::button() const
 {
     return _button;
 }
 
 
-unsigned long PointerEventArgs::getButtons() const
+unsigned long PointerEventArgs::buttons() const
 {
     return _buttons;
 }
 
 
-unsigned long PointerEventArgs::getModifiers() const
+unsigned long PointerEventArgs::modifiers() const
 {
     return _modifiers;
 }
 
 
-unsigned int PointerEventArgs::getPressCount() const
+unsigned int PointerEventArgs::pressCount() const
 {
     return _pressCount;
 }
 
 
-unsigned long long PointerEventArgs::getTimestamp() const
+unsigned long long PointerEventArgs::timestamp() const
 {
     return _timestamp;
 }
@@ -407,7 +411,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     unsigned long long timestamp = ofGetElapsedTimeMillis();
 
-    EventType type = POINTER_MOVE;
+    std::string type = POINTER_MOVE;
 
     unsigned int pressCount = 0;
 
@@ -449,7 +453,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     float pressure = 0;
 
-    EventType type = POINTER_MOVE;
+    std::string type = POINTER_MOVE;
 
     unsigned int pressCount = 0;
 
@@ -521,8 +525,8 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
 {
     return PointerEventArgs(json.get("eventType", POINTER_MOVE).asString(),
                             Point::fromJSON(json.get("point", Json::Value())),
-                            json.get("deviceID", 0).asLargestInt(),
-                            json.get("pointerID", 0).asLargestInt(),
+                            json.get("deviceId", 0).asLargestInt(),
+                            json.get("pointerId", 0).asLargestInt(),
                             json.get("deviceType", TYPE_UNKNOWN).asString(),
                             json.get("isPrimary", false).asBool(),
                             json.get("button", 0).asLargestInt(),
@@ -539,8 +543,8 @@ Json::Value PointerEventArgs::toJSON(const PointerEventArgs& evt)
 
     json["eventType"]  = evt._eventType;
     json["point"]      = Point::toJSON(evt._point);
-    json["deviceID"]   = (Json::Int64)evt._deviceID;
-    json["pointerID"]  = (Json::Int64)evt._pointerID;
+    json["deviceId"]   = (Json::Int64)evt._deviceId;
+    json["pointerIndex"]  = (Json::Int64)evt._pointerIndex;
     json["deviceType"] = evt._deviceType;
     json["isPrimary"]  = evt._isPrimary;
     json["button"]     = (Json::Int64)evt._button;
@@ -673,7 +677,7 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 
 void PointerEvents::handleMultiPress(PointerEventArgs& evt)
 {
-    PointerPressEventKey key(evt.getID(), evt.getButton());
+    PointerPressEventKey key(evt.id(), evt.button());
 
     unsigned long long _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
     
@@ -683,9 +687,9 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
     {
         PointerEventArgs& lastEvent = (*iter).second;
         
-        if (evt.getTimestamp() <= (lastEvent.getTimestamp() + _doublePressThreshold))
+        if (evt.timestamp() <= (lastEvent.timestamp() + _doublePressThreshold))
         {
-            evt._pressCount += lastEvent.getPressCount();
+            evt._pressCount += lastEvent.pressCount();
         }
     }
     

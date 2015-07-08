@@ -260,18 +260,13 @@ private:
 class PointerEventArgs: public ofEventArgs
 {
 public:
-    typedef std::string EventType;
-    typedef std::string DeviceType;
-    typedef std::tuple<long, long, DeviceType> PointerID;
-    typedef std::vector<PointerID> PointerList;
-
     PointerEventArgs();
-
-    PointerEventArgs(const EventType& eventType,
+    
+    PointerEventArgs(const std::string& type,
                      const Point& point,
-                     long deviceID,
-                     long pointerID,
-                     const DeviceType& deviceType,
+                     long deviceId,
+                     long pointerIndex,
+                     const std::string& deviceType,
                      bool isPrimary,
                      unsigned long button,
                      unsigned long buttons,
@@ -281,43 +276,43 @@ public:
 
     virtual ~PointerEventArgs();
 
-    const EventType& getEventType() const;
+    std::string eventType() const;
 
-    const Point& getPoint() const;
+    Point point() const;
 
-    /// \brief Get the unique input device ID.
-    /// \returns the unique input device ID.
-    long getDeviceID() const;
+    /// \brief Get the unique input device id.
+    /// \returns the unique input device id.
+    long deviceId() const;
 
-    /// \brief Get the unique pointer ID for the given device ID.
+    /// \brief Get the unique pointer index for the given device id.
     ///
     /// This ID should correspend to different touches for a multi-touch device.
     ///
-    /// \returns the unique pointer ID for the given device ID.
-    long getPointerID() const;
+    /// \returns the unique pointer index for the given device id.
+    long index() const;
 
-    /// \brief Get a single unique ID for a device ID and Pointer ID.
-    /// \returns a single unique ID for a device ID and Pointer ID.
-    PointerID getID() const;
+    /// \brief Get a single unique id for a device id and Pointer index.
+    /// \returns a single unique id for a device id and Pointer index.
+    std::size_t id() const;
 
     /// \brief Get the device type string.
     ///
     /// This string may be TYPE_MOUSE, TYPE_TOUCH, TYPE_PEN, or a custom string.
     ///
     /// \returns a device description string.
-    const DeviceType& getDeviceType() const;
+    std::string deviceType() const;
 
     bool isPrimary() const;
 
-    unsigned long getButton() const;
+    unsigned long button() const;
 
-    unsigned long getButtons() const;
+    unsigned long buttons() const;
 
-    unsigned long getModifiers() const;
+    unsigned long modifiers() const;
 
-    unsigned long long getTimestamp() const;
+    unsigned long long timestamp() const;
 
-    unsigned int getPressCount() const;
+    unsigned int pressCount() const;
 
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
     static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
@@ -327,14 +322,15 @@ public:
         std::stringstream ss;
 
         ss << "------------" << std::endl;
-        ss << "  Device ID: " << getDeviceID() << std::endl;
-        ss << "Device Type: " << getDeviceType() << std::endl;
-        ss << "     Button: " << getButton() << std::endl;
-        ss << "      Event: " << getEventType() << std::endl;
-        ss << "    Buttons: " << ofToBinary(getButtons()) << std::endl;
-        ss << "  Modifiers: " << ofToBinary(getModifiers()) << std::endl;
-        ss << "Press Count: " << getPressCount() << std::endl;
-        ss << "   Touch ID: " << getPointerID() << std::endl;
+        ss << "      Event: " << eventType() << std::endl;
+        ss << "         Id: " << id() << std::endl;
+        ss << "  Device Id: " << deviceId() << std::endl;
+        ss << "Device Type: " << deviceType() << std::endl;
+        ss << "     Button: " << button() << std::endl;
+        ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
+        ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
+        ss << "Press Count: " << pressCount() << std::endl;
+        ss << "Touch Index: " << index() << std::endl;
 
         return ss.str();
     }
@@ -371,20 +367,22 @@ public:
     static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
 private:
-    Point _point;
+    std::string _eventType;
 
-    EventType _eventType;
+    std::size_t _id;
 
-    long _deviceID;
+    long _deviceId;
 
     /// \brief A unique pointer ID.
     ///
     /// This value must be unique from all other active pointers at any given
     /// time.  Pointer IDs can be reused and are implementation specific.
-    long _pointerID;
+    long _pointerIndex;
 
     /// \brief The type of device that generated this Point.
-    DeviceType _deviceType;
+    std::string _deviceType;
+
+    Point _point;
 
     /// \brief Indicates if the pointer is a primary pointer.
     ///
@@ -474,7 +472,7 @@ public:
     }
 
 protected:
-    typedef std::pair<PointerEventArgs::PointerID, unsigned long> PointerPressEventKey;
+    typedef std::pair<long, unsigned long> PointerPressEventKey;
     typedef std::map<PointerPressEventKey, PointerEventArgs> PointerPressEvents;
 
     bool _consumeMouseEvents;
@@ -522,3 +520,12 @@ void UnregisterPointerEvents(ListenerClass* listener)
 
 
 } // namespace ofx
+
+
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v)
+{
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+}
+
