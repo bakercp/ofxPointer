@@ -561,10 +561,12 @@ PointerEvents::PointerEvents():
     _consumeMouseEvents(false),
     _consumeTouchEvents(false)
 {
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     ofAddListener(ofEvents().mouseMoved, this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().mouseDragged, this, &PointerEvents::mouseDragged, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().mousePressed, this, &PointerEvents::mousePressed, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().mouseReleased, this, &PointerEvents::mouseReleased, OF_EVENT_ORDER_BEFORE_APP);
+#endif
 
     ofAddListener(ofEvents().touchUp, this, &PointerEvents::touchUp, OF_EVENT_ORDER_BEFORE_APP);
     ofAddListener(ofEvents().touchDown, this, &PointerEvents::touchDown, OF_EVENT_ORDER_BEFORE_APP);
@@ -576,10 +578,12 @@ PointerEvents::PointerEvents():
 
 PointerEvents::~PointerEvents()
 {
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     ofRemoveListener(ofEvents().mouseMoved, this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
     ofRemoveListener(ofEvents().mouseDragged, this, &PointerEvents::mouseDragged, OF_EVENT_ORDER_BEFORE_APP);
     ofRemoveListener(ofEvents().mousePressed, this, &PointerEvents::mousePressed, OF_EVENT_ORDER_BEFORE_APP);
     ofRemoveListener(ofEvents().mouseReleased, this, &PointerEvents::mouseReleased, OF_EVENT_ORDER_BEFORE_APP);
+#endif
 
     ofRemoveListener(ofEvents().touchUp, this, &PointerEvents::touchUp, OF_EVENT_ORDER_BEFORE_APP);
     ofRemoveListener(ofEvents().touchDown, this, &PointerEvents::touchDown, OF_EVENT_ORDER_BEFORE_APP);
