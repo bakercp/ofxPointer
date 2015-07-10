@@ -413,6 +413,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     std::string type = POINTER_MOVE;
 
+    unsigned long buttons = 0;
     unsigned int pressCount = 0;
 
     switch (evt.type)
@@ -420,6 +421,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
         case ofTouchEventArgs::down:
         case ofTouchEventArgs::doubleTap:
             type = POINTER_DOWN;
+            buttons |= (1 << OF_MOUSE_BUTTON_1);
             pressCount = 1;
             break;
         case ofTouchEventArgs::up:
@@ -440,7 +442,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
                             PointerEventArgs::TYPE_TOUCH,
                             false,
                             0,
-                            0,
+                            buttons,
                             modifiers,
                             pressCount,
                             timestamp);
