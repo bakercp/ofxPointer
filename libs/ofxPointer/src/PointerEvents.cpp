@@ -531,11 +531,11 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
                             json.get("pointerId", 0).asLargestInt(),
                             json.get("deviceType", TYPE_UNKNOWN).asString(),
                             json.get("isPrimary", false).asBool(),
-                            json.get("button", 0).asLargestInt(),
-                            json.get("buttons", 0).asLargestInt(),
-                            json.get("modifiers", 0).asLargestInt(),
-                            json.get("pressCount", 0).asLargestInt(),
-                            json.get("timestamp", 0).asLargestUInt());
+                            json.get("button", 0).asUInt64(),
+                            json.get("buttons", 0).asUInt64(),
+                            json.get("modifiers", 0).asUInt64(),
+                            json.get("pressCount", 0).asUInt(),
+                            json.get("timestamp", 0).asUInt64());
 }
 
 
