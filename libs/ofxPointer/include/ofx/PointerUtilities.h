@@ -26,13 +26,16 @@
 #pragma once
 
 
+#include <cstdint>
+
+
 namespace ofx {
 
 
 class PointerUtilities
 {
 public:
-    static unsigned long long getSystemDoublePressInterval();
+    static uint64_t getSystemDoublePressInterval();
 
     enum
     {

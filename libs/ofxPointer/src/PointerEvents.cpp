@@ -295,7 +295,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    unsigned long buttons,
                                    unsigned long modifiers,
                                    unsigned int pressCount,
-                                   unsigned long long timestamp):
+                                   uint64_t timestamp):
     _eventType(eventType),
     _id(0),
     _deviceId(deviceId),
@@ -386,7 +386,7 @@ unsigned int PointerEventArgs::pressCount() const
 }
 
 
-unsigned long long PointerEventArgs::timestamp() const
+uint64_t PointerEventArgs::timestamp() const
 {
     return _timestamp;
 }
@@ -409,7 +409,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    unsigned long long timestamp = ofGetElapsedTimeMillis();
+    uint64_t timestamp = ofGetElapsedTimeMillis();
 
     std::string type = POINTER_MOVE;
 
@@ -504,7 +504,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
-    unsigned long long timestamp = ofGetElapsedTimeMillis();
+    uint64_t timestamp = ofGetElapsedTimeMillis();
 
     return PointerEventArgs(type,
                             point,
@@ -683,7 +683,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
 {
     PointerPressEventKey key(evt.id(), evt.button());
 
-    unsigned long long _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
+    uint64_t _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
     
     PointerPressEvents::iterator iter = _pointerDownEvents.find(key);
     

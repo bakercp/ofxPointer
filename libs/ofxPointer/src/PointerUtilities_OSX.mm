@@ -34,7 +34,7 @@
 namespace ofx {
 
 
-unsigned long long PointerUtilities::getSystemDoublePressInterval()
+uint64_t PointerUtilities::getSystemDoublePressInterval()
 {
     return 1000 * [NSEvent doubleClickInterval]; // Returns time in seconds.
 }

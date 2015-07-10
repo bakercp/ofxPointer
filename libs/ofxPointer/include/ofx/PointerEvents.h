@@ -272,7 +272,7 @@ public:
                      unsigned long buttons,
                      unsigned long modifiers,
                      unsigned int pressCount,
-                     unsigned long long timestamp);
+                     uint64_t timestamp);
 
     virtual ~PointerEventArgs();
 
@@ -310,7 +310,7 @@ public:
 
     unsigned long modifiers() const;
 
-    unsigned long long timestamp() const;
+    uint64_t timestamp() const;
 
     unsigned int pressCount() const;
 
@@ -403,7 +403,7 @@ private:
 
     unsigned int _pressCount;
 
-    unsigned long long _timestamp;
+    uint64_t _timestamp;
 
     friend class PointerEvents;
 
