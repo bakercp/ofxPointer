@@ -302,16 +302,28 @@ public:
     /// \returns a device description string.
     std::string deviceType() const;
 
+    /// \brief Determine if this pointer is the primary.
+    /// \returns true if this pointer is the primary pointer.
+    /// \sa https://w3c.github.io/pointerevents/#the-primary-pointer
     bool isPrimary() const;
 
+    /// \brief Get the button id for this event.
+    /// \returns the button id for this event.
     unsigned long button() const;
 
+    /// \brief Get all pressed buttons for this pointer.
+    /// \return all pressed buttons for this pointer.
+    /// \sa https://w3c.github.io/pointerevents/#button-states
     unsigned long buttons() const;
 
+    /// \brief Get all modifiers for this pointer.
+    /// \returns all modifiers for this pointer.
     unsigned long modifiers() const;
 
+    /// \returns the timestamp of this event.
     uint64_t timestamp() const;
 
+    /// \returns the number of presses, clicks or taps associated with this pointer.
     unsigned int pressCount() const;
 
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
@@ -367,10 +379,13 @@ public:
     static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
 private:
+    /// \brief The name of this event type.
     std::string _eventType;
 
+    /// \brief The unique id of this pointer.
     std::size_t _id;
 
+    /// \brief The id of the device producing the pointer events.
     long _deviceId;
 
     /// \brief A unique pointer ID.
@@ -382,6 +397,7 @@ private:
     /// \brief The type of device that generated this Point.
     std::string _deviceType;
 
+    /// \brief The location and orientation of the pointer.
     Point _point;
 
     /// \brief Indicates if the pointer is a primary pointer.
