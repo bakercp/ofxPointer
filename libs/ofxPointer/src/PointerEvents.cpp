@@ -430,6 +430,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
             type = POINTER_UP;
             break;
         case ofTouchEventArgs::move:
+			buttons |= (1 << OF_MOUSE_BUTTON_1);
             type = POINTER_MOVE;
             break;
         case ofTouchEventArgs::cancel:
