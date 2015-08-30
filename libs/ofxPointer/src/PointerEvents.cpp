@@ -418,8 +418,10 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     switch (evt.type)
     {
+		case ofTouchEventArgs::doubleTap:
+			// We don't use this event.
+			break;
         case ofTouchEventArgs::down:
-        case ofTouchEventArgs::doubleTap:
             type = POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
             pressCount = 1;
