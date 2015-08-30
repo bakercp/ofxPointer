@@ -38,7 +38,7 @@ namespace ofx {
 
 uint64_t PointerUtilities::getSystemDoublePressInterval()
 {
-    int timeMS = 0;
+    uint64_t timeMS = 0;
 #if defined(TARGET_LINUX)
     GSettings* mouseSettings = g_settings_new("org.gnome.settings-daemon.peripherals.mouse");
     timeMS = g_settings_get_int(mouseSettings, "double-click");
