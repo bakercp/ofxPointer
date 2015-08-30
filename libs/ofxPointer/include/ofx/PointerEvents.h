@@ -52,6 +52,11 @@ public:
     PointShape();
 
     /// \brief Create a PointShape with parameters.
+	/// \param width Bounding box width.
+	/// \param height Bounding box height.
+	/// \param ellipseMajorAxis Ellipse major axis.
+	/// \param ellipseMinorAxis Ellipse minor axis.
+	/// \param ellipseAngle Ellipse angle in degrees.
     PointShape(float width,
                float height,
                float ellipseMajorAxis = 0,
@@ -126,17 +131,41 @@ protected:
     
     /// \brief Ellipse angle in degrees.
     float _ellipseAngle = 0;
-    
+
 };
 
 
 class Point: public ofVec3f
 {
 public:
-    Point();
+	/// \brief Construct a Point
+	Point();
+
+	/// \brief Construct a Point
+	/// \param position The position in screen coordinates.
     Point(const ofVec3f& position);
+
+	/// \brief Construct a Point
+	/// \param position The position in screen coordinates.
+	/// \param shape The point shape.
     Point(const ofVec3f& position, const PointShape& shape);
+
+	/// \brief Construct a Point
+	/// \param position The position in screen coordinates.
+	/// \param pressure The normalized pressure.
+	/// \param tiltX The tilt X angle.
+	/// \param tiltY The tilt Y angle.
     Point(const ofVec3f& position, float pressure, float tiltX, float tiltY);
+
+	/// \brief Construct a Point
+	/// \param position The position in screen coordinates.
+	/// \param absolutePosition The absolute position in device coordinates.
+	/// \param shape The point shape.
+	/// \param pressure The normalized pressure.
+	/// \param tangentialPressureThe tangential pressure (aka barrel pressure).
+	/// \param rotationThe rotation.
+	/// \param tiltX The tilt X angle.
+	/// \param tiltY The tilt Y angle.
     Point(const ofVec3f& position,
           const ofVec3f& absolutePosition,
           const PointShape& shape,
@@ -162,7 +191,6 @@ public:
     /// \returns the absolute position in device coordinates.
     const ofVec3f& getAbsolutePosition() const;
 
-
     /// \brief Get the normalized point pressure.
     ///
     /// The normalized pressure is in the range [0, 1].  For devices that do not
@@ -172,7 +200,6 @@ public:
     /// \returns the normalized point pressure [0, 1].
     float getPressure() const;
 
-
     /// \brief Get the Point's normalized tangential pressure.
     ///
     /// The normalized tangential pressure (aka the barrel pressure) is in the
@@ -181,7 +208,6 @@ public:
     ///
     /// \returns the normalized tangential pressure [0, 1].
     float getTangentialPressure() const;
-
 
     /// \brief Get the Point's rotation in degrees.
     ///
@@ -195,7 +221,6 @@ public:
     /// \returns the rotation in degrees.
     float getRotation() const;
 
-
     /// \brief Get the Tilt X angle.
     ///
     /// Tilt X is given in degrees [-90, 90] between the Y-Z plane and the plane
@@ -206,7 +231,6 @@ public:
     /// \returns the Tilt X angle in degrees.
     float getTiltX() const;
 
-
     /// \brief Get the Tilt Y angle.
     ///
     /// Tilt Y is given in degrees [-90, 90] between the X-Z plane and the plane
@@ -216,7 +240,6 @@ public:
     ///
     /// \returns the Tilt Y angle in degrees.
     float getTiltY() const;
-
 
     /// \brief Get the shape of the Point.
     /// \returns The PointShape.
@@ -411,14 +434,19 @@ private:
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary;
 
+	/// \brief The current button associated with this event.
     unsigned long _button;
 
+	/// \brief The current buttons being pressed.
     unsigned long _buttons;
 
+	/// \brief The current modifiers being pressed.
     unsigned long _modifiers;
 
+	/// \brief The current number of presses (aka clicks) associated with this event.
     unsigned int _pressCount;
 
+	/// \brief The timestamp of this event.
     uint64_t _timestamp;
 
     friend class PointerEvents;
