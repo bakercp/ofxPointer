@@ -35,7 +35,9 @@ namespace ofx {
 class PointerUtilities
 {
 public:
-    static uint64_t getSystemDoublePressInterval();
+    /// \brief Get the system's double tap interval in milliseconds.
+    /// \returns the system's double tap interval in milliseconds.
+    static uint64_t getSystemDoubleTapInterval();
 
     enum
     {
