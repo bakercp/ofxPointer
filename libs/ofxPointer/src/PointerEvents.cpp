@@ -688,7 +688,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
 {
     PointerPressEventKey key(evt.id(), evt.button());
 
-    uint64_t _doublePressThreshold = PointerUtilities::getSystemDoublePressInterval();
+    uint64_t _doubleTapThreshold = PointerUtilities::getSystemDoubleTapInterval();
     
     PointerPressEvents::iterator iter = _pointerDownEvents.find(key);
     
@@ -696,7 +696,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
     {
         PointerEventArgs& lastEvent = (*iter).second;
         
-        if (evt.timestamp() <= (lastEvent.timestamp() + _doublePressThreshold))
+        if (evt.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
         {
             evt._pressCount += lastEvent.pressCount();
         }

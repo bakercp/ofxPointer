@@ -36,7 +36,7 @@ namespace ofx {
 
 #if !defined(TARGET_OSX)
 
-uint64_t PointerUtilities::getSystemDoublePressInterval()
+uint64_t PointerUtilities::getSystemDoubleTapInterval()
 {
     uint64_t timeMS = 0;
 #if defined(TARGET_LINUX)
