@@ -1,0 +1,26 @@
+language: c++
+compiler: gcc
+sudo: true
+matrix:
+  include:
+    - os: linux
+     sudo: false
+     env:
+     - TARGET="docs"
+     - secure: kjz286d6rs2VHpv4WnxAOYXcdTIaTaABZ0SNXf27r5H+NDu5qx8ZSeCmj/9op/sDjTtpkLKhi2a0njUCWwak28RAWP3dNkT92MkUPVKBkevznSxWeqwLHoUos3AJnhPMB+cwrWvmRC+Ljt5K1q8SxQsS/HXM9pzKL3DG3qxM+eo=
+     addons:
+       apt:
+         packages:
+         - git
+         - doxygen
+  # Exclude the default build that would otherwise be generated
+  # see https://github.com/travis-ci/travis-ci/issues/1228
+  exclude:
+    - compiler: gcc
+install:
+    - if [ "$TARGET" == "docs" ]; then scripts/ci/$TARGET/install.sh; fi
+script:
+    - scripts/ci/$TARGET/build.sh $OPT
+after_success:
+    # this will only run fully on a commit, not a PR, due to secure above
+    - if [ "$TARGET" == "docs" ]; then scripts/ci/$TARGET/after_success.sh; fi
