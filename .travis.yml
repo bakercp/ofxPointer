@@ -3,28 +3,27 @@ compiler: gcc
 sudo: true
 matrix:
   include:
-    - os: linux
-      env:
-        - TARGET="docs"
-        - secure: kjz286d6rs2VHpv4WnxAOYXcdTIaTaABZ0SNXf27r5H+NDu5qx8ZSeCmj/9op/sDjTtpkLKhi2a0njUCWwak28RAWP3dNkT92MkUPVKBkevznSxWeqwLHoUos3AJnhPMB+cwrWvmRC+Ljt5K1q8SxQsS/HXM9pzKL3DG3qxM+eo=
-      addons:
-        apt:
-          packages:
-          - doxygen
-          - git
+  - os: linux
+    env:
+    - TARGET="docs"
+    addons:
+      apt:
+        packages:
+        - doxygen
+        - git
   exclude:
-    - compiler: gcc
+  - compiler: gcc
 install:
-    - if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ] || [ "$TARGET" == "docs" ]; then
-        scripts/ci/$TARGET/install.sh;
-      fi
+- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ] || [ "$TARGET" == "docs"
+  ]; then scripts/ci/$TARGET/install.sh; fi
 script:
-    - scripts/ci/$TARGET/build.sh $OPT
-    - if [ "$TARGET" == "osx" ] || [ "$TARGET" == "linux" ]; then
-        scripts/ci/$TARGET/run_tests.sh;
-      fi
-after_success:
-    # this will only run fully on a commit, not a PR, due to secure above
-    if [ "$TARGET" == "docs" ]; then scripts/ci/$TARGET/after_success.sh; fi
+- scripts/ci/$TARGET/build.sh $OPT
+- if [ "$TARGET" == "osx" ] || [ "$TARGET" == "linux" ]; then scripts/ci/$TARGET/run_tests.sh;
+  fi
+after_success: if [ "$TARGET" == "docs" ]; then scripts/ci/$TARGET/after_success.sh;
+  fi
 git:
-    depth: 10
+  depth: 10
+env:
+  global:
+    secure: UQgO9GZfgVBD8KZpkR+StfJhg85NGOrJ1luAM5vaRZmaRrG8o9ULSEv9wGa3GjNK+kLncqymhcC3eZIN15TFcFIsYrOaYPnT1oDjOOiqXj6wJxDREwh1qf2lm/KiXkrOjH4JG5h2sW0ELJe+iEFX1AzNJtEHpe/tHAVYrILCwc0=
