@@ -115,20 +115,20 @@ public:
     /// \param point the PointShape to serialize.
     /// \returns the PointShape as serialized JSON.
     static Json::Value toJSON(const PointShape& pointShape);
-    
+
 protected:
     /// \brief Bounding box width.
     float _width = 0;
-    
+
     /// \brief Bounding box height.
     float _height = 0;
-    
+
     /// \brief Ellipse major axis.
     float _ellipseMajorAxis = 0;
-    
+
     /// \brief Ellipse minor axis.
     float _ellipseMinorAxis = 0;
-    
+
     /// \brief Ellipse angle in degrees.
     float _ellipseAngle = 0;
 
@@ -264,16 +264,16 @@ private:
 
     /// \brief The Point's normalized pressure.
     float _pressure = 0;
-    
+
     /// \brief The Point's tangential pressure (aka barrel pressure).
     float _tangentialPressure = 0;
-    
+
     /// \brief The Point's rotation.
     float _rotation = 0;
-    
+
     /// \brief The Point tilt X angle.
     float _tiltX = 0;
-    
+
     /// \brief The Point tilt Y angle.
     float _tiltY = 0;
 
@@ -284,7 +284,7 @@ class PointerEventArgs: public ofEventArgs
 {
 public:
     PointerEventArgs();
-    
+
     PointerEventArgs(const std::string& type,
                      const Point& point,
                      long deviceId,
@@ -572,4 +572,3 @@ inline void hash_combine(std::size_t& seed, const T& v)
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 }
-

@@ -28,7 +28,7 @@
 #if defined(TARGET_OSX)
 
 
-#import <AppKit/NSEvent.h> 
+#import <AppKit/NSEvent.h>
 
 
 namespace ofx {

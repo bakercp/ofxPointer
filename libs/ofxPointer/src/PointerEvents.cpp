@@ -97,13 +97,13 @@ PointShape PointShape::fromJSON(const Json::Value& json)
 Json::Value PointShape::toJSON(const PointShape& pointShape)
 {
     Json::Value json;
-    
+
     json["width"] = pointShape._width;
     json["height"] = pointShape._height;
     json["ellipseMajorAxis"] = pointShape._ellipseMajorAxis;
     json["ellipseMinorAxis"] = pointShape._ellipseMinorAxis;
     json["ellipseAngle"] = pointShape._ellipseAngle;
-    
+
     return json;
 }
 
@@ -245,7 +245,7 @@ Json::Value Point::toJSON(const Point& point)
     json["rotation"] =              point._rotation;
     json["tiltX"] =                 point._tiltX;
     json["tiltY"] =                 point._tiltY;
-    
+
     return json;
 }
 
@@ -264,7 +264,7 @@ const std::string PointerEventArgs::POINTER_CANCEL = "pointercancel";
 const std::string PointerEventArgs::POINTER_OUT    = "pointerout";
 const std::string PointerEventArgs::POINTER_LEAVE  = "pointerleave";
 const std::string PointerEventArgs::POINTER_SCROLL = "pointerscroll";
-    
+
 const std::string PointerEventArgs::GOT_POINTER_CAPTURE  = "gotpointercapture";
 const std::string PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 
@@ -689,19 +689,19 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
     PointerPressEventKey key(evt.id(), evt.button());
 
     uint64_t _doubleTapThreshold = PointerUtilities::getSystemDoubleTapInterval();
-    
+
     PointerPressEvents::iterator iter = _pointerDownEvents.find(key);
-    
+
     if (iter != _pointerDownEvents.end())
     {
         PointerEventArgs& lastEvent = (*iter).second;
-        
+
         if (evt.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
         {
             evt._pressCount += lastEvent.pressCount();
         }
     }
-    
+
     _pointerDownEvents[key] = evt;
 }
 
