@@ -1,16 +1,13 @@
 ofxPointer
 ==========
 
-A framework to unify openFrameworks pointer events into a single WC3-pointerevents/MSPointer-like interface.
+Currently the openFrameworks pointer model separates touch and mouse events, making cross platform development a little tricky.
 
-The goal is to have something that unites pointer events in openFrameworks to work like these:
+This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevents/) specification to work with openFrameworks.
 
-http://www.w3.org/TR/pointerevents/
-http://msdn.microsoft.com/en-us/library/ie/hh673557(v=vs.85).aspx
+Simply put, ofxPointer merges pointer, touch and pen input into a single extensible interface.
 
-This will ease gui development, interaction, etc.
-
-Basically, PointerEvents merge touch, pen and mouse events into one simple event system.
+This addon also keeps track of additional information like number of clicks, etc.
 
 A typical program will now look like this:
 
@@ -28,33 +25,44 @@ class ofApp: public ofBaseApp
 public:
     void setup()
     {
-      // Use the default instance until we can associate them with a window.
-      ofx::PointerEvents::instance().registerPointerEvents(this);
+        // Register the pointer events.
+        ofx::RegisterPointerEvents(this);
     }
+
 
     void update()
     {
+        // Update
     }
+
 
     void draw()
-    {  
+    {
+        // Draw
     }
 
-    // Pointer Events
+
     void onPointerUp(ofx::PointerEventArgs& evt)
     {
+        ofLogNotice("ofApp::onPointerUp") << evt.toString();
     }
+
 
     void onPointerDown(ofx::PointerEventArgs& evt)
     {
+        ofLogNotice("ofApp::onPointerDown") << evt.toString();
     }
+
 
     void onPointerMove(ofx::PointerEventArgs& evt)
     {
+        ofLogNotice("ofApp::onPointerMove") << evt.toString();
     }
+
 
     void onPointerCancel(ofx::PointerEventArgs& evt)
     {
+        ofLogNotice("ofApp::onPointerCancel") << evt.toString();
     }
 
 };
