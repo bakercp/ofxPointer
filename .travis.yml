@@ -1,6 +1,6 @@
 language: c++
 compiler: gcc
-sudo: true
+sudo: false
 matrix:
   include:
   - os: linux

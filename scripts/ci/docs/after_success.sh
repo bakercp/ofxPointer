@@ -6,13 +6,19 @@ git config --global user.name "Travis-CI"
 git config --global user.email ${GIT_EMAIL}
 cd docs/;
 doxygen Doxyfile;
-cd ..
+
 
 echo "ofxAddon documentation publishing"
 
 # rm -rf gh-pages || exit 0;
 git clone --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git gh-pages
-cp -R docs/html/* gh-pages/
+
+echo "Here ..."
+
+ls -la
+ls -la html/
+
+cp -R html/* gh-pages/
 (
 	cd gh-pages;
 	git add --all .;
