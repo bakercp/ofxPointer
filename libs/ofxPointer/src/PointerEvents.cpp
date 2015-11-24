@@ -294,7 +294,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    unsigned long button,
                                    unsigned long buttons,
                                    unsigned long modifiers,
-                                   unsigned int pressCount,
+                                   uint64_t tapCount,
                                    uint64_t timestamp):
     _eventType(eventType),
     _id(0),
@@ -306,7 +306,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
     _button(button),
     _buttons(buttons),
     _modifiers(modifiers),
-    _pressCount(pressCount),
+    _tapCount(tapCount),
     _timestamp(timestamp)
 {
     hash_combine(_id, _deviceId);
@@ -380,9 +380,9 @@ unsigned long PointerEventArgs::modifiers() const
 }
 
 
-unsigned int PointerEventArgs::pressCount() const
+uint64_t PointerEventArgs::tapCount() const
 {
-    return _pressCount;
+    return _tapCount;
 }
 
 
@@ -537,7 +537,7 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
                             json.get("button", 0).asUInt64(),
                             json.get("buttons", 0).asUInt64(),
                             json.get("modifiers", 0).asUInt64(),
-                            json.get("pressCount", 0).asUInt(),
+                            json.get("pressCount", 0).asUInt64(),
                             json.get("timestamp", 0).asUInt64());
 }
 
@@ -555,8 +555,8 @@ Json::Value PointerEventArgs::toJSON(const PointerEventArgs& evt)
     json["button"]     = (Json::Int64)evt._button;
     json["buttons"]    = (Json::Int64)evt._buttons;
     json["modifiers"]  = (Json::Int64)evt._modifiers;
-    json["pressCount"] = (Json::Int64)evt._pressCount;
-    json["timestamp"]  = (Json::Int64)evt._timestamp;
+    json["tapCount"]   = (Json::UInt64)evt._tapCount;
+    json["timestamp"]  = (Json::UInt64)evt._timestamp;
 
     return json;
 }
@@ -617,7 +617,7 @@ bool PointerEvents::mouseDragged(ofMouseEventArgs& e)
 bool PointerEvents::mousePressed(ofMouseEventArgs& e)
 {
     PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
-    handleMultiPress(p);
+    handleMultiTap(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeMouseEvents;
 }
@@ -634,7 +634,7 @@ bool PointerEvents::mouseReleased(ofMouseEventArgs& e)
 bool PointerEvents::touchDown(ofTouchEventArgs& e)
 {
     PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
-    handleMultiPress(p);
+    handleMultiTap(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeTouchEvents;
 }
@@ -684,7 +684,7 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 }
 
 
-void PointerEvents::handleMultiPress(PointerEventArgs& evt)
+void PointerEvents::handleMultiTap(PointerEventArgs& evt)
 {
     PointerPressEventKey key(evt.id(), evt.button());
 
@@ -698,7 +698,7 @@ void PointerEvents::handleMultiPress(PointerEventArgs& evt)
 
         if (evt.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
         {
-            evt._pressCount += lastEvent.pressCount();
+            evt._tapCount += lastEvent.tapCount();
         }
     }
 

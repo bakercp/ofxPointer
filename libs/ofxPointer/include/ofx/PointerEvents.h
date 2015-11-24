@@ -162,8 +162,8 @@ public:
 	/// \param absolutePosition The absolute position in device coordinates.
 	/// \param shape The point shape.
 	/// \param pressure The normalized pressure.
-	/// \param tangentialPressureThe tangential pressure (aka barrel pressure).
-	/// \param rotationThe rotation.
+	/// \param tangentialPressure The tangential pressure (aka barrel pressure).
+	/// \param rotation The rotation.
 	/// \param tiltX The tilt X angle.
 	/// \param tiltY The tilt Y angle.
     Point(const ofVec3f& position,
@@ -294,7 +294,7 @@ public:
                      unsigned long button,
                      unsigned long buttons,
                      unsigned long modifiers,
-                     unsigned int pressCount,
+                     uint64_t tapCount,
                      uint64_t timestamp);
 
     virtual ~PointerEventArgs();
@@ -347,7 +347,7 @@ public:
     uint64_t timestamp() const;
 
     /// \returns the number of presses, clicks or taps associated with this pointer.
-    unsigned int pressCount() const;
+    uint64_t tapCount() const;
 
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
     static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
@@ -364,7 +364,7 @@ public:
         ss << "     Button: " << button() << std::endl;
         ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
-        ss << "Press Count: " << pressCount() << std::endl;
+        ss << "  Tap Count: " << tapCount() << std::endl;
         ss << "Touch Index: " << index() << std::endl;
 
         return ss.str();
@@ -443,8 +443,8 @@ private:
 	/// \brief The current modifiers being pressed.
     unsigned long _modifiers;
 
-	/// \brief The current number of presses (aka clicks) associated with this event.
-    unsigned int _pressCount;
+	/// \brief The current number of taps associated with this event.
+    uint64_t _tapCount;
 
 	/// \brief The timestamp of this event.
     uint64_t _timestamp;
@@ -519,11 +519,16 @@ protected:
     typedef std::pair<long, unsigned long> PointerPressEventKey;
     typedef std::map<PointerPressEventKey, PointerEventArgs> PointerPressEvents;
 
+    /// \brief True iff the PointerEvents should consume mouse events.
     bool _consumeMouseEvents;
+
+    /// \brief True iff the PointerEvents should consume touch events.
     bool _consumeTouchEvents;
 
-    void handleMultiPress(PointerEventArgs& evt);
+    /// \brief A callback for multiple tap events.
+    void handleMultiTap(PointerEventArgs& evt);
 
+    /// \brief The Pointer down events.
     PointerPressEvents _pointerDownEvents;
 
 };
