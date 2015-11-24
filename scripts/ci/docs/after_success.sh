@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ev
 echo "Publishing docs."
-if [[ $TRAVIS_PULL_REQUEST == "false" && $FTP_USER ]]; then
+# if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
     git config --global user.name "Travis-CI"
     git config --global user.email ${GIT_EMAIL}
     cd docs/;
@@ -22,6 +22,6 @@ if [[ $TRAVIS_PULL_REQUEST == "false" && $FTP_USER ]]; then
     )
 
     echo "Publishing done"
-else
-    echo "Skipping document generation since this is a pull request.";
-fi
+# else
+#     echo "Skipping document generation since this is a pull request.";
+# fi
