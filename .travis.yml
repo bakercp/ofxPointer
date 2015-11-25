@@ -10,11 +10,10 @@ matrix:
       apt:
         packages:
         - doxygen
-        - git
   exclude:
   - compiler: gcc
 install:
-- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ] || [ "$TARGET" == "docs"]; then scripts/ci/$TARGET/install.sh; fi
+- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ]; then scripts/ci/$TARGET/install.sh; fi
 script:
 - scripts/ci/$TARGET/build.sh $OPT
 - if [ "$TARGET" == "osx" ] || [ "$TARGET" == "linux" ]; then scripts/ci/$TARGET/run_tests.sh; fi

@@ -4,9 +4,6 @@ echo "Publishing docs."
 # if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
 git config --global user.name "Travis-CI"
 git config --global user.email ${GIT_EMAIL}
-cd docs/;
-doxygen Doxyfile;
-
 
 echo "ofxAddon documentation publishing"
 
