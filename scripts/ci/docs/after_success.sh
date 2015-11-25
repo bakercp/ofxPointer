@@ -8,17 +8,12 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
 cd docs/;
 doxygen Doxyfile;
 
-ls -la
-
 # Publish html.
 git config --global user.name "Travis-CI"
 git config --global user.email ${GIT_EMAIL}
 
 # rm -rf gh-pages || exit 0;
 git clone --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git gh-pages
-
-ls -la
-ls -la html/
 
 cp -R html/* gh-pages/
 (
