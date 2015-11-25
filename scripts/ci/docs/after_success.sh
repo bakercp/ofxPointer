@@ -1,16 +1,21 @@
 #!/bin/bash
 set -ev
 echo "Publishing docs."
-# if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
+
+if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
+
+# Generate doxygen files.
+cd docs/;
+doxygen Doxyfile;
+
+ls -la
+
+# Publish html.
 git config --global user.name "Travis-CI"
 git config --global user.email ${GIT_EMAIL}
 
-echo "ofxAddon documentation publishing"
-
 # rm -rf gh-pages || exit 0;
 git clone --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git gh-pages
-
-echo "Here ..."
 
 ls -la
 ls -la html/
@@ -24,7 +29,8 @@ cp -R html/* gh-pages/
 	git push -fq origin gh-pages > /dev/null 2>&1
 )
 
-echo "Publishing done"
-# else
-#     echo "Skipping document generation since this is a pull request.";
-# fi
+cd ..
+
+else
+    echo "Skipping document generation since this is a pull request.";
+fi

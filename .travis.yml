@@ -10,6 +10,7 @@ matrix:
       apt:
         packages:
         - doxygen
+        - graphviz
   exclude:
   - compiler: gcc
 install:
