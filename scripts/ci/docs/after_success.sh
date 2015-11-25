@@ -25,9 +25,9 @@ cp -R html/* gh-pages/
 	cd gh-pages;
 	git add --all .;
 	git commit -m "Travis ofxAddon documentation generation.";
-	git remote set-url origin "https://${GIT_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
+	git remote set-url origin "https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
 #	git push -fq origin gh-pages > /dev/null 2>&1
-    git push -fq origin gh-pages 
+    git push -fq origin gh-pages
 )
 
 cd ..
