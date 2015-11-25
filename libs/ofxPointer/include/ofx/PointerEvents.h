@@ -640,8 +640,11 @@ public:
     }
 
 protected:
-    typedef std::pair<long, unsigned long> PointerPressEventKey;
-    typedef std::map<PointerPressEventKey, PointerEventArgs> PointerPressEvents;
+    /// \brief A typedef defining a key for a pointer press event map.
+    typedef std::pair<int32_t, uint64_t> PointerDownEventKey;
+
+    /// \brief A typedef defining a pointer press event map.
+    typedef std::map<PointerDownEventKey, PointerEventArgs> PointerDownEvents;
 
     /// \brief True iff the PointerEvents should consume mouse events.
     bool _consumeMouseEvents;
@@ -653,7 +656,7 @@ protected:
     void handleMultiTap(PointerEventArgs& evt);
 
     /// \brief The Pointer down events.
-    PointerPressEvents _pointerDownEvents;
+    PointerDownEvents _pointerDownEvents;
 
 };
 

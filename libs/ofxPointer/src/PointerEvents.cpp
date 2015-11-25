@@ -686,11 +686,11 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 
 void PointerEvents::handleMultiTap(PointerEventArgs& evt)
 {
-    PointerPressEventKey key(evt.id(), evt.button());
+    PointerDownEventKey key(evt.id(), evt.button());
 
     uint64_t _doubleTapThreshold = PointerUtilities::getSystemDoubleTapInterval();
 
-    PointerPressEvents::iterator iter = _pointerDownEvents.find(key);
+    PointerDownEvents::iterator iter = _pointerDownEvents.find(key);
 
     if (iter != _pointerDownEvents.end())
     {
