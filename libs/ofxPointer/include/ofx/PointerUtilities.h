@@ -32,6 +32,7 @@
 namespace ofx {
 
 
+/// \brief A class for retrieving platform-specific pointer data.
 class PointerUtilities
 {
 public:

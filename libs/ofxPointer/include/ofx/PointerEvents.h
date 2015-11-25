@@ -112,7 +112,7 @@ public:
     static PointShape fromJSON(const Json::Value& json);
 
     /// \brief Serialize a PointShape as JSON.
-    /// \param point the PointShape to serialize.
+    /// \param pointShape the PointShape to serialize.
     /// \returns the PointShape as serialized JSON.
     static Json::Value toJSON(const PointShape& pointShape);
 
@@ -135,6 +135,9 @@ protected:
 };
 
 
+/// \brief A class representing a pointer's point.
+///
+/// Captures all relevant position, tilt rotation and presssure information.
 class Point: public ofVec3f
 {
 public:
@@ -280,11 +283,14 @@ private:
 };
 
 
-class PointerEventArgs: public ofEventArgs
+/// \param A class representing all of the arguments in a pointer event.
+class PointerEventArgs
 {
 public:
+    /// \brief Create a default PointerEventArgs.
     PointerEventArgs();
 
+    /// \brief Create a PointerEventArgs with arguments.
     PointerEventArgs(const std::string& type,
                      const Point& point,
                      long deviceId,
@@ -297,10 +303,13 @@ public:
                      uint64_t tapCount,
                      uint64_t timestamp);
 
+    /// \brief Destroy the pointer event args.
     virtual ~PointerEventArgs();
 
+    /// \returns the pointer event type.
     std::string eventType() const;
 
+    /// \returns the Point data associated with this event.
     Point point() const;
 
     /// \brief Get the unique input device id.
@@ -349,9 +358,18 @@ public:
     /// \returns the number of presses, clicks or taps associated with this pointer.
     uint64_t tapCount() const;
 
+    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \param evt The touch event to convert.
+    /// \returns a PointerEventArgs.
     static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
+
+    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \param evt The touch event to convert.
+    /// \returns a PointerEventArgs.
     static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
 
+    /// \brief A debug utility for viewing the contents of PointerEventArgs.
+    /// \returns A string representation of the PointerEventArgs.
     std::string toString() const
     {
         std::stringstream ss;
@@ -370,25 +388,51 @@ public:
         return ss.str();
     }
 
+    /// \brief The mouse pointer type.
     static const std::string TYPE_MOUSE;
+
+    /// \brief The pen pointer type.
     static const std::string TYPE_PEN;
+
+    /// \brief The touch pointer type.
     static const std::string TYPE_TOUCH;
+
+    /// \brief The unknown pointer type.
     static const std::string TYPE_UNKNOWN;
 
+    /// \brief The pointer over event type.
     static const std::string POINTER_OVER;
+
+    /// \brief The pointer enter event type.
     static const std::string POINTER_ENTER;
+
+    /// \brief The pointer down event type.
     static const std::string POINTER_DOWN;
+
+    /// \brief The pointer move event type.
     static const std::string POINTER_MOVE;
+
+    /// \brief The pointer up event type.
     static const std::string POINTER_UP;
+
+    /// \brief The pointer cancel event type.
     static const std::string POINTER_CANCEL;
+
+    /// \brief The pointer out event type.
     static const std::string POINTER_OUT;
+
+    /// \brief The pointer leave event type.
     static const std::string POINTER_LEAVE;
 
+    /// \brief The pointer scroll type.
     /// \todo This is not part of the PointerEvents spec.
-    /// Should be an extension of a mouse event.
+    ///       It should be an extension of a mouse event.
     static const std::string POINTER_SCROLL;
 
+    /// \brief The got pointer capture event type.
     static const std::string GOT_POINTER_CAPTURE;
+
+    /// \brief The lost pointer capture event type.
     static const std::string LOST_POINTER_CAPTURE;
 
     /// \brief Deserialize a PointerEventArgs from JSON.
@@ -397,7 +441,7 @@ public:
     static PointerEventArgs fromJSON(const Json::Value& json);
 
     /// \brief Serialize a PointerEventArgs as JSON.
-    /// \param point the PointerEventArgs to serialize.
+    /// \param pointerEventArgs the PointerEventArgs to serialize.
     /// \returns the PointerEventArgs as serialized JSON.
     static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
@@ -454,29 +498,107 @@ private:
 };
 
 
+/// \brief A class for converting touch and mouse events into pointer events.
+///
+/// This class is a source of pointer events.  It captures mouse and touch
+/// events and repackages and distributes them as pointer events.
 class PointerEvents
 {
 public:
+    /// \brief Create a default PointerEvents object.
     PointerEvents();
+
+    /// \brief Destroy the PointerEvents.
     virtual ~PointerEvents();
 
+    /// \brief Mouse moved callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool mouseMoved(ofMouseEventArgs& e);
+
+    /// \brief Mouse dragged callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool mouseDragged(ofMouseEventArgs& e);
+
+    /// \brief Mouse pressed callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool mousePressed(ofMouseEventArgs& e);
+
+    /// \brief Mouse released callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool mouseReleased(ofMouseEventArgs& e);
 
+    /// \brief Touch down callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool touchDown(ofTouchEventArgs& e);
+
+    /// \brief Touch moved callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool touchMoved(ofTouchEventArgs& e);
+
+    /// \brief Touch up callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool touchUp(ofTouchEventArgs& e);
+
+    /// \brief Touch double tap callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool touchDoubleTap(ofTouchEventArgs& e);
+
+    /// \brief Touch cancelled callback.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
     bool touchCancelled(ofTouchEventArgs& e);
 
+    /// \brief Set the PointerEvents instance to consume mouse events.
+    ///
+    /// If mouse events are consumed, they will not be futher propagated.
+    ///
+    /// \param consumeMouseEvents true if events should be consumed.
     void setConsumeMouseEvents(bool consumeMouseEvents);
+
+    /// \brief Set the PointerEvents instance to consume touch events.
+    ///
+    /// If touch events are consumed, they will not be futher propagated.
+    ///
+    /// \param consumeTouchEvents true if events should be consumed.
     void setConsumeTouchEvents(bool consumeTouchEvents);
 
+    /// \brief Register a pointer event listener.
+    ///
+    /// Event listeners registered via this function must have the following
+    /// ofEvent callbacks defined:
+    ///
+    ///     `onPointerDown(...)`
+    ///     `onPointerUp(...)`
+    ///     `onPointerMove(...)`
+    ///     `onPointerCancel(...)`
+    ///
+    /// \tparam ListenerClass The class of the listener.
+    /// \param listener A pointer to the listener class.
+    /// \param prio The event priority.
     template<class ListenerClass>
     void registerPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
+    /// \brief Unregister a pointer event listener.
+    ///
+    /// Event listeners unregistered via this function must have the following
+    /// ofEvent callbacks defined:
+    ///
+    ///     `onPointerDown(...)`
+    ///     `onPointerUp(...)`
+    ///     `onPointerMove(...)`
+    ///     `onPointerCancel(...)`
+    ///
+    /// \tparam ListenerClass The class of the listener.
+    /// \param listener A pointer to the listener class.
+    /// \param prio The event priority.
     template<class ListenerClass>
     void unregisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
@@ -509,6 +631,8 @@ public:
     /// \todo Remaining element-related methods don't apply to the same event
     /// structure because they depend on the target.
 
+    /// \brief Get the singleton instance of the PointerEvents.
+    /// \returns an instance of PointerEvents.
     static PointerEvents& instance()
     {
         static PointerEvents instance;
