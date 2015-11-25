@@ -1,0 +1,684 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<tagfile>
+  <compound kind="class">
+    <name>ofx::Point</name>
+    <filename>classofx_1_1_point.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a0efe0c728da47e752cb4dfaa6b549b10</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>af65e8e8dc0da6e0b8a8cbbfb3675cf45</anchor>
+      <arglist>(const ofVec3f &amp;position)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>aed7244457d8b6d295c2cd41fa151c6fb</anchor>
+      <arglist>(const ofVec3f &amp;position, const PointShape &amp;shape)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>af0804fdf9085fe115dbf74972804d4b5</anchor>
+      <arglist>(const ofVec3f &amp;position, float pressure, float tiltX, float tiltY)</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>ab9f0f16e819854f9dff22f476c3e45eb</anchor>
+      <arglist>(const ofVec3f &amp;position, const ofVec3f &amp;absolutePosition, const PointShape &amp;shape, float pressure, float tangentialPressure, float rotation, float tiltX, float tiltY)</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual</type>
+      <name>~Point</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a8eb88b9aaebd41dd864a3515927b704c</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>const ofVec3f &amp;</type>
+      <name>getAbsolutePosition</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>ae49c3cb24fc3bab4bbb1e251a150abd7</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getPressure</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a02825b0f6dd0a2ac32fc18741e5391af</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getTangentialPressure</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a9c01b6157aca92517e7925f1538745c8</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getRotation</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>ac2f0af915df212c98834056e0dd38584</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getTiltX</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a6d6417986557ade33482e9f50fd7f0b4</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getTiltY</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>ad051c9feca097007c6f3086f081ddfde</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>const PointShape &amp;</type>
+      <name>getShape</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a3e6aba1971b661ec8a7231eee47fe0e4</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static Point</type>
+      <name>fromJSON</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>a66368714ba015367836b76adc8aab7d3</anchor>
+      <arglist>(const Json::Value &amp;json)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static Json::Value</type>
+      <name>toJSON</name>
+      <anchorfile>classofx_1_1_point.html</anchorfile>
+      <anchor>ad6783174aea6b40ec151bd17b98d649a</anchor>
+      <arglist>(const Point &amp;point)</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ofx::PointerEventArgs</name>
+    <filename>classofx_1_1_pointer_event_args.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>PointerEventArgs</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>af43492c78c36a44e6a9432dfb8980bdf</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>PointerEventArgs</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a7378eeb4de2f2848671ba060c9a091e6</anchor>
+      <arglist>(const std::string &amp;type, const Point &amp;point, std::size_t deviceId, int64_t pointerIndex, const std::string &amp;deviceType, bool isPrimary, uint64_t button, uint64_t buttons, uint64_t modifiers, uint64_t tapCount, uint64_t timestamp)</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual</type>
+      <name>~PointerEventArgs</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a862da7feb0b4a8c2adbc08349a19759f</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>std::string</type>
+      <name>eventType</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>ac44acf3f111ea654078d9988a7dded7c</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>Point</type>
+      <name>point</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>af357aff82ca193e9eb002de0124e66bc</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>int64_t</type>
+      <name>deviceId</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>acac7c22a231a53d0b266a2296d15bbc2</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>int64_t</type>
+      <name>index</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a90aad11dffd77e10605280dac7b0e2f1</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>std::size_t</type>
+      <name>id</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a8ccc09f7323ec4d86b78b6b1fe3258ae</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>std::string</type>
+      <name>deviceType</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a89fbfc4bbdf444e91a845c5f36321965</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>isPrimary</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a190779925ef3c553bb7d1b50219cdb10</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>button</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a772006c0ede452cfbe7bbe45c87217b6</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>buttons</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>ac7f631c35cc7ced32c59bf1892533318</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>modifiers</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a2f3a6631dfc958d3f6abf365bc60caa4</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>timestamp</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>aadbe8a56d7a71e5202ccacd7c1b1c494</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>uint64_t</type>
+      <name>tapCount</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>adfe3a592ccbc1c9efe386510cfc70450</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>std::string</type>
+      <name>toString</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a85d672ccf28badd985e2d3d26874fc8d</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static PointerEventArgs</type>
+      <name>toPointerEventArgs</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a1fb5dbd6d876c578c2f185855463c315</anchor>
+      <arglist>(const ofTouchEventArgs &amp;evt)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static PointerEventArgs</type>
+      <name>toPointerEventArgs</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>af6288c426255fc62cb7e5fea919cafc3</anchor>
+      <arglist>(const ofMouseEventArgs &amp;evt)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static PointerEventArgs</type>
+      <name>fromJSON</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a7372ba0c630545a526a79fa07e2bb424</anchor>
+      <arglist>(const Json::Value &amp;json)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static Json::Value</type>
+      <name>toJSON</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a6ea8553630a4ffd634a5cb81633b9dfb</anchor>
+      <arglist>(const PointerEventArgs &amp;pointerEventArgs)</arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>TYPE_MOUSE</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a1b19c7d047a30c31770669cf2c660a16</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>TYPE_PEN</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a6bae126650667677e707f5a5bee1c96e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>TYPE_TOUCH</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>ad39a6bdf64ad6bf875b160fad4567344</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>TYPE_UNKNOWN</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a02790b61ec182668a1176d47d160ca4c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_OVER</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>ad526123bb432e481b8767ee42721e1a1</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_ENTER</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>aabe804b953a52ac5930a892d672a9f31</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_DOWN</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a3e2c5017031ffbd9c237c17da24e882c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_MOVE</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>adc46a9a545b971cd9c5d0fd074f3b0d8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_UP</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a5d66eb147350bb683759f9a12ac0bc03</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_CANCEL</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a6acd71af9eec80708123e1607652fc45</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_OUT</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a22efcf4590515c534d8bf2611884dca6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_LEAVE</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>aa5dbc714cf27287b2b5b4869a7fbf4c6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>POINTER_SCROLL</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>adedcb72d0964da9d01666cba0f73a702</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>GOT_POINTER_CAPTURE</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a8fa57ff5bfef036acc2dc1e1d2961ea2</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" static="yes">
+      <type>static const std::string</type>
+      <name>LOST_POINTER_CAPTURE</name>
+      <anchorfile>classofx_1_1_pointer_event_args.html</anchorfile>
+      <anchor>a64f04f2f0eeb7ee06c35cd5dc4064e3a</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ofx::PointerEvents</name>
+    <filename>classofx_1_1_pointer_events.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>PointerEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a74e8a49cd6d6c330678404ccacc8fa50</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual</type>
+      <name>~PointerEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>af89d2205cc48af147298a986c20eee87</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>mouseMoved</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a51bb6ace33406637917850765e988f77</anchor>
+      <arglist>(ofMouseEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>mouseDragged</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>af2800f830e799ff3937f6e222b742e57</anchor>
+      <arglist>(ofMouseEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>mousePressed</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a45a60de367e21bbfa0d2274dab937cba</anchor>
+      <arglist>(ofMouseEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>mouseReleased</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a23d26592642428408909dcfca80b0e2d</anchor>
+      <arglist>(ofMouseEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>touchDown</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>ab037ada4ae9475e9318a355055cc5fa4</anchor>
+      <arglist>(ofTouchEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>touchMoved</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>ad760bdb87c1a76196f33554c65eb3af6</anchor>
+      <arglist>(ofTouchEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>touchUp</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>ac99b817c628f97e48f4ba449f24238c5</anchor>
+      <arglist>(ofTouchEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>touchDoubleTap</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a9c38d8daf74b1621ceb77f3ebab8f72c</anchor>
+      <arglist>(ofTouchEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>bool</type>
+      <name>touchCancelled</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a48477fa4e7368545f81c8952a051f8c0</anchor>
+      <arglist>(ofTouchEventArgs &amp;e)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>setConsumeMouseEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a947410e21dd1df85e144c49a1365a6af</anchor>
+      <arglist>(bool consumeMouseEvents)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>setConsumeTouchEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a926a6d470353bf7dbe6a7c8c53134399</anchor>
+      <arglist>(bool consumeTouchEvents)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>registerPointerEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a9cd40fde0d5fe418a604533a301bc382</anchor>
+      <arglist>(ListenerClass *listener, int prio=OF_EVENT_ORDER_AFTER_APP)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>unregisterPointerEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>ae85c7c0b06a219957635575e7a01d086</anchor>
+      <arglist>(ListenerClass *listener, int prio=OF_EVENT_ORDER_AFTER_APP)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static PointerEvents &amp;</type>
+      <name>instance</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a2b6aeb57710d7c4f6480a6768508109b</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="variable">
+      <type>ofEvent&lt; PointerEventArgs &gt;</type>
+      <name>onPointerDown</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a74e5d7eb8aa21e1b11a776b3a61c8d29</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ofEvent&lt; PointerEventArgs &gt;</type>
+      <name>onPointerUp</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>ac73ac81472630e5116a7820eb6de8c5e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ofEvent&lt; PointerEventArgs &gt;</type>
+      <name>onPointerMove</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a64f508370ab1b742988f56932ce83320</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>ofEvent&lt; PointerEventArgs &gt;</type>
+      <name>onPointerCancel</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a911e051f96b51d4c976c0c1981965b83</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="typedef" protection="protected">
+      <type>std::pair&lt; int32_t, uint64_t &gt;</type>
+      <name>PointerDownEventKey</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a9aae20f6a20b61d1e855b83cc0f7f6ad</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="typedef" protection="protected">
+      <type>std::map&lt; PointerDownEventKey, PointerEventArgs &gt;</type>
+      <name>PointerDownEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a86acc9c0d6c18a2c13e7fcc1459da18e</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function" protection="protected">
+      <type>void</type>
+      <name>handleMultiTap</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a99550631f8e4435e6b7c335681f8b3e4</anchor>
+      <arglist>(PointerEventArgs &amp;evt)</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>bool</type>
+      <name>_consumeMouseEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a9a2adfc6fce7315f6b45bd9e9656b86c</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>bool</type>
+      <name>_consumeTouchEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>adcc195e61ae583d4f98ecf76e88cb172</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>PointerDownEvents</type>
+      <name>_pointerDownEvents</name>
+      <anchorfile>classofx_1_1_pointer_events.html</anchorfile>
+      <anchor>a745d02fcbaf0ec0320dcc770ffeeff15</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ofx::PointerUtilities</name>
+    <filename>classofx_1_1_pointer_utilities.html</filename>
+    <member kind="enumvalue">
+      <name>DEFAULT_DOUBLE_TAP_INTERVAL</name>
+      <anchorfile>classofx_1_1_pointer_utilities.html</anchorfile>
+      <anchor>a8c37924ee42a3998197d21102dc4efa9a3fef716919ea052e3c34ee92d14d8051</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="enumvalue">
+      <name>DEFAULT_DOUBLE_TAP_INTERVAL</name>
+      <anchorfile>classofx_1_1_pointer_utilities.html</anchorfile>
+      <anchor>a8c37924ee42a3998197d21102dc4efa9a3fef716919ea052e3c34ee92d14d8051</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static uint64_t</type>
+      <name>getSystemDoubleTapInterval</name>
+      <anchorfile>classofx_1_1_pointer_utilities.html</anchorfile>
+      <anchor>aeceb28072325ca9515da2b2455d99be3</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>ofx::PointShape</name>
+    <filename>classofx_1_1_point_shape.html</filename>
+    <member kind="function">
+      <type></type>
+      <name>PointShape</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a23a1c4df469deb022991f0075033de75</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type></type>
+      <name>PointShape</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>abc047aa2b568f21db515b6f24fbf2b40</anchor>
+      <arglist>(float width, float height, float ellipseMajorAxis=0, float ellipseMinorAxis=0, float ellipseAngle=0)</arglist>
+    </member>
+    <member kind="function" virtualness="virtual">
+      <type>virtual</type>
+      <name>~PointShape</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a49afb4deba6b21938c460e3debfb02af</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getWidth</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a6c76e2abb6d1faa92597be82c71f2f25</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getHeight</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a2ea90ca90dc1fb22ab07cca4cf655cbe</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getEllipseAngle</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a9fb203cd7c9d341e3cb8618f785c2489</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getEllipseMajorAxis</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>aeef75a4ebee9a57f7d49bd66ffc749f8</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function">
+      <type>float</type>
+      <name>getEllipseMinorAxis</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>af97c8277116c3eeb2826cc696810c582</anchor>
+      <arglist>() const </arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static PointShape</type>
+      <name>fromJSON</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a4eb02b364ac4c8ab81781fc67b4fbfaf</anchor>
+      <arglist>(const Json::Value &amp;json)</arglist>
+    </member>
+    <member kind="function" static="yes">
+      <type>static Json::Value</type>
+      <name>toJSON</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a2ed2fa892645db4f2e1e8a0eb33c9f7b</anchor>
+      <arglist>(const PointShape &amp;pointShape)</arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>float</type>
+      <name>_width</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a96fe086192dc620687f2688b9c8eb093</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>float</type>
+      <name>_height</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a77b623257afc2024a3e6b9dd4daa9da7</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>float</type>
+      <name>_ellipseMajorAxis</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>aa03ab92d9e83640f4a9193db1fa6f1dd</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>float</type>
+      <name>_ellipseMinorAxis</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a9674f2e3814150913e732f2527a10690</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable" protection="protected">
+      <type>float</type>
+      <name>_ellipseAngle</name>
+      <anchorfile>classofx_1_1_point_shape.html</anchorfile>
+      <anchor>a33d4d23d99338e03a57169a8596d91bd</anchor>
+      <arglist></arglist>
+    </member>
+  </compound>
+  <compound kind="page">
+    <name>index</name>
+    <title></title>
+    <filename>index</filename>
+  </compound>
+</tagfile>
