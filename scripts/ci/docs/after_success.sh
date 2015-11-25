@@ -15,6 +15,10 @@ git config --global user.email ${GIT_EMAIL}
 # rm -rf gh-pages || exit 0;
 git clone --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git gh-pages
 
+# Copy the tagfile.
+cp tagfile.xml gh-pages/
+
+# Copy the documentation html.
 cp -R html/* gh-pages/
 (
 	cd gh-pages;
