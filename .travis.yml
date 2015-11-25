@@ -14,7 +14,7 @@ matrix:
   exclude:
   - compiler: gcc
 install:
-- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ]; then
+- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ] || [ "$TARGET" == "linux" ]; then
     scripts/ci/$TARGET/install.sh;
   fi
 script:
