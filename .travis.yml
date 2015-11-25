@@ -14,14 +14,20 @@ matrix:
   exclude:
   - compiler: gcc
 install:
-- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ]; then scripts/ci/$TARGET/install.sh; fi
+- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ]; then
+    scripts/ci/$TARGET/install.sh;
+  fi
 script:
 - scripts/ci/$TARGET/build.sh $OPT
-- if [ "$TARGET" == "osx" ] || [ "$TARGET" == "linux" ]; then scripts/ci/$TARGET/run_tests.sh; fi
+- if [ "$TARGET" == "osx" ] || [ "$TARGET" == "linux" ]; then
+    scripts/ci/$TARGET/run_tests.sh;
+  fi
 after_success:
-- if [ "$TARGET" == "docs" ]; then scripts/ci/$TARGET/after_success.sh; fi
+- if [ "$TARGET" == "docs" ]; then
+    scripts/ci/$TARGET/after_success.sh;
+  fi
 git:
   depth: 10
 env:
   global:
-    secure: UQgO9GZfgVBD8KZpkR+StfJhg85NGOrJ1luAM5vaRZmaRrG8o9ULSEv9wGa3GjNK+kLncqymhcC3eZIN15TFcFIsYrOaYPnT1oDjOOiqXj6wJxDREwh1qf2lm/KiXkrOjH4JG5h2sW0ELJe+iEFX1AzNJtEHpe/tHAVYrILCwc0=
+  - secure: dyeJqawQIXyF8enoShkp5mwk7FPH6MEM0YsniX0bxUGj1yJ/hNfAXbrz9mmfiRuO0creHKMFr+5yN+M791yxZ1p3i/0MQ0AS8YnAwdwd4stqg2qr5Ftbuw5bUPZ4mU+9giPHwLELT01qiDURblCJY01jC1ybXY8vmuwX9QEuhic=
