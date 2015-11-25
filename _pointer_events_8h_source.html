@@ -234,7 +234,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00283"></a>00283 };
 <a name="l00284"></a>00284 
 <a name="l00285"></a>00285 
-<a name="l00287"></a><a class="code" href="classofx_1_1_pointer_event_args.html">00287</a> <span class="keyword">class </span><a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a>
+<a name="l00287"></a><a class="code" href="classofx_1_1_pointer_event_args.html">00287</a> <span class="keyword">class </span><a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a>
 <a name="l00288"></a>00288 {
 <a name="l00289"></a>00289 <span class="keyword">public</span>:
 <a name="l00291"></a>00291     <a class="code" href="classofx_1_1_pointer_event_args.html#af43492c78c36a44e6a9432dfb8980bdf" title="Create a default PointerEventArgs.">PointerEventArgs</a>();
@@ -244,7 +244,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00296"></a>00296                      std::size_t <a class="code" href="classofx_1_1_pointer_event_args.html#acac7c22a231a53d0b266a2296d15bbc2" title="Get the unique input device id.">deviceId</a>,
 <a name="l00297"></a>00297                      int64_t pointerIndex,
 <a name="l00298"></a>00298                      <span class="keyword">const</span> std::string&amp; <a class="code" href="classofx_1_1_pointer_event_args.html#a89fbfc4bbdf444e91a845c5f36321965" title="Get the device type string.">deviceType</a>,
-<a name="l00299"></a>00299                      <span class="keywordtype">bool</span> <a class="code" href="classofx_1_1_pointer_event_args.html#a190779925ef3c553bb7d1b50219cdb10" title="Determine if this pointer is the primary.">isPrimary</a>,
+<a name="l00299"></a>00299                      <span class="keywordtype">bool</span> <a class="code" href="classofx_1_1_pointer_event_args.html#a190779925ef3c553bb7d1b50219cdb10" title="Determine if this pointer is the primary pointer.">isPrimary</a>,
 <a name="l00300"></a>00300                      uint64_t <a class="code" href="classofx_1_1_pointer_event_args.html#a772006c0ede452cfbe7bbe45c87217b6" title="Get the button id for this event.">button</a>,
 <a name="l00301"></a>00301                      uint64_t <a class="code" href="classofx_1_1_pointer_event_args.html#ac7f631c35cc7ced32c59bf1892533318" title="Get all pressed buttons for this pointer.">buttons</a>,
 <a name="l00302"></a>00302                      uint64_t <a class="code" href="classofx_1_1_pointer_event_args.html#a2f3a6631dfc958d3f6abf365bc60caa4" title="Get all modifiers for this pointer.">modifiers</a>,
@@ -265,7 +265,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00329"></a>00329 
 <a name="l00335"></a>00335     std::string <a class="code" href="classofx_1_1_pointer_event_args.html#a89fbfc4bbdf444e91a845c5f36321965" title="Get the device type string.">deviceType</a>() <span class="keyword">const</span>;
 <a name="l00336"></a>00336 
-<a name="l00340"></a>00340     <span class="keywordtype">bool</span> <a class="code" href="classofx_1_1_pointer_event_args.html#a190779925ef3c553bb7d1b50219cdb10" title="Determine if this pointer is the primary.">isPrimary</a>() <span class="keyword">const</span>;
+<a name="l00340"></a>00340     <span class="keywordtype">bool</span> <a class="code" href="classofx_1_1_pointer_event_args.html#a190779925ef3c553bb7d1b50219cdb10" title="Determine if this pointer is the primary pointer.">isPrimary</a>() <span class="keyword">const</span>;
 <a name="l00341"></a>00341 
 <a name="l00344"></a>00344     uint64_t <a class="code" href="classofx_1_1_pointer_event_args.html#a772006c0ede452cfbe7bbe45c87217b6" title="Get the button id for this event.">button</a>() <span class="keyword">const</span>;
 <a name="l00345"></a>00345 
@@ -277,9 +277,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00357"></a>00357 
 <a name="l00359"></a>00359     uint64_t <a class="code" href="classofx_1_1_pointer_event_args.html#adfe3a592ccbc1c9efe386510cfc70450">tapCount</a>() <span class="keyword">const</span>;
 <a name="l00360"></a>00360 
-<a name="l00364"></a>00364     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a1fb5dbd6d876c578c2f185855463c315" title="Utility to convert ofTouchEventArgs events to PointerEventArgs.">toPointerEventArgs</a>(<span class="keyword">const</span> ofTouchEventArgs&amp; evt);
+<a name="l00364"></a>00364     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a1fb5dbd6d876c578c2f185855463c315" title="Utility to convert ofTouchEventArgs events to PointerEventArgs.">toPointerEventArgs</a>(<span class="keyword">const</span> ofTouchEventArgs&amp; evt);
 <a name="l00365"></a>00365 
-<a name="l00369"></a>00369     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a1fb5dbd6d876c578c2f185855463c315" title="Utility to convert ofTouchEventArgs events to PointerEventArgs.">toPointerEventArgs</a>(<span class="keyword">const</span> ofMouseEventArgs&amp; evt);
+<a name="l00369"></a>00369     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a1fb5dbd6d876c578c2f185855463c315" title="Utility to convert ofTouchEventArgs events to PointerEventArgs.">toPointerEventArgs</a>(<span class="keyword">const</span> ofMouseEventArgs&amp; evt);
 <a name="l00370"></a>00370 
 <a name="l00373"></a><a class="code" href="classofx_1_1_pointer_event_args.html#a85d672ccf28badd985e2d3d26874fc8d">00373</a>     std::string <a class="code" href="classofx_1_1_pointer_event_args.html#a85d672ccf28badd985e2d3d26874fc8d" title="A debug utility for viewing the contents of PointerEventArgs.">toString</a>()<span class="keyword"> const</span>
 <a name="l00374"></a>00374 <span class="keyword">    </span>{
@@ -329,9 +329,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00434"></a>00434 
 <a name="l00436"></a><a class="code" href="classofx_1_1_pointer_event_args.html#a64f04f2f0eeb7ee06c35cd5dc4064e3a">00436</a>     <span class="keyword">static</span> <span class="keyword">const</span> std::string <a class="code" href="classofx_1_1_pointer_event_args.html#a64f04f2f0eeb7ee06c35cd5dc4064e3a" title="The lost pointer capture event type.">LOST_POINTER_CAPTURE</a>;
 <a name="l00437"></a>00437 
-<a name="l00441"></a>00441     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a7372ba0c630545a526a79fa07e2bb424" title="Deserialize a PointerEventArgs from JSON.">fromJSON</a>(<span class="keyword">const</span> Json::Value&amp; json);
+<a name="l00441"></a>00441     <span class="keyword">static</span> <a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a> <a class="code" href="classofx_1_1_pointer_event_args.html#a7372ba0c630545a526a79fa07e2bb424" title="Deserialize a PointerEventArgs from JSON.">fromJSON</a>(<span class="keyword">const</span> Json::Value&amp; json);
 <a name="l00442"></a>00442 
-<a name="l00446"></a>00446     <span class="keyword">static</span> Json::Value <a class="code" href="classofx_1_1_pointer_event_args.html#a6ea8553630a4ffd634a5cb81633b9dfb" title="Serialize a PointerEventArgs as JSON.">toJSON</a>(<span class="keyword">const</span> <a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a>&amp; pointerEventArgs);
+<a name="l00446"></a>00446     <span class="keyword">static</span> Json::Value <a class="code" href="classofx_1_1_pointer_event_args.html#a6ea8553630a4ffd634a5cb81633b9dfb" title="Serialize a PointerEventArgs as JSON.">toJSON</a>(<span class="keyword">const</span> <a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a>&amp; pointerEventArgs);
 <a name="l00447"></a>00447 
 <a name="l00448"></a>00448 <span class="keyword">private</span>:
 <a name="l00450"></a>00450     std::string _eventType;
@@ -422,7 +422,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00651"></a>00651 
 <a name="l00653"></a><a class="code" href="classofx_1_1_pointer_events.html#adcc195e61ae583d4f98ecf76e88cb172">00653</a>     <span class="keywordtype">bool</span> <a class="code" href="classofx_1_1_pointer_events.html#adcc195e61ae583d4f98ecf76e88cb172" title="True iff the PointerEvents should consume touch events.">_consumeTouchEvents</a>;
 <a name="l00654"></a>00654 
-<a name="l00656"></a>00656     <span class="keywordtype">void</span> <a class="code" href="classofx_1_1_pointer_events.html#a99550631f8e4435e6b7c335681f8b3e4" title="A callback for multiple tap events.">handleMultiTap</a>(<a class="code" href="classofx_1_1_pointer_event_args.html">PointerEventArgs</a>&amp; evt);
+<a name="l00656"></a>00656     <span class="keywordtype">void</span> <a class="code" href="classofx_1_1_pointer_events.html#a99550631f8e4435e6b7c335681f8b3e4" title="A callback for multiple tap events.">handleMultiTap</a>(<a class="code" href="classofx_1_1_pointer_event_args.html" title="A class representing all of the arguments in a pointer event.">PointerEventArgs</a>&amp; evt);
 <a name="l00657"></a>00657 
 <a name="l00659"></a><a class="code" href="classofx_1_1_pointer_events.html#a745d02fcbaf0ec0320dcc770ffeeff15">00659</a>     <a class="code" href="classofx_1_1_pointer_events.html#a86acc9c0d6c18a2c13e7fcc1459da18e" title="A typedef defining a pointer press event map.">PointerDownEvents</a> <a class="code" href="classofx_1_1_pointer_events.html#a745d02fcbaf0ec0320dcc770ffeeff15" title="The Pointer down events.">_pointerDownEvents</a>;
 <a name="l00660"></a>00660 
@@ -492,7 +492,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul>
       <li class="navelem"><b>PointerEvents.h</b>      </li>
 
-    <li class="footer">Generated on Wed Nov 25 2015 22:05:36 for ofxPointer by
+    <li class="footer">Generated on Wed Nov 25 2015 22:13:59 for ofxPointer by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>
