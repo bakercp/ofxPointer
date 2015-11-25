@@ -334,7 +334,7 @@ public:
     /// \returns a device description string.
     std::string deviceType() const;
 
-    /// \brief Determine if this pointer is the primary.
+    /// \brief Determine if this pointer is the primary pointer.
     /// \returns true if this pointer is the primary pointer.
     /// \sa https://w3c.github.io/pointerevents/#the-primary-pointer
     bool isPrimary() const;
