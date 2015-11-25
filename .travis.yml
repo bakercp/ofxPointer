@@ -3,18 +3,13 @@ compiler: gcc
 sudo: false
 matrix:
   include:
-  - os: linux
+  - os: osx
     env:
     - TARGET="docs"
-    addons:
-      apt:
-        packages:
-        - doxygen
-        - graphviz
   exclude:
   - compiler: gcc
 install:
-- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ] || [ "$TARGET" == "linux" ]; then
+- if [ "$TARGET" == "android" ] || [ "$TARGET" == "linux" ]; then
     scripts/ci/$TARGET/install.sh;
   fi
 script:
@@ -27,7 +22,7 @@ after_success:
     scripts/ci/$TARGET/after_success.sh;
   fi
 git:
-  depth: 10
+  depth: 1
 env:
   global:
   - secure: dyeJqawQIXyF8enoShkp5mwk7FPH6MEM0YsniX0bxUGj1yJ/hNfAXbrz9mmfiRuO0creHKMFr+5yN+M791yxZ1p3i/0MQ0AS8YnAwdwd4stqg2qr5Ftbuw5bUPZ4mU+9giPHwLELT01qiDURblCJY01jC1ybXY8vmuwX9QEuhic=
