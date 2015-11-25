@@ -293,13 +293,13 @@ public:
     /// \brief Create a PointerEventArgs with arguments.
     PointerEventArgs(const std::string& type,
                      const Point& point,
-                     long deviceId,
-                     long pointerIndex,
+                     std::size_t deviceId,
+                     int64_t pointerIndex,
                      const std::string& deviceType,
                      bool isPrimary,
-                     unsigned long button,
-                     unsigned long buttons,
-                     unsigned long modifiers,
+                     uint64_t button,
+                     uint64_t buttons,
+                     uint64_t modifiers,
                      uint64_t tapCount,
                      uint64_t timestamp);
 
@@ -314,14 +314,14 @@ public:
 
     /// \brief Get the unique input device id.
     /// \returns the unique input device id.
-    long deviceId() const;
+    int64_t deviceId() const;
 
     /// \brief Get the unique pointer index for the given device id.
     ///
     /// This ID should correspend to different touches for a multi-touch device.
     ///
     /// \returns the unique pointer index for the given device id.
-    long index() const;
+    int64_t index() const;
 
     /// \brief Get a single unique id for a device id and Pointer index.
     /// \returns a single unique id for a device id and Pointer index.
@@ -341,16 +341,16 @@ public:
 
     /// \brief Get the button id for this event.
     /// \returns the button id for this event.
-    unsigned long button() const;
+    uint64_t button() const;
 
     /// \brief Get all pressed buttons for this pointer.
     /// \return all pressed buttons for this pointer.
     /// \sa https://w3c.github.io/pointerevents/#button-states
-    unsigned long buttons() const;
+    uint64_t buttons() const;
 
     /// \brief Get all modifiers for this pointer.
     /// \returns all modifiers for this pointer.
-    unsigned long modifiers() const;
+    uint64_t modifiers() const;
 
     /// \returns the timestamp of this event.
     uint64_t timestamp() const;
@@ -453,13 +453,13 @@ private:
     std::size_t _id;
 
     /// \brief The id of the device producing the pointer events.
-    long _deviceId;
+    int64_t _deviceId;
 
     /// \brief A unique pointer ID.
     ///
     /// This value must be unique from all other active pointers at any given
-    /// time.  Pointer IDs can be reused and are implementation specific.
-    long _pointerIndex;
+    /// time. Pointer IDs can be reused and are implementation specific.
+    int64_t _pointerIndex;
 
     /// \brief The type of device that generated this Point.
     std::string _deviceType;
@@ -479,13 +479,13 @@ private:
     bool _isPrimary;
 
 	/// \brief The current button associated with this event.
-    unsigned long _button;
+    uint64_t _button;
 
 	/// \brief The current buttons being pressed.
-    unsigned long _buttons;
+    uint64_t _buttons;
 
 	/// \brief The current modifiers being pressed.
-    unsigned long _modifiers;
+    uint64_t _modifiers;
 
 	/// \brief The current number of taps associated with this event.
     uint64_t _tapCount;

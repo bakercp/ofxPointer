@@ -287,13 +287,13 @@ PointerEventArgs::PointerEventArgs():
 
 PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    const Point& point,
-                                   long deviceId,
-                                   long pointerIndex,
+                                   std::size_t deviceId,
+                                   int64_t pointerIndex,
                                    const std::string& deviceType,
                                    bool isPrimary,
-                                   unsigned long button,
-                                   unsigned long buttons,
-                                   unsigned long modifiers,
+                                   uint64_t button,
+                                   uint64_t buttons,
+                                   uint64_t modifiers,
                                    uint64_t tapCount,
                                    uint64_t timestamp):
     _eventType(eventType),
@@ -332,13 +332,13 @@ Point PointerEventArgs::point() const
 }
 
 
-long PointerEventArgs::deviceId() const
+int64_t PointerEventArgs::deviceId() const
 {
     return _deviceId;
 }
 
 
-long PointerEventArgs::index() const
+int64_t PointerEventArgs::index() const
 {
     return _pointerIndex;
 }
@@ -362,19 +362,19 @@ bool PointerEventArgs::isPrimary() const
 }
 
 
-unsigned long PointerEventArgs::button() const
+uint64_t PointerEventArgs::button() const
 {
     return _button;
 }
 
 
-unsigned long PointerEventArgs::buttons() const
+uint64_t PointerEventArgs::buttons() const
 {
     return _buttons;
 }
 
 
-unsigned long PointerEventArgs::modifiers() const
+uint64_t PointerEventArgs::modifiers() const
 {
     return _modifiers;
 }
@@ -402,7 +402,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     Point point(evt, evt, shape, evt.pressure, 0, 0, 0, 0);
 
-    unsigned long modifiers = 0;
+    uint64_t modifiers = 0;
 
     modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
@@ -413,8 +413,8 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 
     std::string type = POINTER_MOVE;
 
-    unsigned long buttons = 0;
-    unsigned int pressCount = 0;
+    uint64_t buttons = 0;
+    uint64_t pressCount = 0;
 
     switch (evt.type)
     {
@@ -460,13 +460,13 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     std::string type = POINTER_MOVE;
 
-    unsigned int pressCount = 0;
+    uint64_t tapCount = 0;
 
     switch (evt.type)
     {
         case ofMouseEventArgs::Pressed:
             type = POINTER_DOWN;
-            pressCount = 1;
+            tapCount = 1;
             pressure = 0.5;
             break;
         case ofMouseEventArgs::Dragged:
@@ -492,14 +492,14 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     Point point(evt, evt, shape, pressure, 0, 0, 0 , 0);
 
-    unsigned long modifiers = 0;
+    uint64_t modifiers = 0;
 
     modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    unsigned long buttons = 0;
+    uint64_t buttons = 0;
 
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_1) ? (1 << OF_MOUSE_BUTTON_1) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_2) ? (1 << OF_MOUSE_BUTTON_2) : 0;
@@ -520,7 +520,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
                             evt.button,
                             buttons,
                             modifiers,
-                            pressCount,
+                            tapCount,
                             timestamp);
 
 }
@@ -530,8 +530,8 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
 {
     return PointerEventArgs(json.get("eventType", POINTER_MOVE).asString(),
                             Point::fromJSON(json.get("point", Json::Value())),
-                            json.get("deviceId", 0).asLargestInt(),
-                            json.get("pointerId", 0).asLargestInt(),
+                            json.get("deviceId", 0).asUInt64(),
+                            json.get("pointerId", 0).asInt64(),
                             json.get("deviceType", TYPE_UNKNOWN).asString(),
                             json.get("isPrimary", false).asBool(),
                             json.get("button", 0).asUInt64(),
@@ -548,7 +548,7 @@ Json::Value PointerEventArgs::toJSON(const PointerEventArgs& evt)
 
     json["eventType"]  = evt._eventType;
     json["point"]      = Point::toJSON(evt._point);
-    json["deviceId"]   = (Json::Int64)evt._deviceId;
+    json["deviceId"]   = (Json::UInt64)evt._deviceId;
     json["pointerIndex"]  = (Json::Int64)evt._pointerIndex;
     json["deviceType"] = evt._deviceType;
     json["isPrimary"]  = evt._isPrimary;
