@@ -283,7 +283,7 @@ private:
 };
 
 
-/// \param A class representing all of the arguments in a pointer event.
+/// \brief A class representing all of the arguments in a pointer event.
 class PointerEventArgs
 {
 public:
