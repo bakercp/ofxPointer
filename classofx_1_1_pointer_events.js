@@ -5,7 +5,6 @@ var classofx_1_1_pointer_events =
     [ "PointerEvents", "classofx_1_1_pointer_events.html#a74e8a49cd6d6c330678404ccacc8fa50", null ],
     [ "~PointerEvents", "classofx_1_1_pointer_events.html#af89d2205cc48af147298a986c20eee87", null ],
     [ "handleMultiTap", "classofx_1_1_pointer_events.html#a99550631f8e4435e6b7c335681f8b3e4", null ],
-    [ "instance", "classofx_1_1_pointer_events.html#a2b6aeb57710d7c4f6480a6768508109b", null ],
     [ "mouseDragged", "classofx_1_1_pointer_events.html#af2800f830e799ff3937f6e222b742e57", null ],
     [ "mouseMoved", "classofx_1_1_pointer_events.html#a51bb6ace33406637917850765e988f77", null ],
     [ "mousePressed", "classofx_1_1_pointer_events.html#a45a60de367e21bbfa0d2274dab937cba", null ],
