@@ -276,6 +276,7 @@ PointerEventArgs::PointerEventArgs():
                      -1,
                      TYPE_UNKNOWN,
                      false,
+                     false,
                      0,
                      0,
                      0,
@@ -290,6 +291,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    std::size_t deviceId,
                                    int64_t pointerIndex,
                                    const std::string& deviceType,
+                                   bool canHover,
                                    bool isPrimary,
                                    uint64_t button,
                                    uint64_t buttons,
@@ -301,6 +303,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
     _deviceId(deviceId),
     _pointerIndex(pointerIndex),
     _deviceType(deviceType),
+    _canHover(canHover),
     _point(point),
     _isPrimary(isPrimary),
     _button(button),
@@ -353,6 +356,12 @@ std::size_t PointerEventArgs::id() const
 std::string PointerEventArgs::deviceType() const
 {
     return _deviceType;
+}
+
+
+bool PointerEventArgs::canHover() const
+{
+    return _canHover;
 }
 
 
@@ -444,6 +453,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
                             evt.id,
                             PointerEventArgs::TYPE_TOUCH,
                             false,
+                            false,
                             0,
                             buttons,
                             modifiers,
@@ -517,6 +527,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
                             0,
                             PointerEventArgs::TYPE_MOUSE,
                             true,
+                            true,
                             evt.button,
                             buttons,
                             modifiers,
@@ -533,6 +544,7 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
                             json.get("deviceId", 0).asUInt64(),
                             json.get("pointerId", 0).asInt64(),
                             json.get("deviceType", TYPE_UNKNOWN).asString(),
+                            json.get("canHover", false).asBool(),
                             json.get("isPrimary", false).asBool(),
                             json.get("button", 0).asUInt64(),
                             json.get("buttons", 0).asUInt64(),

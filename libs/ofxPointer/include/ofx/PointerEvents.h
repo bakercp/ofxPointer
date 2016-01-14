@@ -296,6 +296,7 @@ public:
                      std::size_t deviceId,
                      int64_t pointerIndex,
                      const std::string& deviceType,
+                     bool canHover,
                      bool isPrimary,
                      uint64_t button,
                      uint64_t buttons,
@@ -333,6 +334,9 @@ public:
     ///
     /// \returns a device description string.
     std::string deviceType() const;
+
+    /// \returns true if the device type can hover.
+    bool canHover() const;
 
     /// \brief Determine if this pointer is the primary pointer.
     /// \returns true if this pointer is the primary pointer.
@@ -464,8 +468,10 @@ private:
     /// \brief The type of device that generated this Point.
     std::string _deviceType;
 
-    /// \brief The location and orientation of the pointer.
-    Point _point;
+    /// \brief True if the device type can hover.
+    ///
+    /// False for touch screens, true for mouse and most pen devices.
+    bool _canHover;
 
     /// \brief Indicates if the pointer is a primary pointer.
     ///
@@ -477,6 +483,9 @@ private:
     ///
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary;
+
+    /// \brief The location and orientation of the pointer.
+    Point _point;
 
 	/// \brief The current button associated with this event.
     uint64_t _button;
