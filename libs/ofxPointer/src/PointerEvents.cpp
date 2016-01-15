@@ -286,6 +286,25 @@ PointerEventArgs::PointerEventArgs():
 }
 
 
+PointerEventArgs::PointerEventArgs(const std::string& type,
+                                   const PointerEventArgs& e):
+    PointerEventArgs(type,
+                     e.point(),
+                     e.deviceId(),
+                     e.index(),
+                     e.deviceType(),
+                     e.canHover(),
+                     e.isPrimary(),
+                     e.button(),
+                     e.buttons(),
+                     e.modifiers(),
+                     e.tapCount(),
+                     e.timestamp())
+
+{
+}
+
+
 PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    const Point& point,
                                    std::size_t deviceId,

@@ -290,6 +290,10 @@ public:
     /// \brief Create a default PointerEventArgs.
     PointerEventArgs();
 
+    /// \brief Create a PointerEventArgs with a new event type.
+    PointerEventArgs(const std::string& type,
+                     const PointerEventArgs& e);
+
     /// \brief Create a PointerEventArgs with arguments.
     PointerEventArgs(const std::string& type,
                      const Point& point,
