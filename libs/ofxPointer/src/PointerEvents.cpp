@@ -272,7 +272,7 @@ const std::string PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 PointerEventArgs::PointerEventArgs():
     PointerEventArgs(POINTER_MOVE,
                      Point(),
-                     -1,
+                     0,
                      -1,
                      TYPE_UNKNOWN,
                      false,

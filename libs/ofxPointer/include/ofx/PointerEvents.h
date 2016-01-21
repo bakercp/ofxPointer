@@ -455,27 +455,27 @@ public:
 
 private:
     /// \brief The name of this event type.
-    std::string _eventType;
+    std::string _eventType = POINTER_MOVE;
 
     /// \brief The unique id of this pointer.
-    std::size_t _id;
+    std::size_t _id = 0;
 
     /// \brief The id of the device producing the pointer events.
-    int64_t _deviceId;
+    int64_t _deviceId = -1;
 
     /// \brief A unique pointer ID.
     ///
     /// This value must be unique from all other active pointers at any given
     /// time. Pointer IDs can be reused and are implementation specific.
-    int64_t _pointerIndex;
+    int64_t _pointerIndex = -1;
 
     /// \brief The type of device that generated this Point.
-    std::string _deviceType;
+    std::string _deviceType = TYPE_UNKNOWN;
 
     /// \brief True if the device type can hover.
     ///
     /// False for touch screens, true for mouse and most pen devices.
-    bool _canHover;
+    bool _canHover = false;
 
     /// \brief Indicates if the pointer is a primary pointer.
     ///
@@ -486,25 +486,25 @@ private:
     /// this by ignoring non-primary pointers.
     ///
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
-    bool _isPrimary;
+    bool _isPrimary = false;
 
     /// \brief The location and orientation of the pointer.
     Point _point;
 
 	/// \brief The current button associated with this event.
-    uint64_t _button;
+    uint64_t _button = 0;
 
 	/// \brief The current buttons being pressed.
-    uint64_t _buttons;
+    uint64_t _buttons = 0;
 
 	/// \brief The current modifiers being pressed.
-    uint64_t _modifiers;
+    uint64_t _modifiers = 0;
 
 	/// \brief The current number of taps associated with this event.
-    uint64_t _tapCount;
+    uint64_t _tapCount = 0;
 
 	/// \brief The timestamp of this event.
-    uint64_t _timestamp;
+    uint64_t _timestamp = 0;
 
     friend class PointerEvents;
 
@@ -659,14 +659,15 @@ protected:
     /// \brief A typedef defining a pointer press event map.
     typedef std::map<PointerDownEventKey, PointerEventArgs> PointerDownEvents;
 
+    /// \brief A callback for multiple tap events.
+    /// \param e The event data.
+    void handleMultiTap(PointerEventArgs& e);
+
     /// \brief True iff the PointerEvents should consume mouse events.
-    bool _consumeMouseEvents;
+    bool _consumeMouseEvents = false;
 
     /// \brief True iff the PointerEvents should consume touch events.
-    bool _consumeTouchEvents;
-
-    /// \brief A callback for multiple tap events.
-    void handleMultiTap(PointerEventArgs& evt);
+    bool _consumeTouchEvents = false;
 
     /// \brief The Pointer down events.
     PointerDownEvents _pointerDownEvents;
