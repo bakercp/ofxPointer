@@ -420,15 +420,15 @@ uint64_t PointerEventArgs::timestamp() const
 }
 
 
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& evt)
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
 {
-    PointShape shape(evt.width,
-                     evt.height,
-                     evt.majoraxis,
-                     evt.minoraxis,
-                     evt.angle);
+    PointShape shape(e.width,
+                     e.height,
+                     e.majoraxis,
+                     e.minoraxis,
+                     e.angle);
 
-    Point point(evt, evt, shape, evt.pressure, 0, 0, 0, 0);
+    Point point(e, e, shape, e.pressure, 0, 0, 0, 0);
 
     uint64_t modifiers = 0;
 
@@ -444,7 +444,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
     uint64_t buttons = 0;
     uint64_t pressCount = 0;
 
-    switch (evt.type)
+    switch (e.type)
     {
 		case ofTouchEventArgs::doubleTap:
 			// We don't use this event.
@@ -469,7 +469,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
     return PointerEventArgs(type,
                             point,
                             0,
-                            evt.id,
+                            e.id,
                             PointerEventArgs::TYPE_TOUCH,
                             false,
                             false,
@@ -481,7 +481,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& ev
 }
 
 
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& evt)
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
 {
     PointShape shape;
 
@@ -491,7 +491,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
 
     uint64_t tapCount = 0;
 
-    switch (evt.type)
+    switch (e.type)
     {
         case ofMouseEventArgs::Pressed:
             type = POINTER_DOWN;
@@ -519,7 +519,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& ev
             break;
     }
 
-    Point point(evt, evt, shape, pressure, 0, 0, 0 , 0);
+    Point point(e, e, shape, pressure, 0, 0, 0 , 0);
 
     uint64_t modifiers = 0;
 
@@ -573,29 +573,27 @@ PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
 }
 
 
-Json::Value PointerEventArgs::toJSON(const PointerEventArgs& evt)
+Json::Value PointerEventArgs::toJSON(const PointerEventArgs& e)
 {
     Json::Value json;
 
-    json["eventType"]  = evt._eventType;
-    json["point"]      = Point::toJSON(evt._point);
-    json["deviceId"]   = (Json::UInt64)evt._deviceId;
-    json["pointerIndex"]  = (Json::Int64)evt._pointerIndex;
-    json["deviceType"] = evt._deviceType;
-    json["isPrimary"]  = evt._isPrimary;
-    json["button"]     = (Json::Int64)evt._button;
-    json["buttons"]    = (Json::Int64)evt._buttons;
-    json["modifiers"]  = (Json::Int64)evt._modifiers;
-    json["tapCount"]   = (Json::UInt64)evt._tapCount;
-    json["timestamp"]  = (Json::UInt64)evt._timestamp;
+    json["eventType"]  = e._eventType;
+    json["point"]      = Point::toJSON(e._point);
+    json["deviceId"]   = (Json::UInt64)e._deviceId;
+    json["pointerIndex"]  = (Json::Int64)e._pointerIndex;
+    json["deviceType"] = e._deviceType;
+    json["isPrimary"]  = e._isPrimary;
+    json["button"]     = (Json::Int64)e._button;
+    json["buttons"]    = (Json::Int64)e._buttons;
+    json["modifiers"]  = (Json::Int64)e._modifiers;
+    json["tapCount"]   = (Json::UInt64)e._tapCount;
+    json["timestamp"]  = (Json::UInt64)e._timestamp;
 
     return json;
 }
 
 
-PointerEvents::PointerEvents():
-    _consumeMouseEvents(false),
-    _consumeTouchEvents(false)
+PointerEvents::PointerEvents()
 {
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     ofAddListener(ofEvents().mouseMoved, this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
@@ -715,9 +713,9 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 }
 
 
-void PointerEvents::handleMultiTap(PointerEventArgs& evt)
+void PointerEvents::handleMultiTap(PointerEventArgs& e)
 {
-    PointerDownEventKey key(evt.id(), evt.button());
+    PointerDownEventKey key(e.id(), e.button());
 
     uint64_t _doubleTapThreshold = PointerUtilities::getSystemDoubleTapInterval();
 
@@ -727,13 +725,13 @@ void PointerEvents::handleMultiTap(PointerEventArgs& evt)
     {
         PointerEventArgs& lastEvent = (*iter).second;
 
-        if (evt.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
+        if (e.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
         {
-            evt._tapCount += lastEvent.tapCount();
+            e._tapCount += lastEvent.tapCount();
         }
     }
 
-    _pointerDownEvents[key] = evt;
+    _pointerDownEvents[key] = e;
 }
 
 
