@@ -72,7 +72,7 @@ public:
     /// axis-aligned bounding box.
     ///
     /// \returns the Point width.
-    float getWidth() const;
+    float width() const;
 
     /// \brief Get the height of the PointShape.
     ///
@@ -80,7 +80,7 @@ public:
     /// axis-aligned bounding box.
     ///
     /// \returns the Point height.
-    float getHeight() const;
+    float height() const;
 
     /// \brief Get the angle of the PointShape ellipse.
     ///
@@ -88,7 +88,7 @@ public:
     /// contact point.
     ///
     /// \returns the Point's ellipse angle in degrees.
-    float getEllipseAngle() const;
+    float ellipseAngle() const;
 
     /// \brief Get the major axis of the PointShape ellipse.
     ///
@@ -96,7 +96,7 @@ public:
     /// contact point.
     ///
     /// \returns the Point's ellipse major axis.
-    float getEllipseMajorAxis() const;
+    float ellipseMajorAxis() const;
 
     /// \brief Get the minor axis of the PointShape ellipse.
     ///
@@ -104,7 +104,7 @@ public:
     /// contact point.
     ///
     /// \returns the Point's ellipse minor axis.
-    float getEllipseMinorAxis() const;
+    float ellipseMinorAxis() const;
 
     /// \brief Deserialize a PointShape from JSON.
     /// \param json The json to deserialize.
@@ -192,7 +192,7 @@ public:
     /// positions, the value is equal to the screen position.
     ///
     /// \returns the absolute position in device coordinates.
-    const ofVec3f& getAbsolutePosition() const;
+    const ofVec3f& absolutePosition() const;
 
     /// \brief Get the normalized point pressure.
     ///
@@ -201,7 +201,7 @@ public:
     /// otherwise.
     ///
     /// \returns the normalized point pressure [0, 1].
-    float getPressure() const;
+    float pressure() const;
 
     /// \brief Get the Point's normalized tangential pressure.
     ///
@@ -210,7 +210,7 @@ public:
     /// value is 0.
     ///
     /// \returns the normalized tangential pressure [0, 1].
-    float getTangentialPressure() const;
+    float tangentialPressure() const;
 
     /// \brief Get the Point's rotation in degrees.
     ///
@@ -222,7 +222,7 @@ public:
     /// angle value recorded by the PointShape.
     ///
     /// \returns the rotation in degrees.
-    float getRotation() const;
+    float rotation() const;
 
     /// \brief Get the Tilt X angle.
     ///
@@ -232,7 +232,7 @@ public:
     /// undefined.
     ///
     /// \returns the Tilt X angle in degrees.
-    float getTiltX() const;
+    float tiltX() const;
 
     /// \brief Get the Tilt Y angle.
     ///
@@ -242,11 +242,11 @@ public:
     /// undefined.
     ///
     /// \returns the Tilt Y angle in degrees.
-    float getTiltY() const;
+    float tiltY() const;
 
     /// \brief Get the shape of the Point.
     /// \returns The PointShape.
-    const PointShape& getShape() const;
+    const PointShape& shape() const;
 
     /// \brief Deserialize a Point from JSON.
     /// \param json The json to deserialize.

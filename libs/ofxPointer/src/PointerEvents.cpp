@@ -54,31 +54,31 @@ PointShape::~PointShape()
 }
 
 
-float PointShape::getWidth() const
+float PointShape::width() const
 {
     return _width;
 }
 
 
-float PointShape::getHeight() const
+float PointShape::height() const
 {
     return _height;
 }
 
 
-float PointShape::getEllipseMajorAxis() const
+float PointShape::ellipseMajorAxis() const
 {
     return _ellipseMajorAxis;
 }
 
 
-float PointShape::getEllipseMinorAxis() const
+float PointShape::ellipseMinorAxis() const
 {
     return _ellipseMinorAxis;
 }
 
 
-float PointShape::getEllipseAngle() const
+float PointShape::ellipseAngle() const
 {
     return _ellipseAngle;
 }
@@ -154,43 +154,43 @@ Point::~Point()
 }
 
 
-const ofVec3f& Point::getAbsolutePosition() const
+const ofVec3f& Point::absolutePosition() const
 {
     return _absolutePosition;
 }
 
 
-float Point::getPressure() const
+float Point::pressure() const
 {
     return _pressure;
 }
 
 
-float Point::getTangentialPressure() const
+float Point::tangentialPressure() const
 {
     return _tangentialPressure;
 }
 
 
-float Point::getRotation() const
+float Point::rotation() const
 {
     return _rotation;
 }
 
 
-float Point::getTiltX() const
+float Point::tiltX() const
 {
     return _tiltX;
 }
 
 
-float Point::getTiltY() const
+float Point::tiltY() const
 {
     return _tiltY;
 }
 
 
-const PointShape& Point::getShape() const
+const PointShape& Point::shape() const
 {
     return _shape;
 }
