@@ -547,7 +547,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
                             PointerEventArgs::TYPE_MOUSE,
                             true,
                             true,
-                            evt.button,
+                            e.button,
                             buttons,
                             modifiers,
                             tapCount,

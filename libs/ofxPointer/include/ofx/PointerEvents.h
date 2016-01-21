@@ -367,14 +367,14 @@ public:
     uint64_t tapCount() const;
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
-    /// \param evt The touch event to convert.
+    /// \param e The touch event to convert.
     /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& evt);
+    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& e);
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
-    /// \param evt The touch event to convert.
+    /// \param e The touch event to convert.
     /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& evt);
+    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& e);
 
     /// \brief A debug utility for viewing the contents of PointerEventArgs.
     /// \returns A string representation of the PointerEventArgs.
