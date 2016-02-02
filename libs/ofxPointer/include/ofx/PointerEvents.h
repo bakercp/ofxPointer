@@ -596,7 +596,7 @@ public:
     /// \tparam ListenerClass The class of the listener.
     /// \param listener A pointer to the listener class.
     /// \param prio The event priority.
-    template<class ListenerClass>
+    template <class ListenerClass>
     void registerPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
     /// \brief Unregister a pointer event listener.
@@ -612,7 +612,7 @@ public:
     /// \tparam ListenerClass The class of the listener.
     /// \param listener A pointer to the listener class.
     /// \param prio The event priority.
-    template<class ListenerClass>
+    template <class ListenerClass>
     void unregisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
     /// \brief Event that is triggered when a point is introduced.
@@ -675,7 +675,7 @@ protected:
 };
 
 
-template<class ListenerClass>
+template <class ListenerClass>
 void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
 {
     ofAddListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
@@ -685,7 +685,7 @@ void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
 }
 
 
-template<class ListenerClass>
+template <class ListenerClass>
 void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 {
     ofRemoveListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
@@ -695,14 +695,14 @@ void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 }
 
 
-template<class ListenerClass>
+template <class ListenerClass>
 void RegisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
     PointerEvents::instance().registerPointerEvents(listener, prio);
 }
 
 
-template<class ListenerClass>
+template <class ListenerClass>
 void UnregisterPointerEvents(ListenerClass* listener)
 {
     PointerEvents::instance().unregisterPointerEvents(listener);
