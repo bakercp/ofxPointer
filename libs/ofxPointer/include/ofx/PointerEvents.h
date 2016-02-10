@@ -52,11 +52,11 @@ public:
     PointShape();
 
     /// \brief Create a PointShape with parameters.
-	/// \param width Bounding box width.
-	/// \param height Bounding box height.
-	/// \param ellipseMajorAxis Ellipse major axis.
-	/// \param ellipseMinorAxis Ellipse minor axis.
-	/// \param ellipseAngle Ellipse angle in degrees.
+    /// \param width Bounding box width.
+    /// \param height Bounding box height.
+    /// \param ellipseMajorAxis Ellipse major axis.
+    /// \param ellipseMinorAxis Ellipse minor axis.
+    /// \param ellipseAngle Ellipse angle in degrees.
     PointShape(float width,
                float height,
                float ellipseMajorAxis = 0,
@@ -141,34 +141,34 @@ protected:
 class Point: public ofVec3f
 {
 public:
-	/// \brief Construct a Point
-	Point();
+    /// \brief Construct a Point
+    Point();
 
-	/// \brief Construct a Point
-	/// \param position The position in screen coordinates.
+    /// \brief Construct a Point
+    /// \param position The position in screen coordinates.
     Point(const ofVec3f& position);
 
-	/// \brief Construct a Point
-	/// \param position The position in screen coordinates.
-	/// \param shape The point shape.
+    /// \brief Construct a Point
+    /// \param position The position in screen coordinates.
+    /// \param shape The point shape.
     Point(const ofVec3f& position, const PointShape& shape);
 
-	/// \brief Construct a Point
-	/// \param position The position in screen coordinates.
-	/// \param pressure The normalized pressure.
-	/// \param tiltX The tilt X angle.
-	/// \param tiltY The tilt Y angle.
+    /// \brief Construct a Point
+    /// \param position The position in screen coordinates.
+    /// \param pressure The normalized pressure.
+    /// \param tiltX The tilt X angle.
+    /// \param tiltY The tilt Y angle.
     Point(const ofVec3f& position, float pressure, float tiltX, float tiltY);
 
-	/// \brief Construct a Point
-	/// \param position The position in screen coordinates.
-	/// \param absolutePosition The absolute position in device coordinates.
-	/// \param shape The point shape.
-	/// \param pressure The normalized pressure.
-	/// \param tangentialPressure The tangential pressure (aka barrel pressure).
-	/// \param rotation The rotation.
-	/// \param tiltX The tilt X angle.
-	/// \param tiltY The tilt Y angle.
+    /// \brief Construct a Point
+    /// \param position The position in screen coordinates.
+    /// \param absolutePosition The absolute position in device coordinates.
+    /// \param shape The point shape.
+    /// \param pressure The normalized pressure.
+    /// \param tangentialPressure The tangential pressure (aka barrel pressure).
+    /// \param rotation The rotation.
+    /// \param tiltX The tilt X angle.
+    /// \param tiltY The tilt Y angle.
     Point(const ofVec3f& position,
           const ofVec3f& absolutePosition,
           const PointShape& shape,
@@ -491,19 +491,19 @@ private:
     /// \brief The location and orientation of the pointer.
     Point _point;
 
-	/// \brief The current button associated with this event.
+    /// \brief The current button associated with this event.
     uint64_t _button = 0;
 
-	/// \brief The current buttons being pressed.
+    /// \brief The current buttons being pressed.
     uint64_t _buttons = 0;
 
-	/// \brief The current modifiers being pressed.
+    /// \brief The current modifiers being pressed.
     uint64_t _modifiers = 0;
 
-	/// \brief The current number of taps associated with this event.
+    /// \brief The current number of taps associated with this event.
     uint64_t _tapCount = 0;
 
-	/// \brief The timestamp of this event.
+    /// \brief The timestamp of this event.
     uint64_t _timestamp = 0;
 
     friend class PointerEvents;
