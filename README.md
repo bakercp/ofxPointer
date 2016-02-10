@@ -9,6 +9,8 @@ Simply put, ofxPointer merges pointer, touch and pen input into a single extensi
 
 This addon also keeps track of additional information like number of clicks, etc.
 
+The addon requires (ofxJSON)[https://github.com/jefftimesten/ofxJSON] but will replaced with core JSON support in 0.10.0+.
+
 A typical program will now look like this:
 
 ```c++
