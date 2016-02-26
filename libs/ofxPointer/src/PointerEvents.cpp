@@ -84,29 +84,6 @@ float PointShape::ellipseAngle() const
 }
 
 
-PointShape PointShape::fromJSON(const Json::Value& json)
-{
-    return PointShape(json.get("width", 0).asFloat(),
-                      json.get("height", 0).asFloat(),
-                      json.get("ellipseMajorAxis", 0).asFloat(),
-                      json.get("ellipseMinorAxis", 0).asFloat(),
-                      json.get("ellipseAngle", 0).asFloat());
-}
-
-
-Json::Value PointShape::toJSON(const PointShape& pointShape)
-{
-    Json::Value json;
-
-    json["width"] = pointShape._width;
-    json["height"] = pointShape._height;
-    json["ellipseMajorAxis"] = pointShape._ellipseMajorAxis;
-    json["ellipseMinorAxis"] = pointShape._ellipseMinorAxis;
-    json["ellipseAngle"] = pointShape._ellipseAngle;
-
-    return json;
-}
-
 Point::Point(): Point(ofVec3f(0,0,0))
 {
 }
@@ -193,60 +170,6 @@ float Point::tiltY() const
 const PointShape& Point::shape() const
 {
     return _shape;
-}
-
-
-Point Point::fromJSON(const Json::Value& json)
-{
-    ofVec3f position;
-
-    if (json.isMember("position"))
-    {
-        const Json::Value& positionJSON = json["position"];
-        position.x = positionJSON.get("x", 0).asFloat();
-        position.y = positionJSON.get("y", 0).asFloat();
-        position.z = positionJSON.get("z", 0).asFloat();
-    }
-
-    ofVec3f absolutePosition;
-
-    if (json.isMember("absolutePosition"))
-    {
-        const Json::Value& positionJSON = json["absolutePosition"];
-        position.x = positionJSON.get("x", 0).asFloat();
-        position.y = positionJSON.get("y", 0).asFloat();
-        position.z = positionJSON.get("z", 0).asFloat();
-    }
-
-    return Point(position,
-                 absolutePosition,
-                 PointShape::fromJSON(json.get("pointShape", Json::Value())),
-                 json.get("pressure", 0).asFloat(),
-                 json.get("tangentialPressure", 0).asFloat(),
-                 json.get("rotation", 0).asFloat(),
-                 json.get("tiltX", 0).asFloat(),
-                 json.get("tiltY", 0).asFloat());
-
-}
-
-
-Json::Value Point::toJSON(const Point& point)
-{
-    Json::Value json;
-    json["position"]["x"] =         point.x;
-    json["position"]["y"] =         point.y;
-    json["position"]["z"] =         point.z;
-    json["absolutePosition"]["x"] = point._absolutePosition.x;
-    json["absolutePosition"]["y"] = point._absolutePosition.y;
-    json["absolutePosition"]["z"] = point._absolutePosition.z;
-    json["pointShape"] =            PointShape::toJSON(point._shape);
-    json["pressure"] =              point._pressure;
-    json["tangentialPressure"] =    point._tangentialPressure;
-    json["rotation"] =              point._rotation;
-    json["tiltX"] =                 point._tiltX;
-    json["tiltY"] =                 point._tiltY;
-
-    return json;
 }
 
 
@@ -553,43 +476,6 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
                             tapCount,
                             timestamp);
 
-}
-
-
-PointerEventArgs PointerEventArgs::fromJSON(const Json::Value& json)
-{
-    return PointerEventArgs(json.get("eventType", POINTER_MOVE).asString(),
-                            Point::fromJSON(json.get("point", Json::Value())),
-                            json.get("deviceId", 0).asUInt64(),
-                            json.get("pointerId", 0).asInt64(),
-                            json.get("deviceType", TYPE_UNKNOWN).asString(),
-                            json.get("canHover", false).asBool(),
-                            json.get("isPrimary", false).asBool(),
-                            json.get("button", 0).asUInt64(),
-                            json.get("buttons", 0).asUInt64(),
-                            json.get("modifiers", 0).asUInt64(),
-                            json.get("pressCount", 0).asUInt64(),
-                            json.get("timestamp", 0).asUInt64());
-}
-
-
-Json::Value PointerEventArgs::toJSON(const PointerEventArgs& e)
-{
-    Json::Value json;
-
-    json["eventType"]  = e._eventType;
-    json["point"]      = Point::toJSON(e._point);
-    json["deviceId"]   = (Json::UInt64)e._deviceId;
-    json["pointerIndex"]  = (Json::Int64)e._pointerIndex;
-    json["deviceType"] = e._deviceType;
-    json["isPrimary"]  = e._isPrimary;
-    json["button"]     = (Json::Int64)e._button;
-    json["buttons"]    = (Json::Int64)e._buttons;
-    json["modifiers"]  = (Json::Int64)e._modifiers;
-    json["tapCount"]   = (Json::UInt64)e._tapCount;
-    json["timestamp"]  = (Json::UInt64)e._timestamp;
-
-    return json;
 }
 
 

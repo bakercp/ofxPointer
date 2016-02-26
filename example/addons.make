@@ -1,2 +1,1 @@
-ofxJSON
 ofxPointer

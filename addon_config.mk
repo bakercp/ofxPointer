@@ -4,6 +4,3 @@ meta:
 	ADDON_AUTHOR = bakercp
 	ADDON_TAGS = "mouse" "touch" "multitouch" "pointer" "cross-platform" "pen"
 	ADDON_URL = http://github.com/bakercp/ofxPointer
-
-common:
-	ADDON_DEPENDENCIES = ofxJSON

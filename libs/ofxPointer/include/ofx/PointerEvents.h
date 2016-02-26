@@ -28,7 +28,6 @@
 
 #include <set>
 #include <string>
-#include "json/json.h"
 #include "ofEvents.h"
 #include "ofUtils.h"
 
@@ -105,16 +104,6 @@ public:
     ///
     /// \returns the Point's ellipse minor axis.
     float ellipseMinorAxis() const;
-
-    /// \brief Deserialize a PointShape from JSON.
-    /// \param json The json to deserialize.
-    /// \returns the deserized PointShape.
-    static PointShape fromJSON(const Json::Value& json);
-
-    /// \brief Serialize a PointShape as JSON.
-    /// \param pointShape the PointShape to serialize.
-    /// \returns the PointShape as serialized JSON.
-    static Json::Value toJSON(const PointShape& pointShape);
 
 protected:
     /// \brief Bounding box width.
@@ -247,16 +236,6 @@ public:
     /// \brief Get the shape of the Point.
     /// \returns The PointShape.
     const PointShape& shape() const;
-
-    /// \brief Deserialize a Point from JSON.
-    /// \param json The json to deserialize.
-    /// \returns the deserized Point.
-    static Point fromJSON(const Json::Value& json);
-
-    /// \brief Serialize a Point as JSON.
-    /// \param point the Point to serialize.
-    /// \returns the Point as serialized JSON.
-    static Json::Value toJSON(const Point& point);
 
 private:
     /// \brief The Point's absolute position in device coordinates.
@@ -442,16 +421,6 @@ public:
 
     /// \brief The lost pointer capture event type.
     static const std::string LOST_POINTER_CAPTURE;
-
-    /// \brief Deserialize a PointerEventArgs from JSON.
-    /// \param json The json to deserialize.
-    /// \returns the deserized PointerEventArgs.
-    static PointerEventArgs fromJSON(const Json::Value& json);
-
-    /// \brief Serialize a PointerEventArgs as JSON.
-    /// \param pointerEventArgs the PointerEventArgs to serialize.
-    /// \returns the PointerEventArgs as serialized JSON.
-    static Json::Value toJSON(const PointerEventArgs& pointerEventArgs);
 
 private:
     /// \brief The name of this event type.
