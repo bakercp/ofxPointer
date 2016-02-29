@@ -370,7 +370,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
     switch (e.type)
     {
         case ofTouchEventArgs::doubleTap:
-            // We don't use this event.
+            // Pointers don't use this event. We synthesize them.
             break;
         case ofTouchEventArgs::down:
             type = POINTER_DOWN;
