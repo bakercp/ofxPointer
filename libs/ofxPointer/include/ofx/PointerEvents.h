@@ -642,16 +642,32 @@ protected:
     PointerDownEvents _pointerDownEvents;
 
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+    /// \brief Mouse moved event listener.
     ofEventListener _mouseMovedListener;
+
+    /// \brief Mouse dragged event listener.
     ofEventListener _mouseDraggedListener;
+
+    /// \brief Mouse pressed event listener.
     ofEventListener _mousePressedListener;
+
+    /// \brief Mouse released event listener.
     ofEventListener _mouseReleasedListener;
 #endif
 
+    /// \brief Touch up event listener.
     ofEventListener _touchUpListener;
+
+    /// \brief Touch downevent listener.
     ofEventListener _touchDownListener;
+
+    /// \brief Touch moved event listener.
     ofEventListener _touchMovedListener;
+
+    /// \brief Touch double tap event listener.
     ofEventListener _touchDoubleTapListener;
+
+    /// \brief Touch cancelled event listener.
     ofEventListener _touchCancelledListener;
 
 };
