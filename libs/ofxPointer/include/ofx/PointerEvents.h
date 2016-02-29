@@ -641,6 +641,19 @@ protected:
     /// \brief The Pointer down events.
     PointerDownEvents _pointerDownEvents;
 
+#if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
+    ofEventListener _mouseMovedListener;
+    ofEventListener _mouseDraggedListener;
+    ofEventListener _mousePressedListener;
+    ofEventListener _mouseReleasedListener;
+#endif
+
+    ofEventListener _touchUpListener;
+    ofEventListener _touchDownListener;
+    ofEventListener _touchMovedListener;
+    ofEventListener _touchDoubleTapListener;
+    ofEventListener _touchCancelledListener;
+
 };
 
 
