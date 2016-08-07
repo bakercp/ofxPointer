@@ -127,7 +127,7 @@ protected:
 /// \brief A class representing a pointer's point.
 ///
 /// Captures all relevant position, tilt rotation and presssure information.
-class Point: public ofVec3f
+class Point: public glm::vec3
 {
 public:
     /// \brief Construct a Point
@@ -135,19 +135,25 @@ public:
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
-    Point(const ofVec3f& position);
+    Point(const glm::vec3& position);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
     /// \param shape The point shape.
-    Point(const ofVec3f& position, const PointShape& shape);
+    Point(const glm::vec3& position, const PointShape& shape);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
     /// \param pressure The normalized pressure.
     /// \param tiltX The tilt X angle.
     /// \param tiltY The tilt Y angle.
-    Point(const ofVec3f& position, float pressure, float tiltX, float tiltY);
+    Point(const glm::vec3& position, float pressure, float tiltX, float tiltY);
+
+    /// \brief Construct a Point
+    /// \param position The position in screen coordinates.
+    /// \param shape The point shape.
+    /// \param pressure The normalized pressure.
+    Point(const glm::vec3& position, const PointShape& shape, float pressure);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
@@ -158,8 +164,8 @@ public:
     /// \param rotation The rotation.
     /// \param tiltX The tilt X angle.
     /// \param tiltY The tilt Y angle.
-    Point(const ofVec3f& position,
-          const ofVec3f& absolutePosition,
+    Point(const glm::vec3& position,
+          const glm::vec3& absolutePosition,
           const PointShape& shape,
           float pressure,
           float tangentialPressure,
@@ -172,7 +178,7 @@ public:
 
     /// \brief Get the position in absolute device coordinates.
     ///
-    /// Point extends ofVec3f, providing position relative to the origin of the
+    /// Point extends glm::vec3, providing position relative to the origin of the
     /// screen coordinate system.  Absolute position is returned in absolute
     /// device coordinates, which may be defined at a resolution that differs
     /// from the screen position.
@@ -181,7 +187,7 @@ public:
     /// positions, the value is equal to the screen position.
     ///
     /// \returns the absolute position in device coordinates.
-    const ofVec3f& absolutePosition() const;
+    const glm::vec3& absolutePosition() const;
 
     /// \brief Get the normalized point pressure.
     ///
@@ -239,7 +245,7 @@ public:
 
 private:
     /// \brief The Point's absolute position in device coordinates.
-    ofVec3f _absolutePosition;
+    glm::vec3 _absolutePosition;
 
     /// \brief The Point shape.
     PointShape _shape;

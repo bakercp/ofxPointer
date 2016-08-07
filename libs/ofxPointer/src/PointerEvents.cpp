@@ -84,37 +84,45 @@ float PointShape::ellipseAngle() const
 }
 
 
-Point::Point(): Point(ofVec3f(0,0,0))
+Point::Point(): Point(glm::vec3(0, 0, 0))
 {
 }
 
 
-Point::Point(const ofVec3f& position): Point(position, PointShape())
+Point::Point(const glm::vec3& position): Point(position, PointShape())
 {
 }
 
 
-Point::Point(const ofVec3f& position, const PointShape& shape):
-    Point(position, position, PointShape(), 0, 0, 0, 0, 0)
+Point::Point(const glm::vec3& position, const PointShape& shape):
+    Point(position, PointShape(), 0)
 {
 }
 
 
-Point::Point(const ofVec3f& position, float pressure, float tiltX, float tiltY):
+Point::Point(const glm::vec3& position, float pressure, float tiltX, float tiltY):
     Point(position, position, PointShape(), pressure, 0, 0, tiltX, tiltY)
 {
 }
 
 
-Point::Point(const ofVec3f& position,
-             const ofVec3f& absolutePosition,
+Point::Point(const glm::vec3& position,
+             const PointShape& shape,
+             float pressure):
+    Point(position, position, shape, pressure, 0, 0, 0, 0)
+{
+}
+
+
+Point::Point(const glm::vec3& position,
+             const glm::vec3& absolutePosition,
              const PointShape& shape,
              float pressure,
              float tangentialPressure,
              float rotation,
              float tiltX,
              float tiltY):
-    ofVec3f(position),
+    glm::vec3(position),
     _absolutePosition(absolutePosition),
     _shape(shape),
     _pressure(pressure),
@@ -131,7 +139,7 @@ Point::~Point()
 }
 
 
-const ofVec3f& Point::absolutePosition() const
+const glm::vec3& Point::absolutePosition() const
 {
     return _absolutePosition;
 }
@@ -226,6 +234,7 @@ PointerEventArgs::PointerEventArgs(const std::string& type,
 
 {
 }
+
 
 
 PointerEventArgs::PointerEventArgs(const std::string& eventType,
@@ -351,7 +360,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
                      e.minoraxis,
                      e.angle);
 
-    Point point(e, e, shape, e.pressure, 0, 0, 0, 0);
+    Point point(glm::vec3(e.x, e.y, 0), shape, e.pressure);
 
     uint64_t modifiers = 0;
 
@@ -442,7 +451,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
             break;
     }
 
-    Point point(e, e, shape, pressure, 0, 0, 0 , 0);
+    Point point(glm::vec3(e.x, e.y, 0), shape, pressure);
 
     uint64_t modifiers = 0;
 
