@@ -82,7 +82,7 @@ API documentation can be found here.
 
 ## Build Status
 
-Linux, macOS [![Build Status](https://travis-ci.org/bakercp/ofxPointer.svg?branch=stable)](https://travis-ci.org/bakercp/ofxPointer)
+Linux, macOS [![Build Status](https://travis-ci.org/bakercp/ofxPointer.svg?branch=master)](https://travis-ci.org/bakercp/ofxPointer)
 
 Visual Studio, MSYS [![Build status](https://ci.appveyor.com/api/projects/status/p2v0cy2yy8gli402/branch/master?svg=true)](https://ci.appveyor.com/project/bakercp/ofxpointer/branch/master)
 
