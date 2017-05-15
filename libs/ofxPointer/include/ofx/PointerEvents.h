@@ -330,7 +330,12 @@ public:
     /// \returns the timestamp of this event.
     uint64_t timestamp() const;
 
-    /// \returns the number of presses, clicks or taps associated with this pointer.
+    /// \brief Get the number of presses, clicks or taps associated with this event.
+    ///
+    /// This is not part of the official Pointer Events specification, but is
+    /// useful enough to be included here.
+    ///
+    /// \returns the tap count when the event is of type POINTER_DOWN or POINTER_UP.
     uint64_t tapCount() const;
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
@@ -610,15 +615,15 @@ public:
     }
 
 protected:
-    /// \brief A typedef defining a key for a pointer press event map.
-    typedef std::pair<int32_t, uint64_t> PointerDownEventKey;
+    /// \brief A typedef defining a key for a pointer down event map.
+    typedef std::pair<int32_t, uint64_t> PointerEventKey;
 
-    /// \brief A typedef defining a pointer press event map.
-    typedef std::map<PointerDownEventKey, PointerEventArgs> PointerDownEvents;
+    /// \brief A typedef defining a pointer down event map.
+    typedef std::map<PointerEventKey, PointerEventArgs> PointerDownTimeMap;
 
-    /// \brief A callback for multiple tap events.
+    /// \brief Update POINTER_DOWN or POINTER_UP event tap counts.
     /// \param e The event data.
-    void handleMultiTap(PointerEventArgs& e);
+    void updateTapCount(PointerEventArgs& e);
 
     /// \brief True iff the PointerEvents should consume mouse events.
     bool _consumeMouseEvents = false;
@@ -626,8 +631,11 @@ protected:
     /// \brief True iff the PointerEvents should consume touch events.
     bool _consumeTouchEvents = false;
 
-    /// \brief The Pointer down events.
-    PointerDownEvents _pointerDownEvents;
+    /// \brief The Pointer down event times.
+    ///
+    /// These are used to keep track of multiple taps since the oF event system
+    /// does not currently keep track of tap count.
+    PointerDownTimeMap _pointerDownEventTimeMap;
 
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     /// \brief Mouse moved event listener.

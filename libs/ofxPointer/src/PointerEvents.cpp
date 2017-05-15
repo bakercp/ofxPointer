@@ -356,7 +356,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
     std::string type = POINTER_MOVE;
 
     uint64_t buttons = 0;
-    uint64_t pressCount = 0;
+    uint64_t tapCount = 0;
 
     switch (e.type)
     {
@@ -366,7 +366,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
         case ofTouchEventArgs::down:
             type = POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-            pressCount = 1;
+            tapCount = 1;
             break;
         case ofTouchEventArgs::up:
             type = POINTER_UP;
@@ -390,7 +390,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
                             0,
                             buttons,
                             modifiers,
-                            pressCount,
+                            tapCount,
                             timestamp);
 }
 
@@ -494,7 +494,7 @@ PointerEvents::~PointerEvents()
 
 bool PointerEvents::mouseMoved(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
 }
@@ -502,7 +502,7 @@ bool PointerEvents::mouseMoved(ofMouseEventArgs& e)
 
 bool PointerEvents::mouseDragged(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
 }
@@ -510,8 +510,8 @@ bool PointerEvents::mouseDragged(ofMouseEventArgs& e)
 
 bool PointerEvents::mousePressed(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
-    handleMultiTap(p);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
+    updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeMouseEvents;
 }
@@ -519,7 +519,8 @@ bool PointerEvents::mousePressed(ofMouseEventArgs& e)
 
 bool PointerEvents::mouseReleased(ofMouseEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
+    updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
     return _consumeMouseEvents;
 }
@@ -527,8 +528,8 @@ bool PointerEvents::mouseReleased(ofMouseEventArgs& e)
 
 bool PointerEvents::touchDown(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
-    handleMultiTap(p);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
+    updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeTouchEvents;
 }
@@ -536,7 +537,7 @@ bool PointerEvents::touchDown(ofTouchEventArgs& e)
 
 bool PointerEvents::touchMoved(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeTouchEvents;
 }
@@ -544,7 +545,8 @@ bool PointerEvents::touchMoved(ofTouchEventArgs& e)
 
 bool PointerEvents::touchUp(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
+    updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
     return _consumeTouchEvents;
 }
@@ -552,15 +554,16 @@ bool PointerEvents::touchUp(ofTouchEventArgs& e)
 
 bool PointerEvents::touchDoubleTap(ofTouchEventArgs& e)
 {
-    // We consume these events.
-    // Users should check the press count.
+    // We can consume these events, but skip them.
+    // Users should check the tap count.
     return _consumeTouchEvents;
 }
 
 
 bool PointerEvents::touchCancelled(ofTouchEventArgs& e)
 {
-    PointerEventArgs p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e);
+    updateTapCount(p);
     ofNotifyEvent(onPointerCancel, p, this);
     return _consumeTouchEvents;
 }
@@ -578,25 +581,35 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 }
 
 
-void PointerEvents::handleMultiTap(PointerEventArgs& e)
+void PointerEvents::updateTapCount(PointerEventArgs& e)
 {
-    PointerDownEventKey key(e.id(), e.button());
+    PointerEventKey key(e.id(), e.button());
 
     uint64_t _doubleTapThreshold = PointerUtilities::systemTapTimeout();
 
-    auto iter = _pointerDownEvents.find(key);
+    auto iter = _pointerDownEventTimeMap.find(key);
 
-    if (iter != _pointerDownEvents.end())
+    if (e.eventType() == PointerEventArgs::POINTER_DOWN)
     {
-        PointerEventArgs& lastEvent = iter->second;
-
-        if (e.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
+        if (iter != _pointerDownEventTimeMap.end())
         {
-            e._tapCount += lastEvent.tapCount();
+            if (e.timestamp() <= (iter->second.timestamp() + _doubleTapThreshold))
+            {
+                e._tapCount += iter->second.tapCount();
+            }
         }
+        
+        _pointerDownEventTimeMap[key] = e;
     }
-
-    _pointerDownEvents[key] = e;
+    else if (iter != _pointerDownEventTimeMap.end() && e.eventType() == PointerEventArgs::POINTER_UP)
+    {
+        // Transfer the tap count.
+        e._tapCount += iter->second.tapCount();
+    }
+    else if (iter != _pointerDownEventTimeMap.end() && e.timestamp() > (iter->second.timestamp() + _doubleTapThreshold))
+    {
+        _pointerDownEventTimeMap.erase(iter);
+    }
 }
 
 
