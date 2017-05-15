@@ -414,6 +414,9 @@ private:
     /// \brief The name of this event type.
     std::string _eventType = POINTER_MOVE;
 
+    /// \brief The location and orientation of the pointer.
+    Point _point;
+
     /// \brief The unique id of this pointer.
     std::size_t _id = 0;
 
@@ -444,9 +447,6 @@ private:
     ///
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary = false;
-
-    /// \brief The location and orientation of the pointer.
-    Point _point;
 
     /// \brief The current button associated with this event.
     uint64_t _button = 0;

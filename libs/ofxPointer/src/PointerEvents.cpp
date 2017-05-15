@@ -232,12 +232,12 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    uint64_t tapCount,
                                    uint64_t timestamp):
     _eventType(eventType),
+    _point(point),
     _id(0),
     _deviceId(deviceId),
     _pointerIndex(pointerIndex),
     _deviceType(deviceType),
     _canHover(canHover),
-    _point(point),
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
@@ -582,13 +582,13 @@ void PointerEvents::handleMultiTap(PointerEventArgs& e)
 {
     PointerDownEventKey key(e.id(), e.button());
 
-    uint64_t _doubleTapThreshold = PointerUtilities::getSystemDoubleTapInterval();
+    uint64_t _doubleTapThreshold = PointerUtilities::systemTapTimeout();
 
-    PointerDownEvents::iterator iter = _pointerDownEvents.find(key);
+    auto iter = _pointerDownEvents.find(key);
 
     if (iter != _pointerDownEvents.end())
     {
-        PointerEventArgs& lastEvent = (*iter).second;
+        PointerEventArgs& lastEvent = iter->second;
 
         if (e.timestamp() <= (lastEvent.timestamp() + _doubleTapThreshold))
         {

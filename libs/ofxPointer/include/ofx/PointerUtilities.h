@@ -8,7 +8,7 @@
 #pragma once
 
 
-#include <cstdint>
+#include "ofConstants.h"
 
 
 namespace ofx {
@@ -18,15 +18,29 @@ namespace ofx {
 class PointerUtilities
 {
 public:
-    /// \brief Get the system's double tap interval in milliseconds.
-    /// \returns the system's double tap interval in milliseconds.
-    static uint64_t getSystemDoubleTapInterval();
+    /// \brief Get the system's long press timeout in milliseconds.
+    /// \returns the system's long press timeout in milliseconds.
+    static uint64_t systemLongPressTimeout();
+
+    /// \brief Get the system's tap timeout in milliseconds.
+    /// \returns the system's tap timeout in milliseconds.
+    static uint64_t systemTapTimeout();
+
+    OF_DEPRECATED_MSG("Use systemTapTimeout().", static uint64_t getSystemDoubleTapInterval());
 
     enum
     {
-        /// \brief The default double tap interval in milliseconds.
-        DEFAULT_DOUBLE_TAP_INTERVAL = 500
+        /// \brief The default long press timeout in milliseconds.
+        DEFAULT_LONG_PRESS_TIMEOUT = 500,
+
+        /// \brief The default double tap timeout in milliseconds.
+        DEFAULT_TAP_TIMEOUT = 500,
+
+        /// \deprecated
+        DEFAULT_DOUBLE_TAP_INTERVAL = DEFAULT_TAP_TIMEOUT
+
     };
+
 
 };
 

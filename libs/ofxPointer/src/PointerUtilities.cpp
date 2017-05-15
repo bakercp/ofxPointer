@@ -18,7 +18,14 @@ namespace ofx {
 
 #if !defined(TARGET_OSX)
 
-uint64_t PointerUtilities::getSystemDoubleTapInterval()
+
+uint64_t PointerUtilities::systemLongPressTimeout()
+{
+    return DEFAULT_LONG_PRESS_TIMEOUT;
+}
+
+
+uint64_t PointerUtilities::systemTapTimeout()
 {
     uint64_t timeMS = 0;
 #if defined(TARGET_LINUX)
@@ -34,6 +41,12 @@ uint64_t PointerUtilities::getSystemDoubleTapInterval()
 }
 
 #endif
+
+
+uint64_t PointerUtilities::getSystemDoubleTapInterval()
+{
+    return systemTapTimeout();
+}
 
 
 } // namespace ofx
