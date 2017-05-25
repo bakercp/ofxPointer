@@ -12,6 +12,7 @@
 #include <string>
 #include "ofEvents.h"
 #include "ofUtils.h"
+#include "ofAppBaseWindow.h"
 
 
 namespace ofx {
@@ -254,6 +255,15 @@ private:
 class PointerEventArgs
 {
 public:
+    /// \brief A typedef defining a key for a pointer.
+    ///
+    /// Where first is the event id, and second is the event button. Create a
+    /// new key like this:
+    ///
+    ///     PointerEventKey key(e.id(), e.button());
+    ///
+    typedef std::pair<int32_t, uint64_t> PointerEventKey;
+
     /// \brief Create a default PointerEventArgs.
     PointerEventArgs();
 
@@ -273,7 +283,8 @@ public:
                      uint64_t buttons,
                      uint64_t modifiers,
                      uint64_t tapCount,
-                     uint64_t timestamp);
+                     uint64_t timestamp,
+                     ofAppBaseWindow* source);
 
     /// \brief Destroy the pointer event args.
     virtual ~PointerEventArgs();
@@ -327,9 +338,6 @@ public:
     /// \returns all modifiers for this pointer.
     uint64_t modifiers() const;
 
-    /// \returns the timestamp of this event.
-    uint64_t timestamp() const;
-
     /// \brief Get the number of presses, clicks or taps associated with this event.
     ///
     /// This is not part of the official Pointer Events specification, but is
@@ -338,15 +346,25 @@ public:
     /// \returns the tap count when the event is of type POINTER_DOWN or POINTER_UP.
     uint64_t tapCount() const;
 
-    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
-    /// \param e The touch event to convert.
-    /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& e);
+    /// \returns the timestamp of this event.
+    uint64_t timestamp() const;
+
+    /// \returns the event source if available.
+    const ofAppBaseWindow* source() const;
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
     /// \param e The touch event to convert.
+    /// \param source The event source.
     /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& e);
+    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& e,
+                                               ofAppBaseWindow* source);
+
+    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \param e The touch event to convert.
+    /// \param source The event source.
+    /// \returns a PointerEventArgs.
+    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& e,
+                                               ofAppBaseWindow* source);
 
     /// \brief A debug utility for viewing the contents of PointerEventArgs.
     /// \returns A string representation of the PointerEventArgs.
@@ -356,6 +374,7 @@ public:
 
         ss << "------------" << std::endl;
         ss << "      Event: " << eventType() << std::endl;
+        ss << "  Timestamp: " << timestamp() << std::endl;
         ss << "         Id: " << id() << std::endl;
         ss << "  Device Id: " << deviceId() << std::endl;
         ss << "Device Type: " << deviceType() << std::endl;
@@ -364,6 +383,7 @@ public:
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
         ss << "  Tap Count: " << tapCount() << std::endl;
         ss << "Touch Index: " << index() << std::endl;
+        ss << "     Source: " << source() << std::endl;
 
         return ss.str();
     }
@@ -468,6 +488,9 @@ private:
     /// \brief The timestamp of this event.
     uint64_t _timestamp = 0;
 
+    /// \brief The event source;
+    ofAppBaseWindow* _source = nullptr;
+
     friend class PointerEvents;
 
 };
@@ -483,53 +506,56 @@ public:
     /// \brief Create a default PointerEvents object.
     PointerEvents();
 
+    /// \brief Create a PointerEvents object with the given source.
+    PointerEvents(ofAppBaseWindow* source);
+
     /// \brief Destroy the PointerEvents.
-    virtual ~PointerEvents();
+    ~PointerEvents();
 
     /// \brief Mouse moved callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool mouseMoved(ofMouseEventArgs& e);
+    bool mouseMoved(const void* source, ofMouseEventArgs& e);
 
     /// \brief Mouse dragged callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool mouseDragged(ofMouseEventArgs& e);
+    bool mouseDragged(const void* source, ofMouseEventArgs& e);
 
     /// \brief Mouse pressed callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool mousePressed(ofMouseEventArgs& e);
+    bool mousePressed(const void* source, ofMouseEventArgs& e);
 
     /// \brief Mouse released callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool mouseReleased(ofMouseEventArgs& e);
+    bool mouseReleased(const void* source, ofMouseEventArgs& e);
 
     /// \brief Touch down callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool touchDown(ofTouchEventArgs& e);
+    bool touchDown(const void* source, ofTouchEventArgs& e);
 
     /// \brief Touch moved callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool touchMoved(ofTouchEventArgs& e);
+    bool touchMoved(const void* source, ofTouchEventArgs& e);
 
     /// \brief Touch up callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool touchUp(ofTouchEventArgs& e);
+    bool touchUp(const void* source, ofTouchEventArgs& e);
 
     /// \brief Touch double tap callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool touchDoubleTap(ofTouchEventArgs& e);
+    bool touchDoubleTap(const void* source, ofTouchEventArgs& e);
 
     /// \brief Touch cancelled callback.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool touchCancelled(ofTouchEventArgs& e);
+    bool touchCancelled(const void* source, ofTouchEventArgs& e);
 
     /// \brief Set the PointerEvents instance to consume mouse events.
     ///
@@ -607,19 +633,12 @@ public:
     /// structure because they depend on the target.
 
     /// \brief Get the singleton instance of the PointerEvents.
-    /// \returns an instance of PointerEvents.
-    static PointerEvents& instance()
-    {
-        static PointerEvents instance;
-        return instance;
-    }
+    /// \returns an instance of PointerEvents attached global event context.
+    static PointerEvents& instance();
 
 protected:
-    /// \brief A typedef defining a key for a pointer down event map.
-    typedef std::pair<int32_t, uint64_t> PointerEventKey;
-
     /// \brief A typedef defining a pointer down event map.
-    typedef std::map<PointerEventKey, PointerEventArgs> PointerDownTimeMap;
+    typedef std::map<PointerEventArgs::PointerEventKey, PointerEventArgs> PointerDownTimeMap;
 
     /// \brief Update POINTER_DOWN or POINTER_UP event tap counts.
     /// \param e The event data.
@@ -666,6 +685,8 @@ protected:
     /// \brief Touch cancelled event listener.
     ofEventListener _touchCancelledListener;
 
+    /// \brief The default source if the callback is missing.
+    ofAppBaseWindow* _source = nullptr;
 };
 
 
@@ -689,17 +710,75 @@ void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 }
 
 
+class PointerEventsManager
+{
+public:
+    /// \returns a PointerEvents instance registered to listen to the global events or nullptr.
+    PointerEvents* events();
+
+    /// \returns a PointerEvents instance registered to listen to the given window or nullptr.
+    PointerEvents* eventsForWindow(ofAppBaseWindow* window);
+
+    /// \brief Get the singleton instance of the PointerEventsManager.
+    /// \returns an instance of PointerEventsManager.
+    static PointerEventsManager& instance();
+
+private:
+    /// \brief Create a default PointerEventsManager object.
+    PointerEventsManager();
+
+    /// \brief Destroy the PointerEventsManager.
+    ~PointerEventsManager();
+
+    /// \brief A map of windows to their pointer events.
+    std::map<ofAppBaseWindow*, std::unique_ptr<PointerEvents>> _windowEventMap;
+
+};
+
+
+template <class ListenerClass>
+void RegisterPointerEventsForWindow(ofAppBaseWindow* window, ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    PointerEvents* events = PointerEventsManager::instance().eventsForWindow(window);
+
+    if (events)
+    {
+        events->registerPointerEvents(listener, prio);
+    }
+    else
+    {
+        ofLogError("RegisterPointerEventsForWindow") << "No PointerEvents available for given window.";
+    }
+}
+
+
+template <class ListenerClass>
+void UnregisterPointerEventsForWindow(ofAppBaseWindow* window, ListenerClass* listener)
+{
+    PointerEvents* events = PointerEventsManager::instance().eventsForWindow(window);
+
+    if (events)
+    {
+        events->unregisterPointerEvents(listener);
+    }
+    else
+    {
+        ofLogError("UnregisterPointerEventsForWindow") << "No PointerEvents available for given window.";
+    }
+}
+
+
 template <class ListenerClass>
 void RegisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
-    PointerEvents::instance().registerPointerEvents(listener, prio);
+    RegisterPointerEventsForWindow(nullptr, listener, prio);
 }
 
 
 template <class ListenerClass>
 void UnregisterPointerEvents(ListenerClass* listener)
 {
-    PointerEvents::instance().unregisterPointerEvents(listener);
+    UnregisterPointerEventsForWindow(nullptr, listener);
 }
 
 

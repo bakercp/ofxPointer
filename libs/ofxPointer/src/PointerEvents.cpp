@@ -194,7 +194,8 @@ PointerEventArgs::PointerEventArgs():
                      0,
                      0,
                      0,
-                     0)
+                     0,
+                     nullptr)
 {
 }
 
@@ -212,7 +213,8 @@ PointerEventArgs::PointerEventArgs(const std::string& type,
                      e.buttons(),
                      e.modifiers(),
                      e.tapCount(),
-                     e.timestamp())
+                     e.timestamp(),
+                     nullptr)
 
 {
 }
@@ -230,7 +232,8 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    uint64_t buttons,
                                    uint64_t modifiers,
                                    uint64_t tapCount,
-                                   uint64_t timestamp):
+                                   uint64_t timestamp,
+                                   ofAppBaseWindow* source):
     _eventType(eventType),
     _point(point),
     _id(0),
@@ -243,7 +246,8 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
     _buttons(buttons),
     _modifiers(modifiers),
     _tapCount(tapCount),
-    _timestamp(timestamp)
+    _timestamp(timestamp),
+    _source(source)
 {
     hash_combine(_id, _deviceId);
     hash_combine(_id, _pointerIndex);
@@ -334,7 +338,14 @@ uint64_t PointerEventArgs::timestamp() const
 }
 
 
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
+const ofAppBaseWindow* PointerEventArgs::source() const
+{
+    return _source;
+}
+
+
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
+                                                      ofAppBaseWindow* source)
 {
     PointShape shape(e.width,
                      e.height,
@@ -391,11 +402,13 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e)
                             buttons,
                             modifiers,
                             tapCount,
-                            timestamp);
+                            timestamp,
+                            source);
 }
 
 
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e,
+                                                      ofAppBaseWindow* source)
 {
     PointShape shape;
 
@@ -465,25 +478,42 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e)
                             buttons,
                             modifiers,
                             tapCount,
-                            timestamp);
+                            timestamp,
+                            source);
 
 }
 
 
-PointerEvents::PointerEvents()
+PointerEvents::PointerEvents(): PointerEvents::PointerEvents(nullptr)
 {
+}
+
+
+PointerEvents::PointerEvents(ofAppBaseWindow* source): _source(source)
+{
+    ofCoreEvents* eventSource = nullptr;
+
+    if (_source)
+    {
+        eventSource = &_source->events();
+    }
+    else
+    {
+        eventSource = &ofEvents();
+    }
+
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
-    _mouseMovedListener = ofEvents().mouseMoved.newListener(this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseDraggedListener = ofEvents().mouseDragged.newListener(this, &PointerEvents::mouseDragged, OF_EVENT_ORDER_BEFORE_APP);
-    _mousePressedListener = ofEvents().mousePressed.newListener(this, &PointerEvents::mousePressed, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseReleasedListener = ofEvents().mouseReleased.newListener(this, &PointerEvents::mouseReleased, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseMovedListener = eventSource->mouseMoved.newListener(this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseDraggedListener = eventSource->mouseDragged.newListener(this, &PointerEvents::mouseDragged, OF_EVENT_ORDER_BEFORE_APP);
+    _mousePressedListener = eventSource->mousePressed.newListener(this, &PointerEvents::mousePressed, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseReleasedListener = eventSource->mouseReleased.newListener(this, &PointerEvents::mouseReleased, OF_EVENT_ORDER_BEFORE_APP);
 #endif
 
-    _touchUpListener = ofEvents().touchUp.newListener(this, &PointerEvents::touchUp, OF_EVENT_ORDER_BEFORE_APP);
-    _touchDownListener = ofEvents().touchDown.newListener(this, &PointerEvents::touchDown, OF_EVENT_ORDER_BEFORE_APP);
-    _touchMovedListener = ofEvents().touchMoved.newListener(this, &PointerEvents::touchMoved, OF_EVENT_ORDER_BEFORE_APP);
-    _touchDoubleTapListener = ofEvents().touchDoubleTap.newListener(this, &PointerEvents::touchDoubleTap, OF_EVENT_ORDER_BEFORE_APP);
-    _touchCancelledListener = ofEvents().touchCancelled.newListener(this, &PointerEvents::touchCancelled, OF_EVENT_ORDER_BEFORE_APP);
+    _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::touchUp, OF_EVENT_ORDER_BEFORE_APP);
+    _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::touchDown, OF_EVENT_ORDER_BEFORE_APP);
+    _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::touchMoved, OF_EVENT_ORDER_BEFORE_APP);
+    _touchDoubleTapListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchDoubleTap, OF_EVENT_ORDER_BEFORE_APP);
+    _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::touchCancelled, OF_EVENT_ORDER_BEFORE_APP);
 }
 
 
@@ -492,67 +522,67 @@ PointerEvents::~PointerEvents()
 }
 
 
-bool PointerEvents::mouseMoved(ofMouseEventArgs& e)
+bool PointerEvents::mouseMoved(const void* source, ofMouseEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
 }
 
 
-bool PointerEvents::mouseDragged(ofMouseEventArgs& e)
+bool PointerEvents::mouseDragged(const void* source, ofMouseEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
 }
 
 
-bool PointerEvents::mousePressed(ofMouseEventArgs& e)
+bool PointerEvents::mousePressed(const void* source, ofMouseEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeMouseEvents;
 }
 
 
-bool PointerEvents::mouseReleased(ofMouseEventArgs& e)
+bool PointerEvents::mouseReleased(const void* source, ofMouseEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
     return _consumeMouseEvents;
 }
 
 
-bool PointerEvents::touchDown(ofTouchEventArgs& e)
+bool PointerEvents::touchDown(const void* source, ofTouchEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
     return _consumeTouchEvents;
 }
 
 
-bool PointerEvents::touchMoved(ofTouchEventArgs& e)
+bool PointerEvents::touchMoved(const void* source, ofTouchEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeTouchEvents;
 }
 
 
-bool PointerEvents::touchUp(ofTouchEventArgs& e)
+bool PointerEvents::touchUp(const void* source, ofTouchEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
     return _consumeTouchEvents;
 }
 
 
-bool PointerEvents::touchDoubleTap(ofTouchEventArgs& e)
+bool PointerEvents::touchDoubleTap(const void* source, ofTouchEventArgs& e)
 {
     // We can consume these events, but skip them.
     // Users should check the tap count.
@@ -560,9 +590,9 @@ bool PointerEvents::touchDoubleTap(ofTouchEventArgs& e)
 }
 
 
-bool PointerEvents::touchCancelled(ofTouchEventArgs& e)
+bool PointerEvents::touchCancelled(const void* source, ofTouchEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(e);
+    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerCancel, p, this);
     return _consumeTouchEvents;
@@ -581,9 +611,16 @@ void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
 }
 
 
+PointerEvents& PointerEvents::instance()
+{
+    static PointerEvents instance;
+    return instance;
+}
+
+
 void PointerEvents::updateTapCount(PointerEventArgs& e)
 {
-    PointerEventKey key(e.id(), e.button());
+    PointerEventArgs::PointerEventKey key(e.id(), e.button());
 
     uint64_t _doubleTapThreshold = PointerUtilities::systemTapTimeout();
 
@@ -610,6 +647,46 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
     {
         _pointerDownEventTimeMap.erase(iter);
     }
+}
+
+
+PointerEvents* PointerEventsManager::events()
+{
+    return eventsForWindow(nullptr);
+}
+
+
+PointerEvents* PointerEventsManager::eventsForWindow(ofAppBaseWindow* window)
+{
+    auto iter = _windowEventMap.find(window);
+
+    if (iter != _windowEventMap.end())
+    {
+        return iter->second.get();
+    }
+    else
+    {
+        _windowEventMap[window] = std::make_unique<PointerEvents>(window);
+
+        return _windowEventMap[window].get();
+    }
+}
+
+
+PointerEventsManager& PointerEventsManager::instance()
+{
+    static PointerEventsManager instance;
+    return instance;
+}
+
+
+PointerEventsManager::PointerEventsManager()
+{
+}
+
+
+PointerEventsManager::~PointerEventsManager()
+{
 }
 
 
