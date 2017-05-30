@@ -773,14 +773,14 @@ void UnregisterPointerEventsForWindow(ofAppBaseWindow* window, ListenerClass* li
 template <class ListenerClass>
 void RegisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
-    RegisterPointerEventsForWindow(nullptr, listener, prio);
+    RegisterPointerEventsForWindow<ListenerClass>(nullptr, listener, prio);
 }
 
 
 template <class ListenerClass>
 void UnregisterPointerEvents(ListenerClass* listener)
 {
-    UnregisterPointerEventsForWindow(nullptr, listener);
+    UnregisterPointerEventsForWindow<ListenerClass>(nullptr, listener);
 }
 
 
