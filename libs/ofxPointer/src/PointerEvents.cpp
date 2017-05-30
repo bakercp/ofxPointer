@@ -367,7 +367,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
     std::string type = POINTER_MOVE;
 
     uint64_t buttons = 0;
-    uint64_t tapCount = 0;
+    uint64_t tapCount = 0; // deprecated
 
     switch (e.type)
     {
