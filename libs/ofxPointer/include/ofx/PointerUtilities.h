@@ -18,6 +18,9 @@ namespace ofx {
 class PointerUtilities
 {
 public:
+    /// \returns a consistent timestamp for use with pointer events.
+    static uint64_t timestamp();
+
     /// \brief Get the system's long press timeout in milliseconds.
     /// \returns the system's long press timeout in milliseconds.
     static uint64_t systemLongPressTimeout();

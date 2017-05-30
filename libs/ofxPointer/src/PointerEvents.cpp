@@ -362,7 +362,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    uint64_t timestamp = ofGetElapsedTimeMillis();
+    uint64_t timestamp = PointerUtilities::timestamp();
 
     std::string type = POINTER_MOVE;
 
@@ -465,7 +465,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
-    uint64_t timestamp = ofGetElapsedTimeMillis();
+    uint64_t timestamp = PointerUtilities::timestamp();
 
     return PointerEventArgs(type,
                             point,

@@ -6,6 +6,7 @@
 
 
 #include "ofx/PointerUtilities.h"
+#include "ofUtils.h"
 
 
 #ifdef TARGET_LINUX
@@ -14,6 +15,13 @@
 
 
 namespace ofx {
+
+
+
+uint64_t PointerUtilities::timestamp()
+{
+    return ofGetElapsedTimeMillis();
+}
 
 
 #if !defined(TARGET_OSX)
