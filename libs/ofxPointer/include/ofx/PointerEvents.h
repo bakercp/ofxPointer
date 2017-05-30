@@ -282,7 +282,7 @@ public:
                      uint64_t button,
                      uint64_t buttons,
                      uint64_t modifiers,
-                     uint64_t tapCount,
+                     uint64_t tapCount, // deprecated
                      uint64_t timestamp,
                      ofAppBaseWindow* source);
 
@@ -344,7 +344,7 @@ public:
     /// useful enough to be included here.
     ///
     /// \returns the tap count when the event is of type POINTER_DOWN or POINTER_UP.
-    uint64_t tapCount() const;
+    OF_DEPRECATED_MSG("Use ofx::TapGesture.", uint64_t tapCount() const);
 
     /// \returns the timestamp of this event.
     uint64_t timestamp() const;
@@ -381,7 +381,6 @@ public:
         ss << "     Button: " << button() << std::endl;
         ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
-        ss << "  Tap Count: " << tapCount() << std::endl;
         ss << "Touch Index: " << index() << std::endl;
         ss << "     Source: " << source() << std::endl;
 
@@ -483,6 +482,7 @@ private:
     uint64_t _modifiers = 0;
 
     /// \brief The current number of taps associated with this event.
+    /// \deprecated
     uint64_t _tapCount = 0;
 
     /// \brief The timestamp of this event.
@@ -642,6 +642,7 @@ protected:
 
     /// \brief Update POINTER_DOWN or POINTER_UP event tap counts.
     /// \param e The event data.
+    /// \deprecated
     void updateTapCount(PointerEventArgs& e);
 
     /// \brief True iff the PointerEvents should consume mouse events.

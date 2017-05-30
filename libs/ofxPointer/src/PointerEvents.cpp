@@ -212,7 +212,7 @@ PointerEventArgs::PointerEventArgs(const std::string& type,
                      e.button(),
                      e.buttons(),
                      e.modifiers(),
-                     e.tapCount(),
+                     e._tapCount,
                      e.timestamp(),
                      nullptr)
 
@@ -231,7 +231,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    uint64_t button,
                                    uint64_t buttons,
                                    uint64_t modifiers,
-                                   uint64_t tapCount,
+                                   uint64_t tapCount, // deprecated
                                    uint64_t timestamp,
                                    ofAppBaseWindow* source):
     _eventType(eventType),
@@ -245,7 +245,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
     _button(button),
     _buttons(buttons),
     _modifiers(modifiers),
-    _tapCount(tapCount),
+    _tapCount(tapCount), // deprecated
     _timestamp(timestamp),
     _source(source)
 {
@@ -326,7 +326,7 @@ uint64_t PointerEventArgs::modifiers() const
 }
 
 
-uint64_t PointerEventArgs::tapCount() const
+uint64_t PointerEventArgs::tapCount() const // deprecated
 {
     return _tapCount;
 }
@@ -632,7 +632,7 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
         {
             if (e.timestamp() <= (iter->second.timestamp() + _doubleTapThreshold))
             {
-                e._tapCount += iter->second.tapCount();
+                e._tapCount += iter->second._tapCount;
             }
         }
         
@@ -641,7 +641,7 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
     else if (iter != _pointerDownEventTimeMap.end() && e.eventType() == PointerEventArgs::POINTER_UP)
     {
         // Transfer the tap count.
-        e._tapCount += iter->second.tapCount();
+        e._tapCount += iter->second._tapCount;
     }
     else if (iter != _pointerDownEventTimeMap.end() && e.timestamp() > (iter->second.timestamp() + _doubleTapThreshold))
     {
