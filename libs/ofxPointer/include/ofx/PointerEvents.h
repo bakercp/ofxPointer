@@ -488,7 +488,7 @@ private:
     /// \brief The timestamp of this event.
     uint64_t _timestamp = 0;
 
-    /// \brief The event source;
+    /// \brief The event source.
     ofAppBaseWindow* _source = nullptr;
 
     friend class PointerEvents;
@@ -688,6 +688,7 @@ protected:
 
     /// \brief The default source if the callback is missing.
     ofAppBaseWindow* _source = nullptr;
+
 };
 
 

@@ -524,6 +524,7 @@ PointerEvents::~PointerEvents()
 
 bool PointerEvents::mouseMoved(const void* source, ofMouseEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
@@ -532,6 +533,7 @@ bool PointerEvents::mouseMoved(const void* source, ofMouseEventArgs& e)
 
 bool PointerEvents::mouseDragged(const void* source, ofMouseEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeMouseEvents;
@@ -540,6 +542,7 @@ bool PointerEvents::mouseDragged(const void* source, ofMouseEventArgs& e)
 
 bool PointerEvents::mousePressed(const void* source, ofMouseEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
@@ -549,6 +552,7 @@ bool PointerEvents::mousePressed(const void* source, ofMouseEventArgs& e)
 
 bool PointerEvents::mouseReleased(const void* source, ofMouseEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
@@ -558,6 +562,7 @@ bool PointerEvents::mouseReleased(const void* source, ofMouseEventArgs& e)
 
 bool PointerEvents::touchDown(const void* source, ofTouchEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerDown, p, this);
@@ -567,6 +572,7 @@ bool PointerEvents::touchDown(const void* source, ofTouchEventArgs& e)
 
 bool PointerEvents::touchMoved(const void* source, ofTouchEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     ofNotifyEvent(onPointerMove, p, this);
     return _consumeTouchEvents;
@@ -575,6 +581,7 @@ bool PointerEvents::touchMoved(const void* source, ofTouchEventArgs& e)
 
 bool PointerEvents::touchUp(const void* source, ofTouchEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerUp, p, this);
@@ -592,6 +599,7 @@ bool PointerEvents::touchDoubleTap(const void* source, ofTouchEventArgs& e)
 
 bool PointerEvents::touchCancelled(const void* source, ofTouchEventArgs& e)
 {
+    // TODO: Recognize source when sent by oF core.
     auto p = PointerEventArgs::toPointerEventArgs(e, _source);
     updateTapCount(p);
     ofNotifyEvent(onPointerCancel, p, this);
