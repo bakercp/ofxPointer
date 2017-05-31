@@ -104,7 +104,7 @@ Point::Point(const glm::vec3& position,
              float rotation,
              float tiltX,
              float tiltY):
-    glm::vec3(position),
+    _position(position),
     _absolutePosition(absolutePosition),
     _shape(shape),
     _pressure(pressure),
@@ -118,6 +118,18 @@ Point::Point(const glm::vec3& position,
 
 Point::~Point()
 {
+}
+
+
+Point::operator glm::vec3() const
+{
+    return _position;
+}
+
+
+const glm::vec3& Point::position() const
+{
+    return _position;
 }
 
 

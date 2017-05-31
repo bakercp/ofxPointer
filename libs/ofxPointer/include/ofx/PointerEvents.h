@@ -110,7 +110,7 @@ protected:
 /// \brief A class representing a pointer's point.
 ///
 /// Captures all relevant position, tilt rotation and presssure information.
-class Point: public glm::vec3
+class Point
 {
 public:
     /// \brief Construct a Point
@@ -158,6 +158,11 @@ public:
 
     /// \brief Destroy the Point.
     virtual ~Point();
+
+    OF_DEPRECATED_MSG("Use Point::position().", operator glm::vec3() const);
+
+    /// \returns the position in screen coordinates.
+    const glm::vec3& position() const;
 
     /// \brief Get the position in absolute device coordinates.
     ///
@@ -227,6 +232,9 @@ public:
     const PointShape& shape() const;
 
 private:
+    /// \brief The position in screen coordinates.
+    glm::vec3 _position;
+
     /// \brief The Point's absolute position in device coordinates.
     glm::vec3 _absolutePosition;
 
