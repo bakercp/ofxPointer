@@ -276,10 +276,25 @@ public:
     PointerEventArgs();
 
     /// \brief Create a PointerEventArgs with a new event type.
+    /// \param type The event type.
+    /// \param e The event to copy.
     PointerEventArgs(const std::string& type,
                      const PointerEventArgs& e);
 
     /// \brief Create a PointerEventArgs with arguments.
+    /// \param type The pointer event type.
+    /// \param point The event type.
+    /// \param deviceId The unique input device id.
+    /// \param pointerIndex The unique pointer index for the given device id.
+    /// \param deviceType The device type string.
+    /// \param canHover True if the device type can hover.
+    /// \param isPrimary True if this pointer is the primary pointer.
+    /// \param button The button id for this event.
+    /// \param buttons All pressed buttons for this pointer.
+    /// \param modifiers All modifiers for this pointer.
+    /// \param tapCount deprecated.
+    /// \param timestamp The timestamp of this event.
+    /// \param source The event source if available.
     PointerEventArgs(const std::string& type,
                      const Point& point,
                      std::size_t deviceId,
@@ -507,7 +522,8 @@ private:
 /// \brief A class for converting touch and mouse events into pointer events.
 ///
 /// This class is a source of pointer events.  It captures mouse and touch
-/// events and repackages and distributes them as pointer events.
+/// events from openFrameworks and repackages and distributes them as pointer
+/// events.
 class PointerEvents
 {
 public:
@@ -720,6 +736,7 @@ void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 }
 
 
+/// \brief Manages PointerEvents objects based on their ofAppBaseWindow source.
 class PointerEventsManager
 {
 public:
@@ -795,6 +812,10 @@ void UnregisterPointerEvents(ListenerClass* listener)
 } // namespace ofx
 
 
+/// \brief A hash function for combining std::hash<> values.
+/// \param seed The hash to append to.
+/// \param v The value to append.
+/// \tparam T The class to hash. Must be compatible with std::hash<>.
 template <class T>
 inline void hash_combine(std::size_t& seed, const T& v)
 {
