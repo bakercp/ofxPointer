@@ -302,6 +302,12 @@ std::size_t PointerEventArgs::id() const
 }
 
 
+PointerEventArgs::PointerEventKey PointerEventArgs::eventKey() const
+{
+    return PointerEventArgs::PointerEventKey(id(), button());
+}
+
+
 std::string PointerEventArgs::deviceType() const
 {
     return _deviceType;

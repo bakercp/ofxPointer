@@ -333,6 +333,9 @@ public:
     /// \returns a single unique id for a device id and Pointer index.
     std::size_t id() const;
 
+    /// \return a unique event key.
+    PointerEventKey eventKey() const;
+
     /// \brief Get the device type string.
     ///
     /// This string may be TYPE_MOUSE, TYPE_TOUCH, TYPE_PEN, or a custom string.
