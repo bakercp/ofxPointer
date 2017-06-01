@@ -372,8 +372,10 @@ public:
     /// \returns the tap count when the event is of type POINTER_DOWN or POINTER_UP.
     OF_DEPRECATED_MSG("Use ofx::TapGesture.", uint64_t tapCount() const);
 
-    /// \returns the timestamp of this event.
-    uint64_t timestamp() const;
+    /// \returns the timestamp of this event in milliseconds.
+    uint64_t timestampMillis() const;
+
+    OF_DEPRECATED_MSG("Use timestampMillis().", uint64_t timestamp() const);
 
     /// \returns the event source if available.
     const ofAppBaseWindow* source() const;
@@ -400,7 +402,7 @@ public:
 
         ss << "------------" << std::endl;
         ss << "      Event: " << eventType() << std::endl;
-        ss << "  Timestamp: " << timestamp() << std::endl;
+        ss << "  Timestamp: " << timestampMillis() << std::endl;
         ss << "         Id: " << id() << std::endl;
         ss << "  Device Id: " << deviceId() << std::endl;
         ss << "Device Type: " << deviceType() << std::endl;

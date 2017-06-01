@@ -350,9 +350,15 @@ uint64_t PointerEventArgs::tapCount() const // deprecated
 }
 
 
-uint64_t PointerEventArgs::timestamp() const
+uint64_t PointerEventArgs::timestampMillis() const
 {
     return _timestamp;
+}
+
+
+uint64_t PointerEventArgs::timestamp() const // deprecated
+{
+    return timestampMillis();
 }
 
 
@@ -380,7 +386,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    uint64_t timestamp = PointerUtilities::timestamp();
+    uint64_t timestamp = PointerUtilities::timestampMillis();
 
     std::string type = POINTER_MOVE;
 
@@ -483,7 +489,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
-    uint64_t timestamp = PointerUtilities::timestamp();
+    uint64_t timestamp = PointerUtilities::timestampMillis();
 
     return PointerEventArgs(type,
                             point,
@@ -648,7 +654,7 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
 {
     PointerEventArgs::PointerEventKey key(e.id(), e.button());
 
-    uint64_t _doubleTapThreshold = PointerUtilities::systemTapTimeout();
+    uint64_t _doubleTapThreshold = PointerUtilities::tapTimeoutMillis();
 
     auto iter = _pointerDownEventTimeMap.find(key);
 
@@ -656,7 +662,7 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
     {
         if (iter != _pointerDownEventTimeMap.end())
         {
-            if (e.timestamp() <= (iter->second.timestamp() + _doubleTapThreshold))
+            if (e.timestampMillis() <= (iter->second.timestampMillis() + _doubleTapThreshold))
             {
                 e._tapCount += iter->second._tapCount;
             }
@@ -669,7 +675,7 @@ void PointerEvents::updateTapCount(PointerEventArgs& e)
         // Transfer the tap count.
         e._tapCount += iter->second._tapCount;
     }
-    else if (iter != _pointerDownEventTimeMap.end() && e.timestamp() > (iter->second.timestamp() + _doubleTapThreshold))
+    else if (iter != _pointerDownEventTimeMap.end() && e.timestampMillis() > (iter->second.timestampMillis() + _doubleTapThreshold))
     {
         _pointerDownEventTimeMap.erase(iter);
     }

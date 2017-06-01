@@ -18,29 +18,29 @@ namespace ofx {
 class PointerUtilities
 {
 public:
-    /// \returns a consistent timestamp for use with pointer events.
-    static uint64_t timestamp();
+    /// \returns a consistent millisecond timestamp for use with pointer events.
+    static uint64_t timestampMillis();
 
     /// \brief Get the system's long press timeout in milliseconds.
     /// \returns the system's long press timeout in milliseconds.
-    static uint64_t systemLongPressTimeout();
+    static uint64_t longPressTimeoutMillis();
 
     /// \brief Get the system's tap timeout in milliseconds.
     /// \returns the system's tap timeout in milliseconds.
-    static uint64_t systemTapTimeout();
+    static uint64_t tapTimeoutMillis();
 
-    OF_DEPRECATED_MSG("Use systemTapTimeout().", static uint64_t getSystemDoubleTapInterval());
+    OF_DEPRECATED_MSG("Use tapTimeoutMills().", static uint64_t getSystemDoubleTapInterval());
 
     enum
     {
         /// \brief The default long press timeout in milliseconds.
-        DEFAULT_LONG_PRESS_TIMEOUT = 500,
+        DEFAULT_LONG_PRESS_TIMEOUT_MILLIS = 500,
 
         /// \brief The default double tap timeout in milliseconds.
-        DEFAULT_TAP_TIMEOUT = 500,
+        DEFAULT_TAP_TIMEOUT_MILLIS = 500,
 
         /// \deprecated
-        DEFAULT_DOUBLE_TAP_INTERVAL = DEFAULT_TAP_TIMEOUT
+        DEFAULT_DOUBLE_TAP_INTERVAL = DEFAULT_TAP_TIMEOUT_MILLIS
 
     };
 

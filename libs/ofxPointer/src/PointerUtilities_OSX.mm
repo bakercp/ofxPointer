@@ -17,13 +17,13 @@
 namespace ofx {
 
 
-uint64_t PointerUtilities::systemLongPressTimeout()
+uint64_t PointerUtilities::longPressTimeoutMillis()
 {
-    return DEFAULT_LONG_PRESS_TIMEOUT;
+    return DEFAULT_LONG_PRESS_TIMEOUT_MILLIS;
 }
 
 
-uint64_t PointerUtilities::systemTapTimeout()
+uint64_t PointerUtilities::tapTimeoutMillis()
 {
     return 1000 * [NSEvent doubleClickInterval]; // Returns time in seconds.
 }
