@@ -9,4 +9,6 @@
 
 
 #include "ofx/PointerEvents.h"
-#include "ofx/PointerUtilities.h"
+
+/// \brief An alias for easier future core integration.
+typedef ofx::PointerEventArgs ofPointerEventArgs;

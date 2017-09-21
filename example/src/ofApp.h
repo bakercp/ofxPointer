@@ -15,14 +15,15 @@
 class ofApp: public ofBaseApp
 {
 public:
-    void setup();
-    void update();
-    void draw();
+    void setup() override;
+    void update() override;
+    void draw() override;
 
-    // Pointer Events
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
+    void pointerUp(ofx::PointerEventArgs& e);
+    void pointerDown(ofx::PointerEventArgs& e);
+    void pointerMove(ofx::PointerEventArgs& e);
+    void pointerCancel(ofx::PointerEventArgs& e);
+
+    std::vector<ofx::PointerEventArgs> events;
 
 };

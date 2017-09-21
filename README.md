@@ -9,7 +9,7 @@ This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevent
 
 Currently the openFrameworks pointer model separates touch and mouse events, making cross platform development a little tricky.
 
-Simply put, ofxPointer merges pointer, touch and pen input into a single extensible interface.
+Simply put, `ofxPointer` merges pointer, touch and pen input into a single extensible interface.
 
 This addon also keeps track of additional information like number of clicks, etc.
 
@@ -27,45 +27,45 @@ A typical program will now look like this:
 class ofApp: public ofBaseApp
 {
 public:
-    void setup()
+    void setup() override
     {
         // Register the pointer events.
         ofx::RegisterPointerEvents(this);
     }
 
-    void update()
+    void update() override
     {
         // Update
     }
 
 
-    void draw()
+    void draw() override
     {
         // Draw
     }
 
 
-    void onPointerUp(ofx::PointerEventArgs& evt)
+    void pointerUp(ofx::PointerEventArgs& evt)
     {
-        ofLogNotice("ofApp::onPointerUp") << evt.toString();
+        ofLogNotice("ofApp::onPointerUp") << evt;
     }
 
 
-    void onPointerDown(ofx::PointerEventArgs& evt)
+    void pointerDown(ofx::PointerEventArgs& evt)
     {
-        ofLogNotice("ofApp::onPointerDown") << evt.toString();
+        ofLogNotice("ofApp::onPointerDown") << evt;
     }
 
 
-    void onPointerMove(ofx::PointerEventArgs& evt)
+    void pointerMove(ofx::PointerEventArgs& evt)
     {
-        ofLogNotice("ofApp::onPointerMove") << evt.toString();
+        ofLogNotice("ofApp::onPointerMove") << evt;
     }
 
 
-    void onPointerCancel(ofx::PointerEventArgs& evt)
+    void pointerCancel(ofx::PointerEventArgs& evt)
     {
-        ofLogNotice("ofApp::onPointerCancel") << evt.toString();
+        ofLogNotice("ofApp::onPointerCancel") << evt;
     }
 
 };

@@ -13,9 +13,53 @@
 #include "ofEvents.h"
 #include "ofUtils.h"
 #include "ofAppBaseWindow.h"
+#include "ofRectangle.h"
 
 
 namespace ofx {
+
+
+/// \brief A base class describing the basic components of event arguments.
+class EventArgs: public ofEventArgs
+{
+public:
+    /// \brief Create a default EventArgs.
+    EventArgs();
+
+    /// \brief Create a BaseEventArgs with the given paramaters.
+    /// \param eventSource The source of the event.
+    /// \param eventType A string describing the type of the event.
+    /// \param timestampMillis The timestamp of the event.
+    EventArgs(const void* eventSource,
+              const std::string& eventType,
+              uint64_t timestampMillis);
+
+    /// \brief Destroy the EventArgs.
+    virtual ~EventArgs();
+
+    /// \returns the event type.
+    std::string eventType() const;
+
+    /// \returns the timestamp of this event in milliseconds.
+    uint64_t timestampMillis() const;
+
+    /// \returns the source of the event if available.
+    const void* eventSource() const;
+
+    /// \brief An unknown event type.
+    static const std::string EVENT_TYPE_UNKNOWN;
+
+private:
+    /// \brief A pointer to the event source.
+    const void* _eventSource = nullptr;
+
+    /// \brief The name of this event type.
+    std::string _eventType;
+
+    /// \brief The timestamp of this event in milliseconds.
+    uint64_t _timestampMillis = 0;
+
+};
 
 
 /// \brief A PointShape describes the shape of a pointer.
@@ -38,12 +82,12 @@ public:
     /// \param height Bounding box height.
     /// \param ellipseMajorAxis Ellipse major axis.
     /// \param ellipseMinorAxis Ellipse minor axis.
-    /// \param ellipseAngle Ellipse angle in degrees.
+    /// \param ellipseAngleDeg Ellipse angle in degrees.
     PointShape(float width,
                float height,
                float ellipseMajorAxis = 0,
                float ellipseMinorAxis = 0,
-               float ellipseAngle = 0);
+               float ellipseAngleDeg = 0);
 
     /// \brief Destroy the PointShape.
     virtual ~PointShape();
@@ -53,7 +97,7 @@ public:
     /// When an ellipse is defined, this represents the width of the ellipse's
     /// axis-aligned bounding box.
     ///
-    /// \returns the Point width.
+    /// \returns the PointShape width.
     float width() const;
 
     /// \brief Get the height of the PointShape.
@@ -61,7 +105,7 @@ public:
     /// When an ellipse is defined, this represents the height of the ellipse's
     /// axis-aligned bounding box.
     ///
-    /// \returns the Point height.
+    /// \returns the PointShape height.
     float height() const;
 
     /// \brief Get the angle of the PointShape ellipse.
@@ -69,15 +113,25 @@ public:
     /// Some touch pointers may define the elliptical shape and angle of a
     /// contact point.
     ///
-    /// \returns the Point's ellipse angle in degrees.
-    float ellipseAngle() const;
+    /// \returns the PointShape's ellipse angle in degrees.
+    float ellipseAngleDeg() const;
+
+    /// \brief Get the angle of the PointShape ellipse.
+    ///
+    /// Some touch pointers may define the elliptical shape and angle of a
+    /// contact point.
+    ///
+    /// \returns the PointShape's ellipse angle in radians.
+    float ellipseAngleRad() const;
+
+    OF_DEPRECATED_MSG("Use elipseAngleDeg() or ellipseAngleRad().", float ellipseAngle() const);
 
     /// \brief Get the major axis of the PointShape ellipse.
     ///
     /// Some touch pointers may define the elliptical shape and angle of a
     /// contact point.
     ///
-    /// \returns the Point's ellipse major axis.
+    /// \returns the PointShape's ellipse major axis.
     float ellipseMajorAxis() const;
 
     /// \brief Get the minor axis of the PointShape ellipse.
@@ -85,7 +139,7 @@ public:
     /// Some touch pointers may define the elliptical shape and angle of a
     /// contact point.
     ///
-    /// \returns the Point's ellipse minor axis.
+    /// \returns the PointShape's ellipse minor axis.
     float ellipseMinorAxis() const;
 
 protected:
@@ -102,14 +156,14 @@ protected:
     float _ellipseMinorAxis = 0;
 
     /// \brief Ellipse angle in degrees.
-    float _ellipseAngle = 0;
+    float _ellipseAngleDeg = 0;
 
 };
 
 
 /// \brief A class representing a pointer's point.
 ///
-/// Captures all relevant position, tilt rotation and presssure information.
+/// Captures all position, shape, tilt rotation and pressure information.
 class Point
 {
 public:
@@ -118,25 +172,25 @@ public:
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
-    Point(const glm::vec3& position);
+    Point(const glm::vec2& position);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
     /// \param shape The point shape.
-    Point(const glm::vec3& position, const PointShape& shape);
+    Point(const glm::vec2& position, const PointShape& shape);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
     /// \param pressure The normalized pressure.
     /// \param tiltX The tilt X angle.
     /// \param tiltY The tilt Y angle.
-    Point(const glm::vec3& position, float pressure, float tiltX, float tiltY);
+    Point(const glm::vec2& position, float pressure, float tiltX, float tiltY);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
     /// \param shape The point shape.
     /// \param pressure The normalized pressure.
-    Point(const glm::vec3& position, const PointShape& shape, float pressure);
+    Point(const glm::vec2& position, const PointShape& shape, float pressure);
 
     /// \brief Construct a Point
     /// \param position The position in screen coordinates.
@@ -147,8 +201,8 @@ public:
     /// \param rotation The rotation.
     /// \param tiltX The tilt X angle.
     /// \param tiltY The tilt Y angle.
-    Point(const glm::vec3& position,
-          const glm::vec3& absolutePosition,
+    Point(const glm::vec2& position,
+          const glm::vec2& absolutePosition,
           const PointShape& shape,
           float pressure,
           float tangentialPressure,
@@ -159,23 +213,19 @@ public:
     /// \brief Destroy the Point.
     virtual ~Point();
 
-    OF_DEPRECATED_MSG("Use Point::position().", operator glm::vec3() const);
-
     /// \returns the position in screen coordinates.
-    const glm::vec3& position() const;
+    glm::vec2 position() const;
 
     /// \brief Get the position in absolute device coordinates.
     ///
-    /// Point extends glm::vec3, providing position relative to the origin of the
-    /// screen coordinate system.  Absolute position is returned in absolute
-    /// device coordinates, which may be defined at a resolution that differs
-    /// from the screen position.
+    /// Absolute position is returned in absolute device coordinates, which may
+    /// be defined at a resolution that differs from the screen position.
     ///
     /// For devices that do not differentiate between screen and absolute
     /// positions, the value is equal to the screen position.
     ///
     /// \returns the absolute position in device coordinates.
-    const glm::vec3& absolutePosition() const;
+    glm::vec2 absolutePosition() const;
 
     /// \brief Get the normalized point pressure.
     ///
@@ -233,10 +283,10 @@ public:
 
 private:
     /// \brief The position in screen coordinates.
-    glm::vec3 _position;
+    glm::vec2 _position;
 
     /// \brief The Point's absolute position in device coordinates.
-    glm::vec3 _absolutePosition;
+    glm::vec2 _absolutePosition;
 
     /// \brief The Point shape.
     PointShape _shape;
@@ -260,7 +310,12 @@ private:
 
 
 /// \brief A class representing all of the arguments in a pointer event.
-class PointerEventArgs
+///
+/// PointerEventArgs are usually passed as arguments in the openFrameworks event
+/// system, for example, POINTER_UP events might be dispatched to an event like:
+///
+///     ofEvent<PointerEventArgs> onPointerUp;
+class PointerEventArgs: public EventArgs
 {
 public:
     /// \brief A typedef defining a key for a pointer.
@@ -276,14 +331,16 @@ public:
     PointerEventArgs();
 
     /// \brief Create a PointerEventArgs with a new event type.
-    /// \param type The event type.
+    /// \param eventType The event type.
     /// \param e The event to copy.
-    PointerEventArgs(const std::string& type,
+    PointerEventArgs(const std::string& eventType,
                      const PointerEventArgs& e);
 
-    /// \brief Create a PointerEventArgs with arguments.
-    /// \param type The pointer event type.
-    /// \param point The event type.
+    /// \brief Create a PointerEventArgs with parameters.
+    /// \param eventSource The event source if available.
+    /// \param eventType The pointer event type.
+    /// \param timestampMillis The timestamp of this event in milliseconds
+    /// \param point The point.
     /// \param deviceId The unique input device id.
     /// \param pointerIndex The unique pointer index for the given device id.
     /// \param deviceType The device type string.
@@ -292,10 +349,9 @@ public:
     /// \param button The button id for this event.
     /// \param buttons All pressed buttons for this pointer.
     /// \param modifiers All modifiers for this pointer.
-    /// \param tapCount deprecated.
-    /// \param timestamp The timestamp of this event.
-    /// \param source The event source if available.
-    PointerEventArgs(const std::string& type,
+    PointerEventArgs(const void* eventSource,
+                     const std::string& eventType,
+                     uint64_t timestampMillis,
                      const Point& point,
                      std::size_t deviceId,
                      int64_t pointerIndex,
@@ -304,19 +360,20 @@ public:
                      bool isPrimary,
                      uint64_t button,
                      uint64_t buttons,
-                     uint64_t modifiers,
-                     uint64_t tapCount, // deprecated
-                     uint64_t timestamp,
-                     ofAppBaseWindow* source);
+                     uint64_t modifiers);
 
     /// \brief Destroy the pointer event args.
     virtual ~PointerEventArgs();
 
-    /// \returns the pointer event type.
-    std::string eventType() const;
-
     /// \returns the Point data associated with this event.
     Point point() const;
+
+    /// \brief Get the position of the event in screen coordinates.
+    ///
+    /// A convenience method equivalent to point().position();
+    ///
+    /// \returns the position in screen coordinates.
+    glm::vec2 position() const;
 
     /// \brief Get the unique input device id.
     /// \returns the unique input device id.
@@ -364,35 +421,19 @@ public:
     /// \returns all modifiers for this pointer.
     uint64_t modifiers() const;
 
-    /// \brief Get the number of presses, clicks or taps associated with this event.
-    ///
-    /// This is not part of the official Pointer Events specification, but is
-    /// useful enough to be included here.
-    ///
-    /// \returns the tap count when the event is of type POINTER_DOWN or POINTER_UP.
-    OF_DEPRECATED_MSG("Use ofx::TapGesture.", uint64_t tapCount() const);
-
-    /// \returns the timestamp of this event in milliseconds.
-    uint64_t timestampMillis() const;
-
-    OF_DEPRECATED_MSG("Use timestampMillis().", uint64_t timestamp() const);
-
-    /// \returns the event source if available.
-    const ofAppBaseWindow* source() const;
+    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \param source The event source.
+    /// \param e The touch event to convert.
+    /// \returns a PointerEventArgs.
+    static PointerEventArgs toPointerEventArgs(const void* source,
+                                               const ofTouchEventArgs& e);
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
     /// \param e The touch event to convert.
     /// \param source The event source.
     /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofTouchEventArgs& e,
-                                               ofAppBaseWindow* source);
-
-    /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
-    /// \param e The touch event to convert.
-    /// \param source The event source.
-    /// \returns a PointerEventArgs.
-    static PointerEventArgs toPointerEventArgs(const ofMouseEventArgs& e,
-                                               ofAppBaseWindow* source);
+    static PointerEventArgs toPointerEventArgs(const void* source,
+                                               const ofMouseEventArgs& e);
 
     /// \brief A debug utility for viewing the contents of PointerEventArgs.
     /// \returns A string representation of the PointerEventArgs.
@@ -401,6 +442,7 @@ public:
         std::stringstream ss;
 
         ss << "------------" << std::endl;
+        ss << "     Source: " << eventSource() << std::endl;
         ss << "      Event: " << eventType() << std::endl;
         ss << "  Timestamp: " << timestampMillis() << std::endl;
         ss << "         Id: " << id() << std::endl;
@@ -410,7 +452,6 @@ public:
         ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
         ss << "Touch Index: " << index() << std::endl;
-        ss << "     Source: " << source() << std::endl;
 
         return ss.str();
     }
@@ -462,10 +503,9 @@ public:
     /// \brief The lost pointer capture event type.
     static const std::string LOST_POINTER_CAPTURE;
 
-private:
-    /// \brief The name of this event type.
-    std::string _eventType = POINTER_MOVE;
+    friend std::ostream& operator << (std::ostream& os, const PointerEventArgs& e);
 
+private:
     /// \brief The location and orientation of the pointer.
     Point _point;
 
@@ -509,17 +549,103 @@ private:
     /// \brief The current modifiers being pressed.
     uint64_t _modifiers = 0;
 
-    /// \brief The current number of taps associated with this event.
-    /// \deprecated
-    uint64_t _tapCount = 0;
-
-    /// \brief The timestamp of this event.
-    uint64_t _timestamp = 0;
-
-    /// \brief The event source.
-    ofAppBaseWindow* _source = nullptr;
-
     friend class PointerEvents;
+
+};
+
+
+/// \brief Write a PointerEventArgs to a std::ostream.
+/// \param os The std::ostream to write to.
+/// \param e The event to write.
+/// \returns a reference to the provided std::ostream.
+inline std::ostream& operator << (std::ostream& os, const PointerEventArgs& e)
+{
+    os << e.toString();
+    return os;
+}
+
+
+/// \brief A set of pointers of a certain event type with unique event keys.
+class PointerEventSet
+{
+public:
+    PointerEventSet();
+
+    /// \brief Create a PointerEventSet
+    PointerEventSet(const std::string& pointerEventType);
+
+    /// \brief Destroy the PointerEventSet.
+    virtual ~PointerEventSet();
+
+    /// \returns the pointer event type.
+    std::string pointerEventType() const;
+
+    /// \returns the first timestamp in the set in milliseconds.
+    uint64_t firstTimestampMillis() const;
+
+    /// \returns the last timestamp in the set in milliseconds.
+    uint64_t lastTimestampMillis() const;
+
+    /// \returns lastTimestampMillis() - firstTimestampMillis().
+    uint64_t deltaTimeMillis() const;
+
+    /// \returns the centroid of the set.
+    glm::vec2 centroid() const;
+
+    /// \returns the bounding box of the set.
+    ofRectangle boundingBox() const;
+
+    /// \returns the size of the set.
+    std::size_t size() const;
+
+    /// \returns true if the size == 0.
+    std::size_t empty() const;
+
+    /// \brief Clear all items in the set.
+    void clear();
+
+    /// \brief Determine fi the PointerEventSet has the given pointer key.
+    /// \param pointerEvent The pointer key to test.
+    /// \returns true if the set already has the pointerEvent.eventKey().
+    bool hasEventKey(const PointerEventArgs& pointerEvent);
+
+    /// \brief Add a pointer event to the set.
+    ///
+    /// Will add a pointer event to the set if its eventType matches the
+    /// this set's event type and the set does not already contain the
+    /// eventKey().
+    ///
+    /// \param pointerEvent The pointer event to add.
+    /// \returns true if the pointer was added successfully, false otherwise.
+    bool add(const PointerEventArgs& pointerEvent);
+
+    /// \returns the pointer events comprising this group.
+    std::vector<PointerEventArgs> pointerEvents() const;
+
+private:
+    /// \brief Update cached values.
+    void _updateCache() const;
+
+    /// \brief The pointer event type required for this set.
+    std::string _pointerEventType;
+
+    /// \brief The set of pointer events ordered by
+    std::vector<PointerEventArgs> _pointerEvents;
+
+    /// \brief True if the cache variables need updating.
+    mutable bool _cacheNeedsUpdate = true;
+
+    /// \brief The cached first timestamp in milliseconds.
+    mutable uint64_t _cachedFirstTimestampMillis = 0;
+
+    /// \brief The cached last timestamp in milliseconds.
+    mutable uint64_t _cachedLastTimestampMillis = 0;
+
+    /// \brief The cached centroid value.
+    mutable glm::vec2 _cachedCentroid;
+
+    /// \brief The cached bounding box value.
+    mutable ofRectangle _cachedBoundingBox;
 
 };
 
@@ -529,86 +655,60 @@ private:
 /// This class is a source of pointer events.  It captures mouse and touch
 /// events from openFrameworks and repackages and distributes them as pointer
 /// events.
+///
+/// This should not be accessed directly.
 class PointerEvents
 {
 public:
-    /// \brief Create a default PointerEvents object.
-    PointerEvents();
-
     /// \brief Create a PointerEvents object with the given source.
-    PointerEvents(ofAppBaseWindow* source);
+    /// \param source The window that will provide the events.
+    PointerEvents(ofAppBaseWindow* window);
 
     /// \brief Destroy the PointerEvents.
     ~PointerEvents();
 
-    /// \brief Mouse moved callback.
+    /// \brief Mouse event callback.
+    /// \param source The event source.
+    /// \param e the event arguments.
+    /// \returns true of the event was consumed.
+    bool mouseEvent(const void* source, ofMouseEventArgs& e);
+
+    /// \brief Touch event callback.
+    /// \param source The event source.
     /// \param e the event arguments.
     /// \returns true of the event was handled.
-    bool mouseMoved(const void* source, ofMouseEventArgs& e);
+    bool touchEvent(const void* source, ofTouchEventArgs& e);
 
-    /// \brief Mouse dragged callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool mouseDragged(const void* source, ofMouseEventArgs& e);
-
-    /// \brief Mouse pressed callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool mousePressed(const void* source, ofMouseEventArgs& e);
-
-    /// \brief Mouse released callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool mouseReleased(const void* source, ofMouseEventArgs& e);
-
-    /// \brief Touch down callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool touchDown(const void* source, ofTouchEventArgs& e);
-
-    /// \brief Touch moved callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool touchMoved(const void* source, ofTouchEventArgs& e);
-
-    /// \brief Touch up callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool touchUp(const void* source, ofTouchEventArgs& e);
-
-    /// \brief Touch double tap callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool touchDoubleTap(const void* source, ofTouchEventArgs& e);
-
-    /// \brief Touch cancelled callback.
-    /// \param e the event arguments.
-    /// \returns true of the event was handled.
-    bool touchCancelled(const void* source, ofTouchEventArgs& e);
-
-    /// \brief Set the PointerEvents instance to consume mouse events.
+    /// \brief Disable legacy mouse / touch events.
     ///
-    /// If mouse events are consumed, they will not be futher propagated.
+    /// If legacy mouse / touch events are disabled, they will be automatically
+    /// consumed if not already consumed by another callback.
     ///
-    /// \param consumeMouseEvents true if events should be consumed.
-    void setConsumeMouseEvents(bool consumeMouseEvents);
+    /// For legacy addons and other legacy user interface code, this should not
+    /// users should think carefully about disabling legacy events.
+    ///
+    /// Alternatively users that wish to use PointerEvents should simply not
+    /// register listeners for mouse or touch events.
+    void disableLegacyEvents();
 
-    /// \brief Set the PointerEvents instance to consume touch events.
+    /// \brief Enable legacy mouse / touch events.
     ///
-    /// If touch events are consumed, they will not be futher propagated.
-    ///
-    /// \param consumeTouchEvents true if events should be consumed.
-    void setConsumeTouchEvents(bool consumeTouchEvents);
+    /// If legacy mouse / touch events are enabled, event propagation will not
+    /// artificially halted. If a consumer handles the event manually it will
+    /// not be propagated.
+    void enableLegacyEvents();
 
     /// \brief Register a pointer event listener.
     ///
     /// Event listeners registered via this function must have the following
     /// ofEvent callbacks defined:
     ///
-    ///     `onPointerDown(...)`
-    ///     `onPointerUp(...)`
-    ///     `onPointerMove(...)`
-    ///     `onPointerCancel(...)`
+    ///     `void pointerDown(PointerEventArgs& evt)`
+    ///     `void pointerUp(PointerEventArgs& evt)`
+    ///     `void pointerMove(PointerEventArgs& evt)`
+    ///     `void pointerCancel(PointerEventArgs& evt)`
+    ///
+    /// Other method signatures event signatures are also supported.
     ///
     /// \tparam ListenerClass The class of the listener.
     /// \param listener A pointer to the listener class.
@@ -621,10 +721,12 @@ public:
     /// Event listeners unregistered via this function must have the following
     /// ofEvent callbacks defined:
     ///
-    ///     `onPointerDown(...)`
-    ///     `onPointerUp(...)`
-    ///     `onPointerMove(...)`
-    ///     `onPointerCancel(...)`
+    ///     `void pointerDown(PointerEventArgs& evt)`
+    ///     `void pointerUp(PointerEventArgs& evt)`
+    ///     `void pointerMove(PointerEventArgs& evt)`
+    ///     `void pointerCancel(PointerEventArgs& evt)`
+    ///
+    /// Other method signatures event signatures are also supported.
     ///
     /// \tparam ListenerClass The class of the listener.
     /// \param listener A pointer to the listener class.
@@ -632,14 +734,26 @@ public:
     template <class ListenerClass>
     void unregisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
 
+    /// \brief Event that is triggered for any pointer event.
+    ///
+    /// All specific events below are triggered for matching events types if the
+    /// event was not handled by an pointerEvent listener.
+    ofEvent<PointerEventArgs> pointerEvent;
+
     /// \brief Event that is triggered when a point is introduced.
-    ofEvent<PointerEventArgs> onPointerDown;
+    ///
+    /// Triggered after pointerEvent, if pointerEvent is not consumed.
+    ofEvent<PointerEventArgs> pointerDown;
 
     /// \brief Event that is triggered when a point is removed.
-    ofEvent<PointerEventArgs> onPointerUp;
+    ///
+    /// Triggered after pointerEvent, if pointerEvent is not consumed.
+    ofEvent<PointerEventArgs> pointerUp;
 
     /// \brief Event that is triggered when a point moves.
-    ofEvent<PointerEventArgs> onPointerMove;
+    ///
+    /// Triggered after pointerEvent, if pointerEvent is not consumed.
+    ofEvent<PointerEventArgs> pointerMove;
 
     ///  \brief Event when the system cancels a pointer event.
     ///
@@ -656,35 +770,17 @@ public:
     ///     device can support. For example, if a device supports only two
     ///     contact points, if the user has two fingers on a surface, and then
     ///     touches it with a third finger, this event is raised.
-    ofEvent<PointerEventArgs> onPointerCancel;
-
-    /// \todo Remaining element-related methods don't apply to the same event
-    /// structure because they depend on the target.
-
-    /// \brief Get the singleton instance of the PointerEvents.
-    /// \returns an instance of PointerEvents attached global event context.
-    static PointerEvents& instance();
+    ofEvent<PointerEventArgs> pointerCancel;
 
 protected:
-    /// \brief A typedef defining a pointer down event map.
-    typedef std::map<PointerEventArgs::PointerEventKey, PointerEventArgs> PointerDownTimeMap;
+    /// \brief Dispatch the pointer events.
+    /// \param source The event source.
+    /// \param e the event arguments.
+    /// \returns true of the event was handled.
+    bool _dispatchPointerEvent(const void* source, PointerEventArgs& e);
 
-    /// \brief Update POINTER_DOWN or POINTER_UP event tap counts.
-    /// \param e The event data.
-    /// \deprecated
-    void updateTapCount(PointerEventArgs& e);
-
-    /// \brief True iff the PointerEvents should consume mouse events.
-    bool _consumeMouseEvents = false;
-
-    /// \brief True iff the PointerEvents should consume touch events.
-    bool _consumeTouchEvents = false;
-
-    /// \brief The Pointer down event times.
-    ///
-    /// These are used to keep track of multiple taps since the oF event system
-    /// does not currently keep track of tap count.
-    PointerDownTimeMap _pointerDownEventTimeMap;
+    /// \brief True if the PointerEvents should consume mouse / touch events.
+    bool _consumeLegacyEvents = false;
 
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     /// \brief Mouse moved event listener.
@@ -698,13 +794,22 @@ protected:
 
     /// \brief Mouse released event listener.
     ofEventListener _mouseReleasedListener;
-#endif
 
-    /// \brief Touch up event listener.
-    ofEventListener _touchUpListener;
+    /// \brief Mouse scrolled event listener.
+    ofEventListener _mouseScrolledListener;
+
+    /// \brief Mouse entered the source window event listener.
+    ofEventListener _mouseEnteredListener;
+
+    /// \brief Mouse exited the source window event listener.
+    ofEventListener _mouseExitedListener;
+#endif
 
     /// \brief Touch downevent listener.
     ofEventListener _touchDownListener;
+
+    /// \brief Touch up event listener.
+    ofEventListener _touchUpListener;
 
     /// \brief Touch moved event listener.
     ofEventListener _touchMovedListener;
@@ -724,20 +829,20 @@ protected:
 template <class ListenerClass>
 void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
 {
-    ofAddListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
-    ofAddListener(onPointerUp, listener, &ListenerClass::onPointerUp, prio);
-    ofAddListener(onPointerMove, listener, &ListenerClass::onPointerMove, prio);
-    ofAddListener(onPointerCancel, listener, &ListenerClass::onPointerCancel, prio);
+    ofAddListener(pointerDown, listener, &ListenerClass::pointerDown, prio);
+    ofAddListener(pointerUp, listener, &ListenerClass::pointerUp, prio);
+    ofAddListener(pointerMove, listener, &ListenerClass::pointerMove, prio);
+    ofAddListener(pointerCancel, listener, &ListenerClass::pointerCancel, prio);
 }
 
 
 template <class ListenerClass>
 void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
 {
-    ofRemoveListener(onPointerDown, listener, &ListenerClass::onPointerDown, prio);
-    ofRemoveListener(onPointerUp, listener, &ListenerClass::onPointerUp, prio);
-    ofRemoveListener(onPointerMove, listener, &ListenerClass::onPointerMove, prio);
-    ofRemoveListener(onPointerCancel, listener, &ListenerClass::onPointerCancel, prio);
+    ofRemoveListener(pointerDown, listener, &ListenerClass::pointerDown, prio);
+    ofRemoveListener(pointerUp, listener, &ListenerClass::pointerUp, prio);
+    ofRemoveListener(pointerMove, listener, &ListenerClass::pointerMove, prio);
+    ofRemoveListener(pointerCancel, listener, &ListenerClass::pointerCancel, prio);
 }
 
 
@@ -814,6 +919,67 @@ void UnregisterPointerEvents(ListenerClass* listener)
 }
 
 
+template <class ListenerClass>
+void RegisterPointerEventForWindow(ofAppBaseWindow* window, ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    PointerEvents* events = PointerEventsManager::instance().eventsForWindow(window);
+
+    if (events)
+    {
+        ofAddListener(events->pointerEvent, listener, &ListenerClass::pointerEvent, prio);
+    }
+    else
+    {
+        ofLogError("RegisterPointerEventForWindow") << "No PointerEvents available for given window.";
+    }
+}
+
+
+template <class ListenerClass>
+void UnregisterPointerEventForWindow(ofAppBaseWindow* window, ListenerClass* listener)
+{
+    PointerEvents* events = PointerEventsManager::instance().eventsForWindow(window);
+
+    if (events)
+    {
+        ofRemoveListener(events->pointerEvent, listener, &ListenerClass::pointerEvent);
+    }
+    else
+    {
+        ofLogError("UnregisterPointerEventForWindow") << "No PointerEvents available for given window.";
+    }
+}
+
+
+
+template <class ListenerClass>
+void RegisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    RegisterPointerEventForWindow<ListenerClass>(nullptr, listener, prio);
+}
+
+
+template <class ListenerClass>
+void UnregisterPointerEvent(ListenerClass* listener)
+{
+    UnregisterPointerEventForWindow<ListenerClass>(nullptr, listener);
+}
+
+
+
+class PointerDebugUtilities
+{
+public:
+    static void draw(const PointerEventArgs& evt, float alpha = 1.0f);
+
+//    static std::string toString(PointerEventArgs& evt);
+
+};
+
+
+
+
+
 } // namespace ofx
 
 
@@ -827,3 +993,21 @@ inline void hash_combine(std::size_t& seed, const T& v)
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 }
+
+
+//namespace ns
+//{
+//    PointShape
+//    Point
+//    PointerEventArgs
+//
+//    void to_json(json& j, const person& p) {
+//        j = json{{"name", p.name}, {"address", p.address}, {"age", p.age}};
+//    }
+//
+//    void from_json(const json& j, person& p) {
+//        p.name = j.at("name").get<std::string>();
+//        p.address = j.at("address").get<std::string>();
+//        p.age = j.at("age").get<int>();
+//    }
+//} // namespace ns

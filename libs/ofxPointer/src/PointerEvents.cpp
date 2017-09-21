@@ -6,10 +6,54 @@
 
 
 #include "ofx/PointerEvents.h"
-#include "ofx/PointerUtilities.h"
+#include <cassert>
+#include "ofGraphics.h"
 
 
 namespace ofx {
+
+
+const std::string EventArgs::EVENT_TYPE_UNKNOWN = "EVENT_TYPE_UNKNOWN";
+
+
+EventArgs::EventArgs(): EventArgs(nullptr,
+                                  EVENT_TYPE_UNKNOWN,
+                                  ofGetElapsedTimeMillis())
+{
+}
+
+
+EventArgs::EventArgs(const void* eventSource,
+                     const std::string& eventType,
+                     uint64_t timestampMillis):
+    _eventSource(eventSource),
+    _eventType(eventType),
+    _timestampMillis(timestampMillis)
+{
+}
+
+
+EventArgs::~EventArgs()
+{
+}
+
+
+std::string EventArgs::eventType() const
+{
+    return _eventType;
+}
+
+
+uint64_t EventArgs::timestampMillis() const
+{
+    return _timestampMillis;
+}
+
+
+const void* EventArgs::eventSource() const
+{
+    return _eventSource;
+}
 
 
 PointShape::PointShape(): PointShape(0, 0, 0, 0, 0)
@@ -21,12 +65,12 @@ PointShape::PointShape(float width,
                        float height,
                        float ellipseMajorAxis,
                        float ellipseMinorAxis,
-                       float ellipseAngle):
+                       float ellipseAngleDeg):
     _width(width),
     _height(height),
     _ellipseMajorAxis(ellipseMajorAxis),
     _ellipseMinorAxis(ellipseMinorAxis),
-    _ellipseAngle(ellipseAngle)
+    _ellipseAngleDeg(ellipseAngleDeg)
 {
 }
 
@@ -60,35 +104,47 @@ float PointShape::ellipseMinorAxis() const
 }
 
 
+float PointShape::ellipseAngleDeg() const
+{
+    return _ellipseAngleDeg;
+}
+
+
+float PointShape::ellipseAngleRad() const
+{
+    return ofDegToRad(_ellipseAngleDeg);
+}
+
+
 float PointShape::ellipseAngle() const
 {
-    return _ellipseAngle;
+    return ellipseAngleDeg();
 }
 
 
-Point::Point(): Point(glm::vec3(0, 0, 0))
+Point::Point(): Point(glm::vec2(0, 0))
 {
 }
 
 
-Point::Point(const glm::vec3& position): Point(position, PointShape())
+Point::Point(const glm::vec2& position): Point(position, PointShape())
 {
 }
 
 
-Point::Point(const glm::vec3& position, const PointShape& shape):
+Point::Point(const glm::vec2& position, const PointShape& shape):
     Point(position, PointShape(), 0)
 {
 }
 
 
-Point::Point(const glm::vec3& position, float pressure, float tiltX, float tiltY):
+Point::Point(const glm::vec2& position, float pressure, float tiltX, float tiltY):
     Point(position, position, PointShape(), pressure, 0, 0, tiltX, tiltY)
 {
 }
 
 
-Point::Point(const glm::vec3& position,
+Point::Point(const glm::vec2& position,
              const PointShape& shape,
              float pressure):
     Point(position, position, shape, pressure, 0, 0, 0, 0)
@@ -96,8 +152,8 @@ Point::Point(const glm::vec3& position,
 }
 
 
-Point::Point(const glm::vec3& position,
-             const glm::vec3& absolutePosition,
+Point::Point(const glm::vec2& position,
+             const glm::vec2& absolutePosition,
              const PointShape& shape,
              float pressure,
              float tangentialPressure,
@@ -121,19 +177,13 @@ Point::~Point()
 }
 
 
-Point::operator glm::vec3() const
+glm::vec2 Point::position() const
 {
     return _position;
 }
 
 
-const glm::vec3& Point::position() const
-{
-    return _position;
-}
-
-
-const glm::vec3& Point::absolutePosition() const
+glm::vec2 Point::absolutePosition() const
 {
     return _absolutePosition;
 }
@@ -195,26 +245,28 @@ const std::string PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 
 
 PointerEventArgs::PointerEventArgs():
-    PointerEventArgs(POINTER_MOVE,
-                     Point(),
-                     0,
-                     -1,
-                     TYPE_UNKNOWN,
-                     false,
-                     false,
-                     0,
-                     0,
-                     0,
-                     0,
-                     0,
-                     nullptr)
+    PointerEventArgs(nullptr,       // eventSource
+                     EVENT_TYPE_UNKNOWN, // eventType
+                     ofGetElapsedTimeMillis(), // timestampMillis
+                     Point(),       // point
+                     0,             // deviceId
+                     -1,            // pointerIndex
+                     TYPE_UNKNOWN,  // deviceType
+                     false,         // canHover
+                     false,         // isPrimary
+                     0,             // button
+                     0,             // buttons
+                     0              // modifiers
+                     )
 {
 }
 
 
-PointerEventArgs::PointerEventArgs(const std::string& type,
+PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    const PointerEventArgs& e):
-    PointerEventArgs(type,
+    PointerEventArgs(e.eventSource(),
+                     eventType,
+                     e.timestampMillis(),
                      e.point(),
                      e.deviceId(),
                      e.index(),
@@ -223,17 +275,15 @@ PointerEventArgs::PointerEventArgs(const std::string& type,
                      e.isPrimary(),
                      e.button(),
                      e.buttons(),
-                     e.modifiers(),
-                     e._tapCount,
-                     e.timestamp(),
-                     nullptr)
-
+                     e.modifiers())
 {
 }
 
 
 
-PointerEventArgs::PointerEventArgs(const std::string& eventType,
+PointerEventArgs::PointerEventArgs(const void* eventSource,
+                                   const std::string& eventType,
+                                   uint64_t timestampMillis,
                                    const Point& point,
                                    std::size_t deviceId,
                                    int64_t pointerIndex,
@@ -242,11 +292,8 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                                    bool isPrimary,
                                    uint64_t button,
                                    uint64_t buttons,
-                                   uint64_t modifiers,
-                                   uint64_t tapCount, // deprecated
-                                   uint64_t timestamp,
-                                   ofAppBaseWindow* source):
-    _eventType(eventType),
+                                   uint64_t modifiers):
+    EventArgs(eventSource, eventType, timestampMillis),
     _point(point),
     _id(0),
     _deviceId(deviceId),
@@ -256,10 +303,7 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
-    _modifiers(modifiers),
-    _tapCount(tapCount), // deprecated
-    _timestamp(timestamp),
-    _source(source)
+    _modifiers(modifiers)
 {
     hash_combine(_id, _deviceId);
     hash_combine(_id, _pointerIndex);
@@ -272,15 +316,15 @@ PointerEventArgs::~PointerEventArgs()
 }
 
 
-std::string PointerEventArgs::eventType() const
-{
-    return _eventType;
-}
-
-
 Point PointerEventArgs::point() const
 {
     return _point;
+}
+
+
+glm::vec2 PointerEventArgs::position() const
+{
+    return point().position();
 }
 
 
@@ -343,33 +387,8 @@ uint64_t PointerEventArgs::modifiers() const
     return _modifiers;
 }
 
-
-uint64_t PointerEventArgs::tapCount() const // deprecated
-{
-    return _tapCount;
-}
-
-
-uint64_t PointerEventArgs::timestampMillis() const
-{
-    return _timestamp;
-}
-
-
-uint64_t PointerEventArgs::timestamp() const // deprecated
-{
-    return timestampMillis();
-}
-
-
-const ofAppBaseWindow* PointerEventArgs::source() const
-{
-    return _source;
-}
-
-
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
-                                                      ofAppBaseWindow* source)
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
+                                                      const ofTouchEventArgs& e)
 {
     PointShape shape(e.width,
                      e.height,
@@ -377,7 +396,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
                      e.minoraxis,
                      e.angle);
 
-    Point point(glm::vec3(e.x, e.y, 0), shape, e.pressure);
+    Point point(glm::vec2(e.x, e.y), shape, e.pressure);
 
     uint64_t modifiers = 0;
 
@@ -386,36 +405,36 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    uint64_t timestamp = PointerUtilities::timestampMillis();
+    uint64_t timestampMillis = ofGetElapsedTimeMillis();
 
-    std::string type = POINTER_MOVE;
+    std::string eventType = EVENT_TYPE_UNKNOWN;
 
     uint64_t buttons = 0;
-    uint64_t tapCount = 0; // deprecated
 
     switch (e.type)
     {
         case ofTouchEventArgs::doubleTap:
-            // Pointers don't use this event. We synthesize them.
+            // Pointers don't use this event. We gestures for this.
             break;
         case ofTouchEventArgs::down:
-            type = POINTER_DOWN;
+            eventType = POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-            tapCount = 1;
             break;
         case ofTouchEventArgs::up:
-            type = POINTER_UP;
+            eventType = POINTER_UP;
             break;
         case ofTouchEventArgs::move:
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-            type = POINTER_MOVE;
+            eventType = POINTER_MOVE;
             break;
         case ofTouchEventArgs::cancel:
-            type = POINTER_CANCEL;
+            eventType = POINTER_CANCEL;
             break;
     }
 
-    return PointerEventArgs(type,
+    return PointerEventArgs(eventSource,
+                            eventType,
+                            timestampMillis,
                             point,
                             0,
                             e.id,
@@ -424,61 +443,54 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofTouchEventArgs& e,
                             false,
                             0,
                             buttons,
-                            modifiers,
-                            tapCount,
-                            timestamp,
-                            source);
+                            modifiers);
 }
 
 
-PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e,
-                                                      ofAppBaseWindow* source)
+PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
+                                                      const ofMouseEventArgs& e)
 {
-    PointShape shape;
+    // We begin with an unknown event type.
+    std::string eventType = EVENT_TYPE_UNKNOWN;
 
-    float pressure = 0;
-
-    std::string type = POINTER_MOVE;
-
-    uint64_t tapCount = 0;
-
+    // Convert the ofMouseEventArgs type to a string event type.
     switch (e.type)
     {
         case ofMouseEventArgs::Pressed:
-            type = POINTER_DOWN;
-            tapCount = 1;
-            pressure = 0.5;
+            eventType = POINTER_DOWN;
             break;
         case ofMouseEventArgs::Dragged:
-            type = POINTER_MOVE;
-            pressure = 0.5;
+            eventType = POINTER_MOVE;
             break;
         case ofMouseEventArgs::Moved:
-            type = POINTER_MOVE;
-            pressure = 0.0;
+            eventType = POINTER_MOVE;
             break;
         case ofMouseEventArgs::Released:
-            type = POINTER_UP;
-            pressure = 0.0;
+            eventType = POINTER_UP;
             break;
         case ofMouseEventArgs::Scrolled:
-            type = POINTER_SCROLL;
-            pressure = 0.0;
+            eventType = POINTER_SCROLL;
             break;
         case ofMouseEventArgs::Entered:
+            // This is with respect to the source window.
+            eventType = POINTER_ENTER;
+            break;
         case ofMouseEventArgs::Exited:
+            // This is with respect to the source window.
+            eventType = POINTER_LEAVE;
             break;
     }
 
-    Point point(glm::vec3(e.x, e.y, 0), shape, pressure);
+    // Record a timestamp.
+    uint64_t timestampMillis = ofGetElapsedTimeMillis();
 
-    uint64_t modifiers = 0;
+    // Create the point, if a button is pressed, the pressure is 0.5.
+    Point point(glm::vec2(e.x, e.y), PointShape(), (e.button > 0 ? 0.5 : 0));
 
-    modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
-    modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
-    modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
-    modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
+    // Note the mouse button associated with this event.
+    uint64_t button = e.button;
 
+    // Calculate buttons.
     uint64_t buttons = 0;
 
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_1) ? (1 << OF_MOUSE_BUTTON_1) : 0;
@@ -489,27 +501,179 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const ofMouseEventArgs& e,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
-    uint64_t timestamp = PointerUtilities::timestampMillis();
+    bool canHover = true;  // A mouse can hover.
+    bool isPrimary = true; // A mouse is primary.
 
-    return PointerEventArgs(type,
+    // Calculate modifiers.
+    uint64_t modifiers = 0;
+
+    modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
+    modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
+
+    return PointerEventArgs(eventSource,
+                            eventType,
+                            ofGetElapsedTimeMillis(),
                             point,
                             0,
                             0,
                             PointerEventArgs::TYPE_MOUSE,
-                            true,
-                            true,
+                            canHover,
+                            isPrimary,
                             e.button,
                             buttons,
-                            modifiers,
-                            tapCount,
-                            timestamp,
-                            source);
-
+                            modifiers);
 }
 
 
-PointerEvents::PointerEvents(): PointerEvents::PointerEvents(nullptr)
+PointerEventSet::PointerEventSet():
+    PointerEventSet(EventArgs::EVENT_TYPE_UNKNOWN)
 {
+}
+
+
+PointerEventSet::PointerEventSet(const std::string& pointerEventType):
+    _pointerEventType(pointerEventType)
+{
+}
+
+
+PointerEventSet::~PointerEventSet()
+{
+}
+
+
+std::string PointerEventSet::pointerEventType() const
+{
+    return _pointerEventType;
+}
+
+
+uint64_t PointerEventSet::firstTimestampMillis() const
+{
+    _updateCache();
+    return _cachedFirstTimestampMillis;
+}
+
+uint64_t PointerEventSet::lastTimestampMillis() const
+{
+    _updateCache();
+    return _cachedLastTimestampMillis;
+}
+
+
+uint64_t PointerEventSet::deltaTimeMillis() const
+{
+    return lastTimestampMillis() - lastTimestampMillis();
+}
+
+glm::vec2 PointerEventSet::centroid() const
+{
+    _updateCache();
+    return _cachedCentroid;
+}
+
+
+ofRectangle PointerEventSet::boundingBox() const
+{
+    _updateCache();
+    return _cachedBoundingBox;
+}
+
+
+std::size_t PointerEventSet::size() const
+{
+    return _pointerEvents.size();
+}
+
+
+std::size_t PointerEventSet::empty() const
+{
+    return _pointerEvents.empty();
+}
+
+
+void PointerEventSet::clear()
+{
+    _pointerEvents.clear();
+    _cacheNeedsUpdate = true;
+}
+
+
+bool PointerEventSet::hasEventKey(const PointerEventArgs& pointerEvent)
+{
+    auto thisEventKey = pointerEvent.eventKey();
+
+    for (const auto& thatEvent: _pointerEvents)
+    {
+        if (thisEventKey == thatEvent.eventKey())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool PointerEventSet::add(const PointerEventArgs& pointerEvent)
+{
+    if (pointerEvent.eventType() == _pointerEventType && !hasEventKey(pointerEvent))
+    {
+        _pointerEvents.push_back(pointerEvent);
+        _cacheNeedsUpdate = true;
+        return true;
+    }
+
+    return false;
+}
+
+
+std::vector<PointerEventArgs> PointerEventSet::pointerEvents() const
+{
+    return _pointerEvents;
+}
+
+
+void PointerEventSet::_updateCache() const
+{
+    if (_cacheNeedsUpdate)
+    {
+        if (_pointerEvents.empty())
+        {
+            _cachedFirstTimestampMillis = 0;
+            _cachedLastTimestampMillis  = 0;
+            _cachedCentroid = glm::vec2(0, 0);
+            _cachedBoundingBox = ofRectangle();
+        }
+        else if (_pointerEvents.size() == 1)
+        {
+            _cachedFirstTimestampMillis = _pointerEvents.begin()->timestampMillis();
+            _cachedLastTimestampMillis  = _pointerEvents.begin()->timestampMillis();
+            _cachedCentroid = _pointerEvents.begin()->position();
+            _cachedBoundingBox = ofRectangle(_cachedCentroid.x, _cachedCentroid.y, 0, 0);
+        }
+        else
+        {
+            _cachedFirstTimestampMillis = std::numeric_limits<uint64_t>::max();
+            _cachedLastTimestampMillis  = std::numeric_limits<uint64_t>::lowest();
+            _cachedCentroid = glm::vec2(0, 0);
+            _cachedBoundingBox = ofRectangle(_pointerEvents.begin()->position(), 0, 0);
+
+            for (const auto& event: _pointerEvents)
+            {
+                _cachedFirstTimestampMillis = std::min(_cachedFirstTimestampMillis, event.timestampMillis());
+                _cachedLastTimestampMillis = std::min(_cachedLastTimestampMillis, event.timestampMillis());
+                _cachedCentroid += event.position();
+                _cachedBoundingBox.growToInclude(event.position());
+            }
+
+            _cachedCentroid /= _pointerEvents.size();
+        }
+
+        _cacheNeedsUpdate = false;
+    }
 }
 
 
@@ -527,17 +691,20 @@ PointerEvents::PointerEvents(ofAppBaseWindow* source): _source(source)
     }
 
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
-    _mouseMovedListener = eventSource->mouseMoved.newListener(this, &PointerEvents::mouseMoved, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseDraggedListener = eventSource->mouseDragged.newListener(this, &PointerEvents::mouseDragged, OF_EVENT_ORDER_BEFORE_APP);
-    _mousePressedListener = eventSource->mousePressed.newListener(this, &PointerEvents::mousePressed, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseReleasedListener = eventSource->mouseReleased.newListener(this, &PointerEvents::mouseReleased, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseMovedListener = eventSource->mouseMoved.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseDraggedListener = eventSource->mouseDragged.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mousePressedListener = eventSource->mousePressed.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseReleasedListener = eventSource->mouseReleased.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseScrolledListener = eventSource->mouseScrolled.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseEnteredListener = eventSource->mouseEntered.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseExitedListener = eventSource->mouseExited.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
 #endif
+    _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchMovedListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
 
-    _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::touchUp, OF_EVENT_ORDER_BEFORE_APP);
-    _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::touchDown, OF_EVENT_ORDER_BEFORE_APP);
-    _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::touchMoved, OF_EVENT_ORDER_BEFORE_APP);
-    _touchDoubleTapListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchDoubleTap, OF_EVENT_ORDER_BEFORE_APP);
-    _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::touchCancelled, OF_EVENT_ORDER_BEFORE_APP);
 }
 
 
@@ -546,140 +713,75 @@ PointerEvents::~PointerEvents()
 }
 
 
-bool PointerEvents::mouseMoved(const void* source, ofMouseEventArgs& e)
+bool PointerEvents::mouseEvent(const void* source, ofMouseEventArgs& e)
 {
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    ofNotifyEvent(onPointerMove, p, this);
-    return _consumeMouseEvents;
-}
-
-
-bool PointerEvents::mouseDragged(const void* source, ofMouseEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    ofNotifyEvent(onPointerMove, p, this);
-    return _consumeMouseEvents;
-}
-
-
-bool PointerEvents::mousePressed(const void* source, ofMouseEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    updateTapCount(p);
-    ofNotifyEvent(onPointerDown, p, this);
-    return _consumeMouseEvents;
-}
-
-
-bool PointerEvents::mouseReleased(const void* source, ofMouseEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    updateTapCount(p);
-    ofNotifyEvent(onPointerUp, p, this);
-    return _consumeMouseEvents;
-}
-
-
-bool PointerEvents::touchDown(const void* source, ofTouchEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    updateTapCount(p);
-    ofNotifyEvent(onPointerDown, p, this);
-    return _consumeTouchEvents;
-}
-
-
-bool PointerEvents::touchMoved(const void* source, ofTouchEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    ofNotifyEvent(onPointerMove, p, this);
-    return _consumeTouchEvents;
-}
-
-
-bool PointerEvents::touchUp(const void* source, ofTouchEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    updateTapCount(p);
-    ofNotifyEvent(onPointerUp, p, this);
-    return _consumeTouchEvents;
-}
-
-
-bool PointerEvents::touchDoubleTap(const void* source, ofTouchEventArgs& e)
-{
-    // We can consume these events, but skip them.
-    // Users should check the tap count.
-    return _consumeTouchEvents;
-}
-
-
-bool PointerEvents::touchCancelled(const void* source, ofTouchEventArgs& e)
-{
-    // TODO: Recognize source when sent by oF core.
-    auto p = PointerEventArgs::toPointerEventArgs(e, _source);
-    updateTapCount(p);
-    ofNotifyEvent(onPointerCancel, p, this);
-    return _consumeTouchEvents;
-}
-
-
-void PointerEvents::setConsumeMouseEvents(bool consumeMouseEvents)
-{
-    _consumeMouseEvents = consumeMouseEvents;
-}
-
-
-void PointerEvents::setConsumeTouchEvents(bool consumeTouchEvents)
-{
-    _consumeTouchEvents = consumeTouchEvents;
-}
-
-
-PointerEvents& PointerEvents::instance()
-{
-    static PointerEvents instance;
-    return instance;
-}
-
-
-void PointerEvents::updateTapCount(PointerEventArgs& e)
-{
-    PointerEventArgs::PointerEventKey key(e.id(), e.button());
-
-    uint64_t _doubleTapThreshold = PointerUtilities::tapTimeoutMillis();
-
-    auto iter = _pointerDownEventTimeMap.find(key);
-
-    if (e.eventType() == PointerEventArgs::POINTER_DOWN)
+    // TODO: Update this when openFrameworks core supports source on events.
+    if (source && source != _source)
     {
-        if (iter != _pointerDownEventTimeMap.end())
+        // "Event source sent, but does not match window. PointerEvents should be updated to respect source."
+        assert(false);
+    }
+
+    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
+    return _dispatchPointerEvent(_source, p);
+}
+
+
+bool PointerEvents::touchEvent(const void* source, ofTouchEventArgs& e)
+{
+    // TODO: Update this when openFrameworks core supports source on events.
+    if (source && source != _source)
+    {
+        // "Event source sent, but does not match window. PointerEvents should be updated to respect source."
+        assert(false);
+    }
+
+    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
+    return _dispatchPointerEvent(_source, p);
+}
+
+
+void PointerEvents::disableLegacyEvents()
+{
+    _consumeLegacyEvents = true;
+}
+
+
+void PointerEvents::enableLegacyEvents()
+{
+    _consumeLegacyEvents = false;
+}
+
+
+bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& e)
+{
+    // All pointer events get dispatched via pointerEvent.
+    bool consumed = ofNotifyEvent(pointerEvent, e, _source);
+
+    // If the pointer was not consumed, then send it along to the standard four.
+    if (!consumed)
+    {
+        if (e.eventType() == PointerEventArgs::POINTER_DOWN)
         {
-            if (e.timestampMillis() <= (iter->second.timestampMillis() + _doubleTapThreshold))
-            {
-                e._tapCount += iter->second._tapCount;
-            }
+            consumed = ofNotifyEvent(pointerDown, e, _source);
         }
-        
-        _pointerDownEventTimeMap[key] = e;
+        else if (e.eventType() == PointerEventArgs::POINTER_UP)
+        {
+            consumed = ofNotifyEvent(pointerUp, e, _source);
+        }
+        else if (e.eventType() == PointerEventArgs::POINTER_MOVE)
+        {
+            consumed = ofNotifyEvent(pointerMove, e, _source);
+        }
+        else if (e.eventType() == PointerEventArgs::POINTER_CANCEL)
+        {
+            consumed = ofNotifyEvent(pointerCancel, e, _source);
+        }
     }
-    else if (iter != _pointerDownEventTimeMap.end() && e.eventType() == PointerEventArgs::POINTER_UP)
-    {
-        // Transfer the tap count.
-        e._tapCount += iter->second._tapCount;
-    }
-    else if (iter != _pointerDownEventTimeMap.end() && e.timestampMillis() > (iter->second.timestampMillis() + _doubleTapThreshold))
-    {
-        _pointerDownEventTimeMap.erase(iter);
-    }
+
+    return _consumeLegacyEvents || consumed;
 }
+
 
 
 PointerEvents* PointerEventsManager::events()
@@ -699,7 +801,6 @@ PointerEvents* PointerEventsManager::eventsForWindow(ofAppBaseWindow* window)
     else
     {
         _windowEventMap[window] = std::make_unique<PointerEvents>(window);
-
         return _windowEventMap[window].get();
     }
 }
@@ -720,6 +821,90 @@ PointerEventsManager::PointerEventsManager()
 PointerEventsManager::~PointerEventsManager()
 {
 }
+
+
+
+void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
+{
+    const auto& point = evt.point();
+
+    auto position = point.position();
+
+    ofPushMatrix();
+    ofTranslate(point.position());
+
+    float w = point.shape().ellipseMajorAxis();
+    float h = point.shape().ellipseMinorAxis();
+
+    float defaultAxis = 60.f;
+    ofColor typeColor;
+
+    if (evt.eventType() == PointerEventArgs::POINTER_DOWN)
+    {
+        typeColor = ofColor::green;
+        defaultAxis *= 2;
+    }
+    else if (evt.eventType() == PointerEventArgs::POINTER_MOVE)
+    {
+        typeColor = ofColor::yellow;
+        defaultAxis /= 2;
+    }
+    else if (evt.eventType() == PointerEventArgs::POINTER_UP)
+    {
+        typeColor = ofColor::blue;
+        defaultAxis *= 2;
+    }
+    else if (evt.eventType() == PointerEventArgs::POINTER_CANCEL)
+    {
+        typeColor = ofColor::red;
+        defaultAxis *= 4;
+    }
+    else
+    {
+        typeColor = ofColor::purple;
+    }
+
+    float defaultPressureScaler = defaultAxis / 2;
+
+
+    // In case the width / height info is not available.
+    if (w <= 0) w = defaultAxis;
+    if (h <= 0) h = defaultAxis;
+
+    float halfW = w / 2.0f;
+    float halfH = h / 2.0f;
+
+    float pressure = point.pressure() * defaultPressureScaler;
+
+    // In case the pressure is not available.
+    if (pressure <= 0) pressure = defaultPressureScaler;
+
+    ofNoFill();
+    ofSetColor(typeColor, 60 * alpha);
+    ofRotateZDeg(point.shape().ellipseAngleDeg());
+    ofDrawEllipse(0, 0, w, h);
+
+    ofFill();
+    ofSetColor(typeColor, 100 * alpha);
+    ofDrawEllipse(0, 0, pressure, pressure);
+
+
+//    ofSetColor(255, 100);
+//    ofDrawLine(-halfW, 0.f, halfW, 0.f);
+//    ofDrawLine(0.f, -halfH, 0.f, halfH);
+
+    ofPopMatrix();
+
+//    ofFill();
+//    ofSetColor(255);
+//    ofDrawBitmapString(ofToString(evt.eventType()), position.x - 6, position.y + 3);
+//    ofSetColor(255, 255, 255, 100);
+}
+
+//std::string PointerDebugUtilities::toString(PointerEventArgs& evt)
+//{
+//
+//}
 
 
 } // namespace ofx
