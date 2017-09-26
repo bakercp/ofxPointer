@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2009 Christopher Baker <https://christopherbaker.net>
 //
-// SPDX-License-Identifier:	MIT
+// SPDX-License-Identifier:    MIT
 //
 
 
@@ -10,78 +10,63 @@
 
 void ofApp::setup()
 {
-    // ofSetLogLevel(OF_LOG_VERBOSE);
     ofx::RegisterPointerEvents(this);
+    ofBackground(0);
+}
+
+
+void ofApp::update()
+{
+    auto now = ofGetElapsedTimeMillis();
+
+    auto iter = events.begin();
+    while (iter != events.end())
+    {
+        if (now > 5000 && iter->timestampMillis() < (now - 5000))
+        {
+            iter = events.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
+    }
 }
 
 
 void ofApp::draw()
 {
-    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    auto now = ofGetElapsedTimeMillis();
 
-    for (const auto& entry: pointers)
+    for (const auto& event: events)
     {
-        const auto& point = entry.second;
+        float alpha = ofMap(now - event.timestampMillis(), 0, 5000, 1, 0, true);
 
-        ofPushMatrix();
-        ofTranslate(point);
-
-        float w = point.shape().ellipseMajorAxis();
-        float h = point.shape().ellipseMinorAxis();
-
-        // In case the width / height info is not available.
-        if (w <= 0) w = 60.0f;
-        if (h <= 0) h = 60.0f;
-
-        float halfW = w / 2.0f;
-        float halfH = h / 2.0f;
-
-        float pressure = point.pressure() * 30.f;
-
-        // In case the pressure is not available.
-        if (pressure <= 0) pressure = 30.f;
-
-        ofRotateZRad(point.shape().ellipseAngle());
-        ofSetColor(255, 100);
-        ofDrawEllipse(0, 0, w, h);
-        ofSetColor(255, 255,0, 100);
-        ofDrawEllipse(0, 0, pressure, pressure);
-        ofSetColor(255, 100);
-        ofDrawLine(-halfW, 0.f, halfW, 0.f);
-        ofDrawLine(0.f, -halfH, 0.f, halfH);
-        ofPopMatrix();
-
-        ofFill();
-        ofSetColor(255);
-        ofDrawBitmapString(ofToString(entry.first), point.x - 6, point.y + 3);
-        ofSetColor(255, 255, 255, 100);
+        ofx::PointerDebugUtilities::draw(event, alpha);
     }
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::pointerUp(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
-    pointers.erase(evt.id());
+    events.push_back(evt);
 }
 
 
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
+void ofApp::pointerDown(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
-    pointers[evt.id()] = evt.point();
+    events.push_back(evt);
 }
 
 
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
+void ofApp::pointerMove(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
-    pointers[evt.id()] = evt.point();
+    events.push_back(evt);
 }
 
 
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::pointerCancel(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
-    pointers.erase(evt.id());
+    events.push_back(evt);
 }
+

@@ -671,7 +671,7 @@ public:
     /// \param source The event source.
     /// \param e the event arguments.
     /// \returns true of the event was consumed.
-    bool mouseEvent(const void* source, ofMouseEventArgs& e);
+    bool mouseEvent(const void* source, ofMouseEventArgs& e);  
 
     /// \brief Touch event callback.
     /// \param source The event source.

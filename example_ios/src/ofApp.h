@@ -16,15 +16,16 @@ class ofApp: public ofxiOSApp
 {
 public:
     void setup() override;
+    void update() override;
     void draw() override;
 
     // Pointer Events
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
+    void pointerUp(ofx::PointerEventArgs& evt);
+    void pointerDown(ofx::PointerEventArgs& evt);
+    void pointerMove(ofx::PointerEventArgs& evt);
+    void pointerCancel(ofx::PointerEventArgs& evt);
 
-    std::map<std::size_t, ofx::Point> pointers;
+    std::vector<ofx::PointerEventArgs> events;
 
 };
 

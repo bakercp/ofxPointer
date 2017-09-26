@@ -280,7 +280,6 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
 }
 
 
-
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
                                    uint64_t timestampMillis,
@@ -414,7 +413,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     switch (e.type)
     {
         case ofTouchEventArgs::doubleTap:
-            // Pointers don't use this event. We gestures for this.
+            // Pointers don't use this event. We use gestures for this.
             break;
         case ofTouchEventArgs::down:
             eventType = POINTER_DOWN;
@@ -432,13 +431,31 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
             break;
     }
 
+    std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
+
+    switch (e.pointerType)
+    {
+        case ofTouchEventArgs::mouse:
+            deviceType = PointerEventArgs::TYPE_MOUSE;
+            break;
+        case ofTouchEventArgs::pen:
+            deviceType = PointerEventArgs::TYPE_PEN;
+            break;
+        case ofTouchEventArgs::touch:
+            deviceType = PointerEventArgs::TYPE_TOUCH;
+            break;
+        case ofTouchEventArgs::unknown:
+            deviceType = PointerEventArgs::TYPE_UNKNOWN;
+            break;
+    }
+
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
                             point,
                             0,
                             e.id,
-                            PointerEventArgs::TYPE_TOUCH,
+                            deviceType,
                             false,
                             false,
                             0,
@@ -514,14 +531,14 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     return PointerEventArgs(eventSource,
                             eventType,
-                            ofGetElapsedTimeMillis(),
+                            timestampMillis,
                             point,
                             0,
                             0,
                             PointerEventArgs::TYPE_MOUSE,
                             canHover,
                             isPrimary,
-                            e.button,
+                            button,
                             buttons,
                             modifiers);
 }
@@ -702,7 +719,7 @@ PointerEvents::PointerEvents(ofAppBaseWindow* source): _source(source)
     _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
     _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
     _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _touchMovedListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchDoubleTapListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
     _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
 
 }
@@ -861,11 +878,11 @@ void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
     }
     else
     {
+        std::cout << "EVENT: " << evt.eventType() << std::endl;
         typeColor = ofColor::purple;
     }
 
     float defaultPressureScaler = defaultAxis / 2;
-
 
     // In case the width / height info is not available.
     if (w <= 0) w = defaultAxis;
@@ -882,12 +899,21 @@ void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
     ofNoFill();
     ofSetColor(typeColor, 60 * alpha);
     ofRotateZDeg(point.shape().ellipseAngleDeg());
-    ofDrawEllipse(0, 0, w, h);
 
-    ofFill();
-    ofSetColor(typeColor, 100 * alpha);
-    ofDrawEllipse(0, 0, pressure, pressure);
-
+    if (evt.deviceType() == PointerEventArgs::TYPE_PEN)
+    {
+        ofDrawRectangle(-halfW, -halfH, w, h);
+        ofFill();
+        ofSetColor(typeColor, 100 * alpha);
+        ofDrawRectangle(-pressure/2, -pressure/2, pressure, pressure);
+    }
+    else
+    {
+        ofDrawEllipse(0, 0, w, h);
+        ofFill();
+        ofSetColor(typeColor, 100 * alpha);
+        ofDrawEllipse(0, 0, pressure, pressure);
+    }
 
 //    ofSetColor(255, 100);
 //    ofDrawLine(-halfW, 0.f, halfW, 0.f);

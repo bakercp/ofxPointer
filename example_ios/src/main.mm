@@ -11,7 +11,6 @@
 int main()
 {
     ofiOSWindowSettings settings;
-
     auto window = ofCreateWindow(settings);
     auto mainApp = std::make_shared<ofApp>();
     ofRunApp(window, mainApp);
