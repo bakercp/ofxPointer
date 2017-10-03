@@ -24,6 +24,6 @@ public:
     void pointerMove(ofx::PointerEventArgs& e);
     void pointerCancel(ofx::PointerEventArgs& e);
 
-    std::vector<ofx::PointerEventArgs> events;
+    PointerDebugRenderer debugRenderer;
 
 };

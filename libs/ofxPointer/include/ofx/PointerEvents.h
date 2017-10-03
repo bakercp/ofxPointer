@@ -966,18 +966,57 @@ void UnregisterPointerEvent(ListenerClass* listener)
 }
 
 
-
-class PointerDebugUtilities
+/// \brief A utility class for visualizing Pointer events.
+class PointerDebugRenderer
 {
 public:
-    static void draw(const PointerEventArgs& evt, float alpha = 1.0f);
+    /// \brief Create a default debug renderer.
+    PointerDebugRenderer();
 
-//    static std::string toString(PointerEventArgs& evt);
+    /// \brief Destroy the renderer.
+    ~PointerDebugRenderer();
+
+    void update(ofEventArgs& args);
+    void draw(ofEventArgs& args);
+
+    /// \brief Set the time an event will remain on screen in milliseconds.
+    /// \param timeoutMillis The onscreen timeout in milliseconds.
+    void setTimeoutMillis(uint64_t timeoutMillis);
+
+    /// \returns the time an event will remain on screen in milliseconds.
+    uint64_t getTimeoutMillis() const;
+
+    /// \brief Enable or disable the renderer.
+    /// \param enabled True of the renderer should be enabled.
+    void setEnabled(bool enabled);
+
+    /// \returns true if enabled.
+    void isEnabled() const;
+
+    /// \brief A callback for all Pointer Events.
+    /// \param evt The Pointer Event arguments.
+    void pointerEvent(PointerEventArgs& evt);
+
+    enum
+    {
+        /// \brief The default timeout for a stroke to be rendered.
+        DEFAULT_TIMEOUT_MILLIS = 5000
+    };
+
+private:
+    /// \brief True if enabled.
+    bool _enabled = false;
+
+    /// \brief The time an event will remain on screen in milliseconds.
+    uint64_t _timeoutMillis = DEFAULT_TIMEOUT_MILLIS;
+
+    /// \brief A map of active strokes.
+    std::map<std::size_t, std::vector<PointerEventArgs>> _activeStrokes;
+
+    /// \brief A collection of saved strokes.
+    std::vector<std::vector<PointerEventArgs>> _savedStrokes;
 
 };
-
-
-
 
 
 } // namespace ofx

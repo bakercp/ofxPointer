@@ -8,6 +8,7 @@
 #include "ofx/PointerEvents.h"
 #include <cassert>
 #include "ofGraphics.h"
+#include "ofMesh.h"
 
 
 namespace ofx {
@@ -408,7 +409,11 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     std::string eventType = EVENT_TYPE_UNKNOWN;
 
+    uint64_t button = 0;
+
     uint64_t buttons = 0;
+
+    std::size_t deviceId = 0;
 
     switch (e.type)
     {
@@ -433,32 +438,32 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
 
-    switch (e.pointerType)
-    {
-        case ofTouchEventArgs::mouse:
-            deviceType = PointerEventArgs::TYPE_MOUSE;
-            break;
-        case ofTouchEventArgs::pen:
-            deviceType = PointerEventArgs::TYPE_PEN;
-            break;
-        case ofTouchEventArgs::touch:
-            deviceType = PointerEventArgs::TYPE_TOUCH;
-            break;
-        case ofTouchEventArgs::unknown:
-            deviceType = PointerEventArgs::TYPE_UNKNOWN;
-            break;
-    }
+//    switch (e.pointerType)
+//    {
+//        case ofTouchEventArgs::mouse:
+//            deviceType = PointerEventArgs::TYPE_MOUSE;
+//            break;
+//        case ofTouchEventArgs::pen:
+//            deviceType = PointerEventArgs::TYPE_PEN;
+//            break;
+//        case ofTouchEventArgs::touch:
+//            deviceType = PointerEventArgs::TYPE_TOUCH;
+//            break;
+//        case ofTouchEventArgs::unknown:
+//            deviceType = PointerEventArgs::TYPE_UNKNOWN;
+//            break;
+//    }
 
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
                             point,
-                            0,
+                            deviceId,
                             e.id,
                             deviceType,
                             false,
                             false,
-                            0,
+                            button,
                             buttons,
                             modifiers);
 }
@@ -529,12 +534,15 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
+    std::size_t deviceId = 0;
+    int64_t pointerIndex = 0;
+
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
                             point,
-                            0,
-                            0,
+                            deviceId,
+                            pointerIndex,
                             PointerEventArgs::TYPE_MOUSE,
                             canHover,
                             isPrimary,
@@ -800,7 +808,6 @@ bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& 
 }
 
 
-
 PointerEvents* PointerEventsManager::events()
 {
     return eventsForWindow(nullptr);
@@ -840,92 +847,240 @@ PointerEventsManager::~PointerEventsManager()
 }
 
 
-
-void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
+PointerDebugRenderer::PointerDebugRenderer()
 {
-    const auto& point = evt.point();
+    setEnabled(true);
+}
 
-    auto position = point.position();
 
-    ofPushMatrix();
-    ofTranslate(point.position());
+PointerDebugRenderer::~PointerDebugRenderer()
+{
+    setEnabled(false);
+}
 
-    float w = point.shape().ellipseMajorAxis();
-    float h = point.shape().ellipseMinorAxis();
 
-    float defaultAxis = 60.f;
-    ofColor typeColor;
+void PointerDebugRenderer::update(ofEventArgs& args)
+{
+    auto now = ofGetElapsedTimeMillis();
 
-    if (evt.eventType() == PointerEventArgs::POINTER_DOWN)
+    auto iter = _savedStrokes.begin();
+
+    while (iter != _savedStrokes.end())
     {
-        typeColor = ofColor::green;
-        defaultAxis *= 2;
+        if ((iter->back().timestampMillis() + _timeoutMillis) < now)
+        {
+            iter = _savedStrokes.erase(iter);
+        }
+        else
+        {
+            ++iter;
+        }
     }
-    else if (evt.eventType() == PointerEventArgs::POINTER_MOVE)
+}
+
+
+void PointerDebugRenderer::draw(ofEventArgs& args)
+{
+//    for (auto& events: _eventMap)
+//    {
+//        ofMesh mesh;
+//
+//        if (events.second.size() > 2)
+//        {
+//            for (std::size_t index = 0; index < events.second.size(); ++index)
+//            {
+//                float width = 0;
+//
+//                if (index > 1 && events.second.size() > 2)
+//                {
+//                    std::size_t i1 = index - 1;
+//                    std::size_t i2 = index;
+//                    std::size_t i3 = index + 1;
+//                    const auto& p1 = events.second[i1].point().position();
+//                    const auto& p2 = events.second[i2].point().position();
+//                    const auto& p3 = events.second[i3].point().position();
+//                    auto v1(p1 - p2); // vector to previous point
+//                    auto v2(p3 - p2); // vector to next point
+//                    v1 = glm::normalize(v1);
+//                    v2 = glm::normalize(v2);
+//                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
+//                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
+//                    ofSetColor(ofColor::red);
+//                    ofDrawLine(p2, p2 + normal.xy * 50);
+//                }
+//
+//                ofSetColor(ofColor::white, 80);
+//                ofDrawCircle(events.second[index].point().position(), 10);
+//            }
+//        }
+//    }
+}
+
+
+void PointerDebugRenderer::setTimeoutMillis(uint64_t timeoutMillis)
+{
+    _timeoutMillis = timeoutMillis;
+}
+
+
+uint64_t PointerDebugRenderer::getTimeoutMillis() const
+{
+    return _timeoutMillis;
+}
+
+
+void PointerDebugRenderer::setEnabled(bool enabled)
+{
+    if (enabled != _enabled)
     {
-        typeColor = ofColor::yellow;
-        defaultAxis /= 2;
+        _enabled = enabled;
+
+        if (_enabled)
+        {
+            ofAddListener(ofEvents().update, this, &PointerDebugRenderer::update, OF_EVENT_ORDER_AFTER_APP);
+            ofAddListener(ofEvents().draw, this, &PointerDebugRenderer::draw, OF_EVENT_ORDER_AFTER_APP);
+            RegisterPointerEvent(this);
+        }
+        else
+        {
+            ofRemoveListener(ofEvents().update, this, &PointerDebugRenderer::update, OF_EVENT_ORDER_AFTER_APP);
+            ofRemoveListener(ofEvents().draw, this, &PointerDebugRenderer::draw, OF_EVENT_ORDER_AFTER_APP);
+            UnregisterPointerEvent(this);
+        }
+    }
+}
+
+
+void PointerDebugRenderer::isEnabled() const
+{
+    return _enabled;
+}
+
+
+void PointerDebugRenderer::pointerEvent(PointerEventArgs& evt)
+{
+    if (evt.eventType() == PointerEventArgs::POINTER_UP
+    ||  evt.eventType() == PointerEventArgs::POINTER_CANCEL)
+    {
+        // finish the associated stroke, move it to saved stroke, if any.
     }
     else if (evt.eventType() == PointerEventArgs::POINTER_UP)
     {
-        typeColor = ofColor::blue;
-        defaultAxis *= 2;
+        
     }
-    else if (evt.eventType() == PointerEventArgs::POINTER_CANCEL)
+    else if (evt.eventType() != PointerEventArgs::POINTER_MOVE
+         || (evt.eventType() == PointerEventArgs::POINTER_MOVE && evt.buttons() > 0))
     {
-        typeColor = ofColor::red;
-        defaultAxis *= 4;
-    }
-    else
-    {
-        std::cout << "EVENT: " << evt.eventType() << std::endl;
-        typeColor = ofColor::purple;
+        // Add the stroke to the active stroke if one.
+        // if none
     }
 
-    float defaultPressureScaler = defaultAxis / 2;
 
-    // In case the width / height info is not available.
-    if (w <= 0) w = defaultAxis;
-    if (h <= 0) h = defaultAxis;
 
-    float halfW = w / 2.0f;
-    float halfH = h / 2.0f;
-
-    float pressure = point.pressure() * defaultPressureScaler;
-
-    // In case the pressure is not available.
-    if (pressure <= 0) pressure = defaultPressureScaler;
-
-    ofNoFill();
-    ofSetColor(typeColor, 60 * alpha);
-    ofRotateZDeg(point.shape().ellipseAngleDeg());
-
-    if (evt.deviceType() == PointerEventArgs::TYPE_PEN)
-    {
-        ofDrawRectangle(-halfW, -halfH, w, h);
-        ofFill();
-        ofSetColor(typeColor, 100 * alpha);
-        ofDrawRectangle(-pressure/2, -pressure/2, pressure, pressure);
-    }
-    else
-    {
-        ofDrawEllipse(0, 0, w, h);
-        ofFill();
-        ofSetColor(typeColor, 100 * alpha);
-        ofDrawEllipse(0, 0, pressure, pressure);
-    }
-
-//    ofSetColor(255, 100);
-//    ofDrawLine(-halfW, 0.f, halfW, 0.f);
-//    ofDrawLine(0.f, -halfH, 0.f, halfH);
-
-    ofPopMatrix();
-
-//    ofFill();
-//    ofSetColor(255);
-//    ofDrawBitmapString(ofToString(evt.eventType()), position.x - 6, position.y + 3);
-//    ofSetColor(255, 255, 255, 100);
+//
+//
+//    // We only want pointer "move" events if a pointer is "down".
+//    if (evt.eventType() != PointerEventArgs::POINTER_MOVE
+//    || (evt.eventType() == PointerEventArgs::POINTER_MOVE && evt.buttons() > 0))
+//    {
+//        auto iter = _eventMap.find(evt.id());
+//
+//        if (iter != _eventMap.end())
+//        {
+//            iter->second.push_back(evt);
+//        }
+//        else
+//        {
+//            _eventMap[evt.id()] = { evt };
+//        }
+//    }
 }
+
+//void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
+//{
+//    const auto& point = evt.point();
+//
+//    auto position = point.position();
+//
+//    ofPushMatrix();
+//    ofTranslate(point.position());
+//
+//    float w = point.shape().ellipseMajorAxis();
+//    float h = point.shape().ellipseMinorAxis();
+//
+//    float defaultAxis = 60.f;
+//    ofColor typeColor;
+//
+//    if (evt.eventType() == PointerEventArgs::POINTER_DOWN)
+//    {
+//        typeColor = ofColor::green;
+//        defaultAxis *= 2;
+//    }
+//    else if (evt.eventType() == PointerEventArgs::POINTER_MOVE)
+//    {
+//        typeColor = ofColor::yellow;
+//        defaultAxis /= 2;
+//    }
+//    else if (evt.eventType() == PointerEventArgs::POINTER_UP)
+//    {
+//        typeColor = ofColor::blue;
+//        defaultAxis *= 2;
+//    }
+//    else if (evt.eventType() == PointerEventArgs::POINTER_CANCEL)
+//    {
+//        typeColor = ofColor::red;
+//        defaultAxis *= 4;
+//    }
+//    else
+//    {
+//        std::cout << "EVENT: " << evt.eventType() << std::endl;
+//        typeColor = ofColor::purple;
+//    }
+//
+//    float defaultPressureScaler = defaultAxis / 2;
+//
+//    // In case the width / height info is not available.
+//    if (w <= 0) w = defaultAxis;
+//    if (h <= 0) h = defaultAxis;
+//
+//    float halfW = w / 2.0f;
+//    float halfH = h / 2.0f;
+//
+//    float pressure = point.pressure() * defaultPressureScaler;
+//
+//    // In case the pressure is not available.
+//    if (pressure <= 0) pressure = defaultPressureScaler;
+//
+//    ofNoFill();
+//    ofSetColor(typeColor, 60 * alpha);
+//    ofRotateZDeg(point.shape().ellipseAngleDeg());
+//
+//    if (evt.deviceType() == PointerEventArgs::TYPE_PEN)
+//    {
+//        ofDrawRectangle(-halfW, -halfH, w, h);
+//        ofFill();
+//        ofSetColor(typeColor, 100 * alpha);
+//        ofDrawRectangle(-pressure/2, -pressure/2, pressure, pressure);
+//    }
+//    else
+//    {
+//        ofDrawEllipse(0, 0, w, h);
+//        ofFill();
+//        ofSetColor(typeColor, 100 * alpha);
+//        ofDrawEllipse(0, 0, pressure, pressure);
+//    }
+//
+////    ofSetColor(255, 100);
+////    ofDrawLine(-halfW, 0.f, halfW, 0.f);
+////    ofDrawLine(0.f, -halfH, 0.f, halfH);
+//
+//    ofPopMatrix();
+//
+////    ofFill();
+////    ofSetColor(255);
+////    ofDrawBitmapString(ofToString(evt.eventType()), position.x - 6, position.y + 3);
+////    ofSetColor(255, 255, 255, 100);
+//}
 
 //std::string PointerDebugUtilities::toString(PointerEventArgs& evt)
 //{
