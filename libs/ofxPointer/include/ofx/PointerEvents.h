@@ -991,7 +991,7 @@ public:
     void setEnabled(bool enabled);
 
     /// \returns true if enabled.
-    void isEnabled() const;
+    bool isEnabled() const;
 
     /// \brief A callback for all Pointer Events.
     /// \param evt The Pointer Event arguments.

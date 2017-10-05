@@ -951,7 +951,7 @@ void PointerDebugRenderer::setEnabled(bool enabled)
 }
 
 
-void PointerDebugRenderer::isEnabled() const
+bool PointerDebugRenderer::isEnabled() const
 {
     return _enabled;
 }
