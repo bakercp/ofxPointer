@@ -6,6 +6,8 @@ _*
 
 raw/
 
+exampl*/mediaAssets/
+
 exampl*/.compiler*
 exampl*/config.make
 exampl*/Makefile

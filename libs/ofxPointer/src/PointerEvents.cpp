@@ -881,39 +881,39 @@ void PointerDebugRenderer::update(ofEventArgs& args)
 
 void PointerDebugRenderer::draw(ofEventArgs& args)
 {
-//    for (auto& events: _eventMap)
-//    {
-//        ofMesh mesh;
-//
-//        if (events.second.size() > 2)
-//        {
-//            for (std::size_t index = 0; index < events.second.size(); ++index)
-//            {
-//                float width = 0;
-//
-//                if (index > 1 && events.second.size() > 2)
-//                {
-//                    std::size_t i1 = index - 1;
-//                    std::size_t i2 = index;
-//                    std::size_t i3 = index + 1;
-//                    const auto& p1 = events.second[i1].point().position();
-//                    const auto& p2 = events.second[i2].point().position();
-//                    const auto& p3 = events.second[i3].point().position();
-//                    auto v1(p1 - p2); // vector to previous point
-//                    auto v2(p3 - p2); // vector to next point
-//                    v1 = glm::normalize(v1);
-//                    v2 = glm::normalize(v2);
-//                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
-//                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
-//                    ofSetColor(ofColor::red);
-//                    ofDrawLine(p2, p2 + normal.xy * 50);
-//                }
-//
-//                ofSetColor(ofColor::white, 80);
-//                ofDrawCircle(events.second[index].point().position(), 10);
-//            }
-//        }
-//    }
+    for (auto& events: _activeStrokes)
+    {
+        ofMesh mesh;
+
+        if (events.second.size() > 2)
+        {
+            for (std::size_t index = 0; index < events.second.size(); ++index)
+            {
+                float width = 0;
+
+                if (index > 1 && events.second.size() > 2)
+                {
+                    std::size_t i1 = index - 1;
+                    std::size_t i2 = index;
+                    std::size_t i3 = index + 1;
+                    const auto& p1 = events.second[i1].point().position();
+                    const auto& p2 = events.second[i2].point().position();
+                    const auto& p3 = events.second[i3].point().position();
+                    auto v1(p1 - p2); // vector to previous point
+                    auto v2(p3 - p2); // vector to next point
+                    v1 = glm::normalize(v1);
+                    v2 = glm::normalize(v2);
+                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
+                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
+                    ofSetColor(ofColor::red);
+                    ofDrawLine(p2, p2 + normal.xy * 50);
+                }
+
+                ofSetColor(ofColor::white, 80);
+                ofDrawCircle(events.second[index].point().position(), 10);
+            }
+        }
+    }
 }
 
 

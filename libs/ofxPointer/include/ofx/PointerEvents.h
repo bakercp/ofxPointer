@@ -8,12 +8,14 @@
 #pragma once
 
 
+#include <map>
 #include <set>
 #include <string>
 #include "ofEvents.h"
 #include "ofUtils.h"
 #include "ofAppBaseWindow.h"
 #include "ofRectangle.h"
+#include "ofLog.h"
 
 
 namespace ofx {
