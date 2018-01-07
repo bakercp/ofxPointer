@@ -19,25 +19,25 @@ void ofApp::draw()
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::pointerUp(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
+    ofLogVerbose("ofApp::pointerUp") << evt.toString();
 }
 
 
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
+void ofApp::pointerDown(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
+    ofLogVerbose("ofApp::pointerDown") << evt.toString();
 }
 
 
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
+void ofApp::pointerMove(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
+    ofLogVerbose("ofApp::pointerMove") << evt.toString();
 }
 
 
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::pointerCancel(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
+    ofLogVerbose("ofApp::pointerCancel") << evt.toString();
 }
