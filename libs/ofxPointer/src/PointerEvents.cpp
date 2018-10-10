@@ -906,7 +906,7 @@ void PointerDebugRenderer::draw(ofEventArgs& args)
                     glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
                     glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
                     ofSetColor(ofColor::red);
-                    ofDrawLine(p2, p2 + normal.xy * 50);
+                    ofDrawLine(p2, p2 + glm::vec2(normal) * 50);
                 }
 
                 ofSetColor(ofColor::white, 80);
