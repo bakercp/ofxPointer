@@ -6,15 +6,13 @@ int main()
 {
     ofGLFWWindowSettings settings;
 
-    settings.width = 600;
-    settings.height = 600;
+    settings.setSize(600, 600);
     settings.setPosition(glm::vec2(300, 0));
     settings.resizable = true;
     auto mainWindow = ofCreateWindow(settings);
 
 
-    settings.width = 300;
-    settings.height = 300;
+    settings.setSize(300, 300);
     settings.setPosition(glm::vec2(0, 0));
     settings.resizable = false;
     auto secondWindow = ofCreateWindow(settings);

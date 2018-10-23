@@ -8,9 +8,9 @@
 class SecondApp: public ofBaseApp
 {
 public:
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
     // Pointer Events
     void pointerUp(ofx::PointerEventArgs& evt);
