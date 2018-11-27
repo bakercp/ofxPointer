@@ -9,7 +9,10 @@
 #pragma once
 
 
+#if defined(OF_TARGET_IOS)
+
 #include "ofxiOS.h"
+
 #include "ofx/PointerEvents.h"
 #include "ofEvents.h"
 #include "ofAppBaseWindow.h"
@@ -87,3 +90,6 @@ static void DisableAdvancedPointerEventsiOS()
 
 
 } // namespace ofx
+
+
+#endif

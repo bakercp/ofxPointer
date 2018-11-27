@@ -5,6 +5,9 @@
 //
 
 
+#if defined(OF_TARGET_IOS)
+
+
 #include "ofx/PointerEventsiOS.h"
 #include "ofx/PointerEvents.h"
 
@@ -556,3 +559,5 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
 
 @end
+
+#endif
