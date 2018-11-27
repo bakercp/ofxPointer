@@ -57,21 +57,34 @@ const void* EventArgs::eventSource() const
 }
 
 
-PointShape::PointShape(): PointShape(0, 0, 0, 0, 0)
+PointShape::PointShape()
 {
 }
 
 
-PointShape::PointShape(float width,
+PointShape::PointShape(ShapeType shapeType,
+                       float size,
+                       float sizeTolerance):
+    PointShape(shapeType,
+               size,
+               size,
+               sizeTolerance,
+               sizeTolerance,
+               0)
+{
+}
+
+PointShape::PointShape(ShapeType shapeType,
+                       float width,
                        float height,
-                       float ellipseMajorAxis,
-                       float ellipseMinorAxis,
-                       float ellipseAngleDeg):
+                       float widthTolerance,
+                       float heightTolerance,
+                       float angleDeg):
     _width(width),
     _height(height),
-    _ellipseMajorAxis(ellipseMajorAxis),
-    _ellipseMinorAxis(ellipseMinorAxis),
-    _ellipseAngleDeg(ellipseAngleDeg)
+    _widthTolerance(widthTolerance),
+    _heightTolerance(heightTolerance),
+    _angleDeg(angleDeg)
 {
 }
 
@@ -81,6 +94,12 @@ PointShape::~PointShape()
 }
 
 
+PointShape::ShapeType PointShape::shapeType() const
+{
+    return _shapeType;
+}
+
+    
 float PointShape::width() const
 {
     return _width;
@@ -93,36 +112,83 @@ float PointShape::height() const
 }
 
 
-float PointShape::ellipseMajorAxis() const
+float PointShape::widthTolerance() const
 {
-    return _ellipseMajorAxis;
+    return _widthTolerance;
 }
 
 
-float PointShape::ellipseMinorAxis() const
+float PointShape::heightTolerance() const
 {
-    return _ellipseMinorAxis;
+    return _heightTolerance;
 }
 
 
-float PointShape::ellipseAngleDeg() const
+float PointShape::angleDeg() const
 {
-    return _ellipseAngleDeg;
+    return _angleDeg;
 }
 
 
-float PointShape::ellipseAngleRad() const
+float PointShape::angleRad() const
 {
-    return ofDegToRad(_ellipseAngleDeg);
+    return glm::radians(_angleDeg);
 }
 
 
-float PointShape::ellipseAngle() const
+float PointShape::axisAlignedWidth() const
 {
-    return ellipseAngleDeg();
+    if (_axisAlignedSizeCached)
+        return _axisAlignedWidth;
+
+    _calculateAxisAlignedSize();
+    
+    return _axisAlignedWidth;
 }
 
 
+float PointShape::axisAlignedHeight() const
+{
+    if (_axisAlignedSizeCached)
+        return _axisAlignedHeight;
+    
+    _calculateAxisAlignedSize();
+    
+    return _axisAlignedHeight;
+}
+
+    
+void PointShape::_calculateAxisAlignedSize() const
+{
+    float _angleRad = angleRad();
+    
+    switch (_shapeType)
+    {
+        case ShapeType::ELLIPSE:
+        {
+            // via http://www.iquilezles.org/www/articles/ellipses/ellipses.htm
+            auto u = glm::rotate(glm::vec2(1, 0) * _width  / 2.0f, _angleRad);
+            auto v = glm::rotate(glm::vec2(0, 1) * _height / 2.0f, _angleRad);
+            glm::vec2 size = glm::sqrt(u * u + v * v) * 2;
+            _axisAlignedWidth = size.x;
+            _axisAlignedHeight = size.y;
+            break;
+        }
+        case ShapeType::RECTANGLE:
+        {
+            // via https://stackoverflow.com/a/6657768/1518329
+            float _cos = std::cos(_angleRad);
+            float _sin = std::sin(_angleRad);
+            _axisAlignedWidth  = _height * _sin + _width * _cos;
+            _axisAlignedHeight = _height * _cos + _width * _sin;
+            break;
+        }
+    }
+    
+    _axisAlignedSizeCached = true;
+}
+
+    
 Point::Point(): Point(glm::vec2(0, 0))
 {
 }
@@ -139,8 +205,8 @@ Point::Point(const glm::vec2& position, const PointShape& shape):
 }
 
 
-Point::Point(const glm::vec2& position, float pressure, float tiltX, float tiltY):
-    Point(position, position, PointShape(), pressure, 0, 0, tiltX, tiltY)
+Point::Point(const glm::vec2& position, float pressure, float tiltXDeg, float tiltYDeg):
+    Point(position, position, PointShape(), pressure, 0, 0, tiltXDeg, tiltYDeg)
 {
 }
 
@@ -154,21 +220,21 @@ Point::Point(const glm::vec2& position,
 
 
 Point::Point(const glm::vec2& position,
-             const glm::vec2& absolutePosition,
+             const glm::vec2& precisePosition,
              const PointShape& shape,
              float pressure,
              float tangentialPressure,
-             float rotation,
-             float tiltX,
-             float tiltY):
+             float twistDeg,
+             float tiltXDeg,
+             float tiltYDeg):
     _position(position),
-    _absolutePosition(absolutePosition),
+    _precisePosition(precisePosition),
     _shape(shape),
     _pressure(pressure),
     _tangentialPressure(tangentialPressure),
-    _rotation(rotation),
-    _tiltX(tiltX),
-    _tiltY(tiltY)
+    _twistDeg(twistDeg),
+    _tiltXDeg(tiltXDeg),
+    _tiltYDeg(tiltYDeg)
 {
 }
 
@@ -184,9 +250,9 @@ glm::vec2 Point::position() const
 }
 
 
-glm::vec2 Point::absolutePosition() const
+glm::vec2 Point::precisePosition() const
 {
-    return _absolutePosition;
+    return _precisePosition;
 }
 
 
@@ -201,22 +267,40 @@ float Point::tangentialPressure() const
     return _tangentialPressure;
 }
 
-
-float Point::rotation() const
+    
+float Point::twistDeg() const
 {
-    return _rotation;
+    return _twistDeg;
+}
+
+    
+float Point::twistRad() const
+{
+    return glm::radians(_twistDeg);
+}
+    
+
+float Point::tiltXDeg() const
+{
+    return _tiltXDeg;
+}
+
+    
+float Point::tiltXRad() const
+{
+    return glm::radians(_tiltXDeg);
+}
+
+    
+float Point::tiltYDeg() const
+{
+    return _tiltYDeg;
 }
 
 
-float Point::tiltX() const
+float Point::tiltYRad() const
 {
-    return _tiltX;
-}
-
-
-float Point::tiltY() const
-{
-    return _tiltY;
+    return glm::radians(_tiltYDeg);
 }
 
 
@@ -237,6 +321,7 @@ const std::string PointerEventArgs::POINTER_DOWN   = "pointerdown";
 const std::string PointerEventArgs::POINTER_MOVE   = "pointermove";
 const std::string PointerEventArgs::POINTER_UP     = "pointerup";
 const std::string PointerEventArgs::POINTER_CANCEL = "pointercancel";
+const std::string PointerEventArgs::POINTER_UPDATE = "pointerupdate";
 const std::string PointerEventArgs::POINTER_OUT    = "pointerout";
 const std::string PointerEventArgs::POINTER_LEAVE  = "pointerleave";
 const std::string PointerEventArgs::POINTER_SCROLL = "pointerscroll";
@@ -244,70 +329,72 @@ const std::string PointerEventArgs::POINTER_SCROLL = "pointerscroll";
 const std::string PointerEventArgs::GOT_POINTER_CAPTURE  = "gotpointercapture";
 const std::string PointerEventArgs::LOST_POINTER_CAPTURE = "lostpointercapture";
 
+const std::string PointerEventArgs::PROPERTY_POSITION = "PROPERTY_POSITION";
+const std::string PointerEventArgs::PROPERTY_PRESSURE = "PROPERTY_PRESSURE";
+const std::string PointerEventArgs::PROPERTY_TILT_X = "PROPERTY_TILT_X";
+const std::string PointerEventArgs::PROPERTY_TILT_Y = "PROPERTY_TILT_Y";
 
-PointerEventArgs::PointerEventArgs():
-    PointerEventArgs(nullptr,       // eventSource
-                     EVENT_TYPE_UNKNOWN, // eventType
-                     ofGetElapsedTimeMillis(), // timestampMillis
-                     Point(),       // point
-                     0,             // deviceId
-                     -1,            // pointerIndex
-                     TYPE_UNKNOWN,  // deviceType
-                     false,         // canHover
-                     false,         // isPrimary
-                     0,             // button
-                     0,             // buttons
-                     0              // modifiers
-                     )
+    
+PointerEventArgs::PointerEventArgs()
 {
 }
 
 
-PointerEventArgs::PointerEventArgs(const std::string& eventType,
-                                   const PointerEventArgs& e):
-    PointerEventArgs(e.eventSource(),
-                     eventType,
-                     e.timestampMillis(),
-                     e.point(),
-                     e.deviceId(),
-                     e.index(),
-                     e.deviceType(),
-                     e.canHover(),
-                     e.isPrimary(),
-                     e.button(),
-                     e.buttons(),
-                     e.modifiers())
-{
-}
-
+//PointerEventArgs::PointerEventArgs(const std::string& eventType,
+//                                   const PointerEventArgs& e):
+//    PointerEventArgs(e.eventSource(),
+//                     eventType,
+//                     e.timestampMillis(),
+//                     e.point(),
+//                     e.pointerId(),
+//                     e.deviceId(),
+//                     e.pointerIndex(),
+//                     e.sequenceIndex(),
+//                     e.deviceType(),
+//                     e.isPrimary(),
+//                     e.button(),
+//                     e.buttons(),
+//                     e.modifiers(),
+//                     e.coalescedPointerEvents(),
+//                     e.predictedPointerEvents(),
+//                     e.estimatedProperties(),
+//                     e.estimatedPropertiesExpectingUpdates())
+//{
+//}
 
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
                                    uint64_t timestampMillis,
                                    const Point& point,
-                                   std::size_t deviceId,
+                                   std::size_t pointerId,
+                                   int64_t deviceId,
                                    int64_t pointerIndex,
+                                   uint64_t sequenceIndex,
                                    const std::string& deviceType,
-                                   bool canHover,
                                    bool isPrimary,
-                                   uint64_t button,
-                                   uint64_t buttons,
-                                   uint64_t modifiers):
+                                   int16_t button,
+                                   uint16_t buttons,
+                                   uint16_t modifiers,
+                                   const std::vector<PointerEventArgs>& coalescedPointerEvents,
+                                   const std::vector<PointerEventArgs>& predictedPointerEvents,
+                                   const std::set<std::string>& estimatedProperties,
+                                   const std::set<std::string>& estimatedPropertiesExpectingUpdates):
     EventArgs(eventSource, eventType, timestampMillis),
     _point(point),
-    _id(0),
+    _pointerId(pointerId),
     _deviceId(deviceId),
     _pointerIndex(pointerIndex),
+    _sequenceIndex(sequenceIndex),
     _deviceType(deviceType),
-    _canHover(canHover),
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
-    _modifiers(modifiers)
+    _modifiers(modifiers),
+    _coalescedPointerEvents(coalescedPointerEvents),
+    _predictedPointerEvents(predictedPointerEvents),
+    _estimatedProperties(estimatedProperties),
+    _estimatedPropertiesExpectingUpdates(estimatedPropertiesExpectingUpdates)
 {
-    hash_combine(_id, _deviceId);
-    hash_combine(_id, _pointerIndex);
-    hash_combine(_id, _deviceType);
 }
 
 
@@ -334,22 +421,28 @@ int64_t PointerEventArgs::deviceId() const
 }
 
 
-int64_t PointerEventArgs::index() const
+int64_t PointerEventArgs::pointerIndex() const
 {
     return _pointerIndex;
 }
 
-
-std::size_t PointerEventArgs::id() const
+    
+uint64_t PointerEventArgs::sequenceIndex() const
 {
-    return _id;
+    return _sequenceIndex;
+}
+
+    
+std::size_t PointerEventArgs::pointerId() const
+{
+    return _pointerId;
 }
 
 
-PointerEventArgs::PointerEventKey PointerEventArgs::eventKey() const
-{
-    return PointerEventArgs::PointerEventKey(id(), button());
-}
+//PointerEventArgs::PointerKey PointerEventArgs::pointerKey() const
+//{
+//    return PointerEventArgs::PointerKey(pointerId(), deviceId(), pointerIndex(), button());
+//}
 
 
 std::string PointerEventArgs::deviceType() const
@@ -358,47 +451,161 @@ std::string PointerEventArgs::deviceType() const
 }
 
 
-bool PointerEventArgs::canHover() const
-{
-    return _canHover;
-}
-
-
 bool PointerEventArgs::isPrimary() const
 {
     return _isPrimary;
 }
 
-
-uint64_t PointerEventArgs::button() const
+    
+int16_t PointerEventArgs::button() const
 {
     return _button;
 }
 
 
-uint64_t PointerEventArgs::buttons() const
+uint16_t PointerEventArgs::buttons() const
 {
     return _buttons;
 }
 
 
-uint64_t PointerEventArgs::modifiers() const
+uint16_t PointerEventArgs::modifiers() const
 {
     return _modifiers;
 }
 
+    
+std::vector<PointerEventArgs> PointerEventArgs::coalescedPointerEvents() const
+{
+    return _coalescedPointerEvents;
+}
+
+
+std::vector<PointerEventArgs> PointerEventArgs::predictedPointerEvents() const
+{
+    return _predictedPointerEvents;
+}
+
+    
+std::set<std::string> PointerEventArgs::estimatedProperties() const
+{
+    return _estimatedProperties;
+}
+
+    
+std::set<std::string> PointerEventArgs::estimatedPropertiesExpectingUpdates() const
+{
+    return _estimatedPropertiesExpectingUpdates;
+}
+    
+    
+bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs& e)
+{
+    if (e.sequenceIndex() != sequenceIndex())
+    {
+        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence numbers do not match.";
+        return false;
+    }
+    
+//    auto otherExpected = e.estimatedPropertiesExpectingUpdates();
+
+//    std::cout << "Other Expected: " << std::endl;
+//    for (auto& e: otherExpected)
+//        std::cout << "\t" << e << std::endl;
+    
+    auto newEstimatedProperties = e.estimatedProperties();
+//
+    std::cout << "New Estimated: " << std::endl;
+    for (auto& e: newEstimatedProperties)
+        std::cout << "\t" << e << std::endl;
+
+//    auto expected = estimatedPropertiesExpectingUpdates();
+//    std::cout << "Expecting: " << std::endl;
+//    for (auto& e: expected)
+//        std::cout << "\t" << e << std::endl;
+//
+//    auto estimated = estimatedProperties();
+//    std::cout << "Estimated: " << std::endl;
+//    for (auto& e: estimated)
+//        std::cout << "\t" << e << std::endl;
+
+    // Go through the updates we are expecting.
+//    auto iter = _estimatedPropertiesExpectingUpdates.begin();
+//    while (iter != _estimatedPropertiesExpectingUpdates.end())
+//    {
+//        auto property = *iter;
+//
+//        if (otherEstimated.find(*iter) == otherEstimated.end())
+//        {
+//
+//        }
+//        ++iter;
+//    }
+    
+    std::vector<std::string> propertiesToUpdate;
+    
+    std::set_difference(_estimatedPropertiesExpectingUpdates.begin(),
+                        _estimatedPropertiesExpectingUpdates.end(),
+                        newEstimatedProperties.begin(),
+                        newEstimatedProperties.end(),
+                        std::inserter(propertiesToUpdate, propertiesToUpdate.begin()));
+
+    for (auto& property: propertiesToUpdate)
+    {
+        if (property == PointerEventArgs::PROPERTY_PRESSURE)
+        {
+            _point._pressure = e.point().pressure();
+            ofNotifyEvent(pointerPropertyUpdate, property, this);
+        }
+        else if (property == PointerEventArgs::PROPERTY_TILT_X)
+        {
+            _point._tiltXDeg = e.point().tiltXDeg();
+            ofNotifyEvent(pointerPropertyUpdate, property, this);
+        }
+        else if (property == PointerEventArgs::PROPERTY_TILT_Y)
+        {
+            _point._tiltYDeg = e.point().tiltYDeg();
+            ofNotifyEvent(pointerPropertyUpdate, property, this);
+        }
+        else if (property == PointerEventArgs::PROPERTY_POSITION)
+        {
+            _point._position = e.point().position();
+            _point._precisePosition = e.point().precisePosition();
+            ofNotifyEvent(pointerPropertyUpdate, property, this);
+        }
+        else
+        {
+            ofLogWarning("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Uknown property to update: " << property;
+        }
+
+        _estimatedPropertiesExpectingUpdates.erase(property);
+    }
+    
+    
+    return true;
+    
+}
+    
+
 PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
                                                       const ofTouchEventArgs& e)
 {
-    PointShape shape(e.width,
-                     e.height,
-                     e.majoraxis,
-                     e.minoraxis,
+    // If major or minor axis is defined, then use them, otherwise, use width
+    // and height. If neither are defined, use 1 and 1.
+    float majorAxis = e.majoraxis > 0 ? e.majoraxis : e.width;
+    float minorAxis = e.minoraxis > 0 ? e.minoraxis : e.height;
+    
+    majorAxis = std::max(majorAxis, 1.f);
+    minorAxis = std::max(minorAxis, 1.f);
+
+    PointShape shape(PointShape::ShapeType::ELLIPSE,
+                     majorAxis,
+                     minorAxis,
+                     0,
+                     0,
                      e.angle);
 
-    Point point(glm::vec2(e.x, e.y), shape, e.pressure);
-
-    uint64_t modifiers = 0;
+    uint16_t modifiers = 0;
 
     modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
@@ -436,36 +643,49 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
             break;
     }
 
-    std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
+    // If pressure is not reported and a button is pressed, the pressure is
+    // 0.5. If no pressure is reported and no button is pressed, then the
+    // pressure is 0.
+    float pressure = e.pressure > 0 ? e.pressure : (buttons > 0 ? 0.5 : 0);
+    
+    Point point(glm::vec2(e.x, e.y), shape, pressure);
+    
+    // Since we can't know for sure, we assume TOUCH because it came from a
+    // ofTouchEventArgs.
+    std::string deviceType = PointerEventArgs::TYPE_TOUCH;
 
-//    switch (e.pointerType)
-//    {
-//        case ofTouchEventArgs::mouse:
-//            deviceType = PointerEventArgs::TYPE_MOUSE;
-//            break;
-//        case ofTouchEventArgs::pen:
-//            deviceType = PointerEventArgs::TYPE_PEN;
-//            break;
-//        case ofTouchEventArgs::touch:
-//            deviceType = PointerEventArgs::TYPE_TOUCH;
-//            break;
-//        case ofTouchEventArgs::unknown:
-//            deviceType = PointerEventArgs::TYPE_UNKNOWN;
-//            break;
-//    }
+    // If the id is 0, it is primary -- theoretically. But in the current legacy
+    // implementation, 0 can be reused even if the there are active touches.
+    // So, openFrameworks treats this as primary (synthesizes mouse events from
+    // touches), but it doesn't work according to the PointerEvents spec.
+    //
+    // https://www.w3.org/TR/pointerevents/#dfn-primary-pointer
+    bool isPrimary = (e.id == 0);
+    
+    std::size_t pointerId = 0;
+    hash_combine(pointerId, deviceId);
+    hash_combine(pointerId, e.id);
+    hash_combine(pointerId, deviceType);
 
+    int64_t sequenceIndex = 0;
+    
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
                             point,
+                            pointerId,
                             deviceId,
                             e.id,
+                            sequenceIndex,
                             deviceType,
-                            false,
-                            false,
+                            isPrimary,
                             button,
                             buttons,
-                            modifiers);
+                            modifiers,
+                            {},
+                            {},
+                            {},
+                            {});
 }
 
 
@@ -523,11 +743,10 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
-    bool canHover = true;  // A mouse can hover.
     bool isPrimary = true; // A mouse is primary.
 
     // Calculate modifiers.
-    uint64_t modifiers = 0;
+    uint16_t modifiers = 0;
 
     modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
@@ -536,169 +755,32 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     std::size_t deviceId = 0;
     int64_t pointerIndex = 0;
+    uint64_t sequenceIndex = 0;
+    
+    std::string deviceType = PointerEventArgs::TYPE_MOUSE;
+    
+    std::size_t pointerId = 0;
+    hash_combine(pointerId, deviceId);
+    hash_combine(pointerId, pointerIndex);
+    hash_combine(pointerId, deviceType);
 
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
                             point,
+                            pointerId,
                             deviceId,
                             pointerIndex,
-                            PointerEventArgs::TYPE_MOUSE,
-                            canHover,
+                            sequenceIndex,
+                            deviceType,
                             isPrimary,
                             button,
                             buttons,
-                            modifiers);
-}
-
-
-PointerEventSet::PointerEventSet():
-    PointerEventSet(EventArgs::EVENT_TYPE_UNKNOWN)
-{
-}
-
-
-PointerEventSet::PointerEventSet(const std::string& pointerEventType):
-    _pointerEventType(pointerEventType)
-{
-}
-
-
-PointerEventSet::~PointerEventSet()
-{
-}
-
-
-std::string PointerEventSet::pointerEventType() const
-{
-    return _pointerEventType;
-}
-
-
-uint64_t PointerEventSet::firstTimestampMillis() const
-{
-    _updateCache();
-    return _cachedFirstTimestampMillis;
-}
-
-uint64_t PointerEventSet::lastTimestampMillis() const
-{
-    _updateCache();
-    return _cachedLastTimestampMillis;
-}
-
-
-uint64_t PointerEventSet::deltaTimeMillis() const
-{
-    return lastTimestampMillis() - lastTimestampMillis();
-}
-
-glm::vec2 PointerEventSet::centroid() const
-{
-    _updateCache();
-    return _cachedCentroid;
-}
-
-
-ofRectangle PointerEventSet::boundingBox() const
-{
-    _updateCache();
-    return _cachedBoundingBox;
-}
-
-
-std::size_t PointerEventSet::size() const
-{
-    return _pointerEvents.size();
-}
-
-
-std::size_t PointerEventSet::empty() const
-{
-    return _pointerEvents.empty();
-}
-
-
-void PointerEventSet::clear()
-{
-    _pointerEvents.clear();
-    _cacheNeedsUpdate = true;
-}
-
-
-bool PointerEventSet::hasEventKey(const PointerEventArgs& pointerEvent)
-{
-    auto thisEventKey = pointerEvent.eventKey();
-
-    for (const auto& thatEvent: _pointerEvents)
-    {
-        if (thisEventKey == thatEvent.eventKey())
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-bool PointerEventSet::add(const PointerEventArgs& pointerEvent)
-{
-    if (pointerEvent.eventType() == _pointerEventType && !hasEventKey(pointerEvent))
-    {
-        _pointerEvents.push_back(pointerEvent);
-        _cacheNeedsUpdate = true;
-        return true;
-    }
-
-    return false;
-}
-
-
-std::vector<PointerEventArgs> PointerEventSet::pointerEvents() const
-{
-    return _pointerEvents;
-}
-
-
-void PointerEventSet::_updateCache() const
-{
-    if (_cacheNeedsUpdate)
-    {
-        if (_pointerEvents.empty())
-        {
-            _cachedFirstTimestampMillis = 0;
-            _cachedLastTimestampMillis  = 0;
-            _cachedCentroid = glm::vec2(0, 0);
-            _cachedBoundingBox = ofRectangle();
-        }
-        else if (_pointerEvents.size() == 1)
-        {
-            _cachedFirstTimestampMillis = _pointerEvents.begin()->timestampMillis();
-            _cachedLastTimestampMillis  = _pointerEvents.begin()->timestampMillis();
-            _cachedCentroid = _pointerEvents.begin()->position();
-            _cachedBoundingBox = ofRectangle(_cachedCentroid.x, _cachedCentroid.y, 0, 0);
-        }
-        else
-        {
-            _cachedFirstTimestampMillis = std::numeric_limits<uint64_t>::max();
-            _cachedLastTimestampMillis  = std::numeric_limits<uint64_t>::lowest();
-            _cachedCentroid = glm::vec2(0, 0);
-            _cachedBoundingBox = ofRectangle(_pointerEvents.begin()->position(), 0, 0);
-
-            for (const auto& event: _pointerEvents)
-            {
-                _cachedFirstTimestampMillis = std::min(_cachedFirstTimestampMillis, event.timestampMillis());
-                _cachedLastTimestampMillis = std::min(_cachedLastTimestampMillis, event.timestampMillis());
-                _cachedCentroid += event.position();
-                _cachedBoundingBox.growToInclude(event.position());
-            }
-
-            _cachedCentroid /= _pointerEvents.size();
-        }
-
-        _cacheNeedsUpdate = false;
-    }
+                            modifiers,
+                            {},
+                            {},
+                            {},
+                            {});
 }
 
 
@@ -716,19 +798,19 @@ PointerEvents::PointerEvents(ofAppBaseWindow* source): _source(source)
     }
 
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
-    _mouseMovedListener = eventSource->mouseMoved.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseDraggedListener = eventSource->mouseDragged.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mousePressedListener = eventSource->mousePressed.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseReleasedListener = eventSource->mouseReleased.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseScrolledListener = eventSource->mouseScrolled.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseEnteredListener = eventSource->mouseEntered.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _mouseExitedListener = eventSource->mouseExited.newListener(this, &PointerEvents::mouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseMovedListener = eventSource->mouseMoved.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseDraggedListener = eventSource->mouseDragged.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mousePressedListener = eventSource->mousePressed.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseReleasedListener = eventSource->mouseReleased.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseScrolledListener = eventSource->mouseScrolled.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseEnteredListener = eventSource->mouseEntered.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _mouseExitedListener = eventSource->mouseExited.newListener(this, &PointerEvents::onMouseEvent, OF_EVENT_ORDER_BEFORE_APP);
 #endif
-    _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _touchDoubleTapListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
-    _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::touchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchDownListener = eventSource->touchDown.newListener(this, &PointerEvents::onTouchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchUpListener = eventSource->touchUp.newListener(this, &PointerEvents::onTouchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchMovedListener = eventSource->touchMoved.newListener(this, &PointerEvents::onTouchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchDoubleTapListener = eventSource->touchDoubleTap.newListener(this, &PointerEvents::onTouchEvent, OF_EVENT_ORDER_BEFORE_APP);
+    _touchCancelledListener = eventSource->touchCancelled.newListener(this, &PointerEvents::onTouchEvent, OF_EVENT_ORDER_BEFORE_APP);
 
 }
 
@@ -738,52 +820,64 @@ PointerEvents::~PointerEvents()
 }
 
 
-bool PointerEvents::mouseEvent(const void* source, ofMouseEventArgs& e)
+bool PointerEvents::onPointerEvent(const void* source, PointerEventArgs& e)
 {
-    // TODO: Update this when openFrameworks core supports source on events.
-    if (source && source != _source)
-    {
-        // "Event source sent, but does not match window. PointerEvents should be updated to respect source."
-        assert(false);
-    }
+    std::cout << "here" << std::endl;
+    return _dispatchPointerEvent(source, e);
+}
 
-    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
-    return _dispatchPointerEvent(_source, p);
+    
+    
+bool PointerEvents::onMouseEvent(const void* source, ofMouseEventArgs& e)
+{
+    auto p = PointerEventArgs::toPointerEventArgs(source, e);
+    return _dispatchPointerEvent(source, p);
 }
 
 
-bool PointerEvents::touchEvent(const void* source, ofTouchEventArgs& e)
+bool PointerEvents::onTouchEvent(const void* source, ofTouchEventArgs& e)
 {
-    // TODO: Update this when openFrameworks core supports source on events.
-    if (source && source != _source)
-    {
-        // "Event source sent, but does not match window. PointerEvents should be updated to respect source."
-        assert(false);
-    }
+    std::cout << "2 here" << std::endl;
 
-    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
-    return _dispatchPointerEvent(_source, p);
+    auto p = PointerEventArgs::toPointerEventArgs(source, e);
+    return _dispatchPointerEvent(source, p);
 }
 
 
-void PointerEvents::disableLegacyEvents()
-{
-    _consumeLegacyEvents = true;
-}
-
-
-void PointerEvents::enableLegacyEvents()
-{
-    _consumeLegacyEvents = false;
-}
+//void PointerEvents::disableLegacyEvents()
+//{
+//    _consumeLegacyEvents = true;
+//}
+//
+//
+//void PointerEvents::enableLegacyEvents()
+//{
+//    _consumeLegacyEvents = false;
+//}
 
 
 bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& e)
 {
+    // TODO: Update this when openFrameworks core supports source on events.
+    if (source && source != _source)
+    {
+        // "Event source sent, but does not match window. PointerEvents should be updated to respect source."
+        assert(false);
+        ofLogError("PointerEvents::_dispatchPointerEvent") << "Mismatched source.";
+        return false;
+    }
+    
+    if (e.eventType() == PointerEventArgs::EVENT_TYPE_UNKNOWN)
+    {
+        // We don't deliver unknown event types.
+        // These are usually double-tap events from OF core.
+        return true;
+    }
+    
     // All pointer events get dispatched via pointerEvent.
     bool consumed = ofNotifyEvent(pointerEvent, e, _source);
 
-    // If the pointer was not consumed, then send it along to the standard four.
+    // If the pointer was not consumed, then send it along to the standard five.
     if (!consumed)
     {
         if (e.eventType() == PointerEventArgs::POINTER_DOWN)
@@ -801,6 +895,10 @@ bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& 
         else if (e.eventType() == PointerEventArgs::POINTER_CANCEL)
         {
             consumed = ofNotifyEvent(pointerCancel, e, _source);
+        }
+        else if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
+        {
+            consumed = ofNotifyEvent(pointerUpdate, e, _source);
         }
     }
 
@@ -822,11 +920,9 @@ PointerEvents* PointerEventsManager::eventsForWindow(ofAppBaseWindow* window)
     {
         return iter->second.get();
     }
-    else
-    {
-        _windowEventMap[window] = std::make_unique<PointerEvents>(window);
-        return _windowEventMap[window].get();
-    }
+
+    _windowEventMap[window] = std::make_unique<PointerEvents>(window);
+    return _windowEventMap[window].get();
 }
 
 
@@ -889,7 +985,7 @@ void PointerDebugRenderer::draw(ofEventArgs& args)
         {
             for (std::size_t index = 0; index < events.second.size(); ++index)
             {
-                float width = 0;
+                // float width = 0;
 
                 if (index > 1 && events.second.size() > 2)
                 {
@@ -957,7 +1053,7 @@ bool PointerDebugRenderer::isEnabled() const
 }
 
 
-void PointerDebugRenderer::pointerEvent(PointerEventArgs& evt)
+void PointerDebugRenderer::onPointerEvent(PointerEventArgs& evt)
 {
     if (evt.eventType() == PointerEventArgs::POINTER_UP
     ||  evt.eventType() == PointerEventArgs::POINTER_CANCEL)
@@ -1088,4 +1184,155 @@ void PointerDebugRenderer::pointerEvent(PointerEventArgs& evt)
 //}
 
 
+PointerEventCollection::PointerEventCollection()
+{
+}
+
+
+//PointerEventCollection::PointerEventCollection(const std::set<std::string>& pointerEventTypes):
+//    _pointerEventTypes(pointerEventTypes)
+//{
+//}
+
+
+PointerEventCollection::~PointerEventCollection()
+{
+}
+
+//void PointerEventCollection::setPointerEventTypes(const std::set<std::string>& pointerEventTypes)
+//{
+//    clear();
+//    _pointerEventTypes = pointerEventTypes;
+//}
+//
+//
+//std::set<std::string> PointerEventCollection::getPointerEventTypes() const
+//{
+//    return _pointerEventTypes;
+//}
+
+    
+//void PointerEventCollection::setMaxNumEventKeys(std::size_t maxNumEventKeys)
+//{
+//    clear();
+//    _maxNumEventKeys = maxNumEventKeys;
+//}
+//    
+//
+//std::size_t PointerEventCollection::getMaxNumEventKeys() const
+//{
+//    return _maxNumEventKeys;
+//}
+
+
+std::size_t PointerEventCollection::size() const
+{
+    return _events.size();
+}
+
+
+bool PointerEventCollection::empty() const
+{
+    return _events.empty();
+}
+
+
+void PointerEventCollection::clear()
+{
+    _events.clear();
+    _eventsForPointerId.clear();
+}
+
+
+std::size_t PointerEventCollection::numPointers() const
+{
+    return _eventsForPointerId.size();
+}
+    
+    
+bool PointerEventCollection::hasPointerId(std::size_t pointerId)
+{
+    return _eventsForPointerId.find(pointerId) != _eventsForPointerId.end();
+}
+
+
+void PointerEventCollection::add(const PointerEventArgs& pointerEvent)
+{
+    _events.push_back(pointerEvent);
+    
+    auto iter = _eventsForPointerId.find(pointerEvent.pointerId());
+
+    if (iter != _eventsForPointerId.end())
+        iter->second.push_back(&_events.back());
+    else
+        _eventsForPointerId[pointerEvent.pointerId()] = { &_events.back() };
+
+}
+
+    
+void PointerEventCollection::removeEventsForPointerId(std::size_t pointerId)
+{
+    _eventsForPointerId.erase(pointerId);
+    
+    auto iter = _events.begin();
+    
+    while (iter != _events.end())
+    {
+        if (iter->pointerId() == pointerId)
+            iter = _events.erase(iter);
+        else
+            ++iter;
+    }
+}
+    
+    
+std::vector<PointerEventArgs> PointerEventCollection::events() const
+{
+    return _events;
+}
+
+
+std::vector<PointerEventArgs> PointerEventCollection::eventsForPointerId(std::size_t pointerId) const
+{
+    std::vector<PointerEventArgs> results;
+    
+    auto iter = _eventsForPointerId.find(pointerId);
+    
+    if (iter != _eventsForPointerId.end())
+    {
+        for (auto* event: iter->second)
+            results.push_back(*event);
+    }
+    
+    return results;
+}
+    
+    
+    
+const PointerEventArgs* PointerEventCollection::firstEventForPointerId(std::size_t pointerId) const
+{
+    auto iter = _eventsForPointerId.find(pointerId);
+    
+    if (iter != _eventsForPointerId.end())
+    {
+        return iter->second.front();
+    }
+    
+    return nullptr;
+}
+ 
+    
+const PointerEventArgs* PointerEventCollection::lastEventForPointerId(std::size_t pointerId) const
+{
+    auto iter = _eventsForPointerId.find(pointerId);
+    
+    if (iter != _eventsForPointerId.end())
+    {
+        return iter->second.back();
+    }
+    
+    return nullptr;
+}
+
+    
 } // namespace ofx
