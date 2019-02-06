@@ -27,17 +27,17 @@ void ofApp::setup()
     // When calling ofx::RegisterPointerEvents(this), it is expected that the
     // following methods are present in the listener class.
     //
-    //  void pointerUp(ofx::PointerEventArgs& evt);
-    //  void pointerDown(ofx::PointerEventArgs& evt);
-    //  void pointerMove(ofx::PointerEventArgs& evt);
-    //  void pointerCancel(ofx::PointerEventArgs& evt);
+    //  void onPointerUp(ofx::PointerEventArgs& evt);
+    //  void onPointerDown(ofx::PointerEventArgs& evt);
+    //  void onPointerMove(ofx::PointerEventArgs& evt);
+    //  void onPointerCancel(ofx::PointerEventArgs& evt);
     //
     // or if pointer events can be consumed:
     //
-    //  bool pointerUp(ofx::PointerEventArgs& evt);
-    //  bool pointerDown(ofx::PointerEventArgs& evt);
-    //  bool pointerMove(ofx::PointerEventArgs& evt);
-    //  bool pointerCancel(ofx::PointerEventArgs& evt);
+    //  bool onPointerUp(ofx::PointerEventArgs& evt);
+    //  bool onPointerDown(ofx::PointerEventArgs& evt);
+    //  bool onPointerMove(ofx::PointerEventArgs& evt);
+    //  bool onPointerCancel(ofx::PointerEventArgs& evt);
 
     ofx::RegisterPointerEvents(this);
 }
@@ -52,25 +52,26 @@ void ofApp::draw()
 {
 }
 
-void ofApp::pointerUp(ofx::PointerEventArgs& evt)
+
+void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::pointerUp") << evt.toString();
 }
 
 
-void ofApp::pointerDown(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::pointerDown") << evt.toString();
 }
 
 
-void ofApp::pointerMove(ofx::PointerEventArgs& evt)
+void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::pointerMove") << evt.toString();
 }
 
 
-void ofApp::pointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::pointerCancel") << evt.toString();
 }

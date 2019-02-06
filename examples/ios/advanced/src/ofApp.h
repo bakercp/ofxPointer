@@ -12,20 +12,13 @@ public:
     void update() override;
     void draw() override;
 
-    void touchDown(ofTouchEventArgs& touch) override;
-    void touchMoved(ofTouchEventArgs& touch) override;
-    void touchUp(ofTouchEventArgs& touch) override;
-    void touchDoubleTap(ofTouchEventArgs& touch) override;
-    void touchCancelled(ofTouchEventArgs& touch) override;
-
     void onPointerUp(ofx::PointerEventArgs& evt);
     void onPointerDown(ofx::PointerEventArgs& evt);
     void onPointerMove(ofx::PointerEventArgs& evt);
     void onPointerCancel(ofx::PointerEventArgs& evt);
-
     void onPointerUpdate(ofx::PointerEventArgs& evt);
 
-    void pointerPropertyUpdate(std::string& evt);
+    void pointerPropertyUpdate(const void* source, std::string& evt);
     
     
     void addEvent(ofx::PointerEventArgs& evt);
