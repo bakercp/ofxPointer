@@ -11,13 +11,14 @@
 #include <map>
 #include <set>
 #include <string>
+#include "json.hpp"
 #include "ofEvents.h"
 #include "ofUtils.h"
 #include "ofAppBaseWindow.h"
 #include "ofAppRunner.h"
 #include "ofRectangle.h"
 #include "ofLog.h"
-#include "ofxSerializer.h"
+//#include "ofxSerializer.h"
 
 
 namespace ofx {
@@ -481,12 +482,30 @@ private:
 };
 
     
+// \todo This function is a replacement for automatic glm serialization using ofxSerializer.
+inline glm::vec2 to_vec_2_temp(const nlohmann::json& j)
+{
+    return glm::vec2(j.value("x", float(0)),
+                     j.value("y", float(0)));
+}
+
+// \todo This function is a replacement for automatic glm serialization using ofxSerializer.
+inline nlohmann::json to_json_temp(const glm::vec2& v)
+{
+    nlohmann::json j = {
+        { "x", v.x },
+        { "y", v.y }
+    };
+    return j;
+}
+
+    
 inline void to_json(nlohmann::json& j, const Point& v)
 {
     j =
     {
-        { "position", v.position() },
-        { "precise_position", v.precisePosition() },
+        { "position", to_json_temp(v.position()) },
+        { "precise_position", to_json_temp(v.precisePosition()) },
         { "shape", v.shape() },
         { "pressure", v.pressure() },
         { "tangential_pressure", v.tangentialPressure() },
@@ -499,8 +518,11 @@ inline void to_json(nlohmann::json& j, const Point& v)
 
 void from_json(const nlohmann::json& j, Point& v)
 {
-    v = Point(j.value("position", glm::vec2(0, 0)),
-              j.value("precise_position", glm::vec2(0, 0)),
+    nlohmann::json jp = j.value("position", nlohmann::json());
+    nlohmann::json jpp = j.value("precise_position", nlohmann::json());
+
+    v = Point(to_vec_2_temp(jp),
+              to_vec_2_temp(jpp),
               j.value("shape", PointShape()),
               j.value("pressure", float(0)),
               j.value("tangential_pressure", float(0)),
@@ -884,7 +906,7 @@ void from_json(const nlohmann::json& j, PointerEventArgs& v)
     v = PointerEventArgs(nullptr,
                          j.value("event_type", EventArgs::EVENT_TYPE_UNKNOWN),
                          j.value("timestamp_millis", uint64_t(0)),
-                         j.value("detail", uint64_t(0))),
+                         j.value("detail", uint64_t(0)),
                          j.value("point", Point()),
                          j.value("pointer_id", std::size_t(0)),
                          j.value("device_id", uint64_t(0)),
