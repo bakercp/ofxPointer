@@ -5,7 +5,10 @@
 //
 
 
-#if defined(OF_TARGET_IOS)
+#include "ofConstants.h"
+
+
+#if defined(TARGET_OF_IOS)
 
 
 #include "ofx/PointerEventsiOS.h"
@@ -348,7 +351,8 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     uint64_t buttons = 0;
     
     std::string eventType = PointerEventArgs::EVENT_TYPE_UNKNOWN;
-
+    uint64_t detail = 0;
+    
     uint64_t sequenceIndex = [[touch estimationUpdateIndex] unsignedLongLongValue];
         
     std::set<std::string> estimatedProperties = toPopertySet([touch estimatedProperties]);
@@ -541,6 +545,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
+                            detail,
                             point,
                             pointerId,
                             deviceId,
@@ -557,7 +562,46 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                             estimatedPropertiesExpectingUpdates);
 }
 
-
 @end
+
+
+namespace ofx {
+
+
+///// \brief The global PointerView associated with the single iOS window.
+///// \note Currently we only support one window. In the future we might support more if iOS allows it.
+static PointerView* pointerView = nullptr;
+
+
+void EnableAdvancedPointerEventsiOS()
+{
+    if (!pointerView)
+    {
+        // Since iOS can only have one window, we initialize our PointerView on
+        // that window.
+        pointerView = [[PointerView alloc] initWithFrame:CGRectMake(0,
+                                                                    0,
+                                                                    ofxiOSGetOFWindow()->getWidth(),
+                                                                    ofxiOSGetOFWindow()->getHeight())];
+
+        // Add the view. PointerView will now intercept all pointer input.
+        [[ofxiOSGetAppDelegate() uiViewController].view addSubview:pointerView];
+    }
+}
+
+
+void DisableAdvancedPointerEventsiOS()
+{
+    if (pointerView)
+    {
+        [pointerView removeFromSuperview];
+        [pointerView release];
+        pointerView = nullptr;
+    }
+}
+    
+
+} // namespace ofx
+
 
 #endif

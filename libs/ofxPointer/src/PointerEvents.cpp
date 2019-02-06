@@ -19,23 +19,32 @@ const std::string EventArgs::EVENT_TYPE_UNKNOWN = "EVENT_TYPE_UNKNOWN";
 
 EventArgs::EventArgs(): EventArgs(nullptr,
                                   EVENT_TYPE_UNKNOWN,
-                                  ofGetElapsedTimeMillis())
+                                  ofGetElapsedTimeMillis(),
+                                  0)
 {
 }
 
 
 EventArgs::EventArgs(const void* eventSource,
                      const std::string& eventType,
-                     uint64_t timestampMillis):
+                     uint64_t timestampMillis,
+                     uint64_t detail):
     _eventSource(eventSource),
     _eventType(eventType),
-    _timestampMillis(timestampMillis)
+    _timestampMillis(timestampMillis),
+    _detail(detail)
 {
 }
 
 
 EventArgs::~EventArgs()
 {
+}
+
+
+const void* EventArgs::eventSource() const
+{
+    return _eventSource;
 }
 
 
@@ -50,10 +59,10 @@ uint64_t EventArgs::timestampMillis() const
     return _timestampMillis;
 }
 
-
-const void* EventArgs::eventSource() const
+    
+uint64_t EventArgs::detail() const
 {
-    return _eventSource;
+    return _detail;
 }
 
 
@@ -365,6 +374,7 @@ PointerEventArgs::PointerEventArgs()
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
                                    uint64_t timestampMillis,
+                                   uint64_t detail,
                                    const Point& point,
                                    std::size_t pointerId,
                                    int64_t deviceId,
@@ -379,7 +389,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::vector<PointerEventArgs>& predictedPointerEvents,
                                    const std::set<std::string>& estimatedProperties,
                                    const std::set<std::string>& estimatedPropertiesExpectingUpdates):
-    EventArgs(eventSource, eventType, timestampMillis),
+    EventArgs(eventSource, eventType, timestampMillis, detail),
     _point(point),
     _pointerId(pointerId),
     _deviceId(deviceId),
@@ -616,6 +626,8 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     std::string eventType = EVENT_TYPE_UNKNOWN;
 
+    uint64_t detail = 0;
+    
     uint64_t button = 0;
 
     uint64_t buttons = 0;
@@ -672,6 +684,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
+                            detail,
                             point,
                             pointerId,
                             deviceId,
@@ -694,6 +707,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 {
     // We begin with an unknown event type.
     std::string eventType = EVENT_TYPE_UNKNOWN;
+    uint64_t detail = 0;
 
     // Convert the ofMouseEventArgs type to a string event type.
     switch (e.type)
@@ -767,6 +781,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
+                            detail,
                             point,
                             pointerId,
                             deviceId,

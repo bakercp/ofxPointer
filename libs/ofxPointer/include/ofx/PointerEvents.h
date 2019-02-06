@@ -17,25 +17,7 @@
 #include "ofAppRunner.h"
 #include "ofRectangle.h"
 #include "ofLog.h"
-//#include "ofJson.h"
-
-
-//namespace glm {
-//    void to_json(ofJson& j, const glm::vec2& p)
-//    {
-//        j = ofJson
-//        {
-//            {"x", p.x},
-//            {"y", p.y}
-//        };
-//    }
-//
-//    void from_json(const ofJson& j, glm::vec2& p)
-//    {
-//        p.x = j.at("x").get<float>();
-//        p.y = j.at("y").get<float>();
-//    }
-//}
+#include "ofxSerializer.h"
 
 
 namespace ofx {
@@ -61,12 +43,17 @@ public:
     /// \param eventSource The source of the event.
     /// \param eventType A string describing the type of the event.
     /// \param timestampMillis The timestamp of the event.
+    /// \param detail Optional event detail.
     EventArgs(const void* eventSource,
               const std::string& eventType,
-              uint64_t timestampMillis);
+              uint64_t timestampMillis,
+              uint64_t detail);
 
     /// \brief Destroy the EventArgs.
     virtual ~EventArgs();
+    
+    /// \returns the source of the event if available.
+    const void* eventSource() const;
 
     /// \returns the event type.
     std::string eventType() const;
@@ -74,8 +61,8 @@ public:
     /// \returns the timestamp of this event in milliseconds.
     uint64_t timestampMillis() const;
 
-    /// \returns the source of the event if available.
-    const void* eventSource() const;
+    /// \returns the optional event detail.
+    uint64_t detail() const;
 
     /// \brief An unknown event type.
     static const std::string EVENT_TYPE_UNKNOWN;
@@ -101,7 +88,7 @@ private:
     uint64_t _detail = 0;
     
 };
-    
+
 
 /// \brief A PointShape describes the shape of a pointer.
 ///
@@ -231,38 +218,72 @@ protected:
 
 };
 
+
+inline std::string to_string(PointShape::ShapeType v)
+{
+    switch (v)
+    {
+        case PointShape::ShapeType::ELLIPSE:
+            return "ELLIPSE";
+        case PointShape::ShapeType::RECTANGLE:
+            return "RECTANGLE";
+    }
+
+    return "ELLIPSE";
+}
     
-//void to_json(ofJson& j, const PointShape& p)
-//{
-//    std::string shapeType = p.shapeType() == PointShape::ShapeType::RECTANGLE ? "RECTANGLE" : "ELLIPSE";
-//
-//    j = ofJson
-//    {
-//        {"shape_type", shapeType},
-//        {"width", p.width()},
-//        {"height", p.height()},
-//        {"width_tolerance", p.widthTolerance()},
-//        {"height_tolerance", p.heightTolerance()},
-//        {"angle_deg", p.angleDeg()},
-//    };
-//}
-//
-//void from_json(const ofJson& j, PointShape& p)
-//{
-//    std::string shapeType;
-//    float width = j.at("shape_type").get<float>();
-//    float height = j.at("height").get<float>();
-//    float widthTolerance = j.at("width_tolerance").get<float>();
-//    float heightTolerance = j.at("height_tolerance").get<float>();
-//    float angleDeg = j.at("angle_deg").get<float>();
-//    PointShape::ShapeType _shapeType = (shapeType == "RECTANGLE") ? PointShape::ShapeType::RECTANGLE : PointShape::ShapeType::ELLIPSE;
-//    p = PointShape(_shapeType,
-//                   width,
-//                   height,
-//                   widthTolerance,
-//                   heightTolerance,
-//                   angleDeg);
-//}
+    
+inline void to_json(nlohmann::json& j, const PointShape::ShapeType& v)
+{
+    j = to_string(v);
+}
+
+    
+inline void from_json(const nlohmann::json& j, PointShape::ShapeType& v)
+{
+    std::string s = j.get<std::string>();
+    if (!s.empty())
+    {
+        if (s == to_string(PointShape::ShapeType::ELLIPSE))
+        {
+            v = PointShape::ShapeType::ELLIPSE;
+            return;
+        }
+        else if (s == to_string(PointShape::ShapeType::RECTANGLE))
+        {
+            v = PointShape::ShapeType::RECTANGLE;
+            return;
+        }
+    }
+    
+    ofLogWarning("from_json") << "Unknown value: " << s;
+    v = PointShape::ShapeType::ELLIPSE;
+    return;
+}
+
+    
+inline void to_json(nlohmann::json& j, const PointShape& v)
+{
+    j = {
+        { "shape_type", v.shapeType() },
+        { "width", v.width() },
+        { "height", v.height() },
+        { "width_tolerance", v.widthTolerance() },
+        { "height_tolerance", v.heightTolerance() },
+        { "angle_deg", v.angleDeg() }
+    };
+}
+
+
+inline void from_json(const nlohmann::json& j, PointShape& v)
+{
+    v = PointShape(j.value("shape_type", PointShape::ShapeType::ELLIPSE),
+                   j.value("width", float(1)),
+                   j.value("height", float(1)),
+                   j.value("width_tolerance", float(0)),
+                   j.value("height_tolerance", float(0)),
+                   j.value("angle_deg", float(0)));
+}
 
 
 /// \brief A class representing a pointer's point.
@@ -459,33 +480,34 @@ private:
     friend PointerEventArgs;
 };
 
-//void to_json(ofJson& j, const Point& p)
-//{
-//    j = ofJson
-//    {
-//        {"position", p.position()},
-//        {"precise_position", p.precisePosition()},
-//        {"shape", p.shape()},
-//        {"pressure", p.pressure()},
-//        {"tangential_pressure", p.tangentialPressure()},
-//        {"twist_deg", p.twistDeg()},
-//        {"tilt_x_deg", p.tiltXDeg()},
-//        {"tilt_y_deg", p.tiltYDeg()}
-//    };
-//}
-//
-//
-//void from_json(const ofJson& j, Point& p)
-//{
-//    p = Point(j.at("position").get<glm::vec2>(),
-//              j.at("precise_position").get<glm::vec2>(),
-//              j.at("shape").get<PointShape>(),
-//              j.at("pressure").get<float>(),
-//              j.at("tangential_pressure").get<float>(),
-//              j.at("twist_deg").get<float>(),
-//              j.at("tilt_x_deg").get<float>(),
-//              j.at("tilt_y_deg").get<float>());
-//}
+    
+inline void to_json(nlohmann::json& j, const Point& v)
+{
+    j =
+    {
+        { "position", v.position() },
+        { "precise_position", v.precisePosition() },
+        { "shape", v.shape() },
+        { "pressure", v.pressure() },
+        { "tangential_pressure", v.tangentialPressure() },
+        { "twist_deg", v.twistDeg() },
+        { "tilt_x_deg", v.tiltXDeg() },
+        { "tilt_y_deg", v.tiltYDeg() }
+    };
+}
+
+
+void from_json(const nlohmann::json& j, Point& v)
+{
+    v = Point(j.value("position", glm::vec2(0, 0)),
+              j.value("precise_position", glm::vec2(0, 0)),
+              j.value("shape", PointShape()),
+              j.value("pressure", float(0)),
+              j.value("tangential_pressure", float(0)),
+              j.value("twist_deg", float(0)),
+              j.value("tilt_x_deg", float(0)),
+              j.value("tilt_y_deg", float(0)));
+}
 
 
 /// \brief A class representing all of the arguments in a pointer event.
@@ -522,6 +544,7 @@ public:
     /// \param eventSource The event source if available.
     /// \param eventType The pointer event type.
     /// \param timestampMillis The timestamp of this event in milliseconds
+    /// \param detail The optional event details.
     /// \param point The point.
     /// \param pointerId The unique pointer id.
     /// \param deviceId The unique input device id.
@@ -534,13 +557,14 @@ public:
     /// \param modifiers All modifiers for this pointer.
     /// \param buttons All pressed buttons for this pointer.
     /// \param modifiers All modifiers for this pointer.
-    /// \param coalescedPointerEvents Pointer events not delivered since the last frame.
+    /// \param coalescedPointerEvents Pointer events not delivered since the last frame, including a copy of the current event.
     /// \param predictedPointerEvents Predicted pointer events that will arrive between now and the next frame.
     /// \param estimatedProperties A set of estimated properties.
     /// \param estimatedPropertiesExpectingUpdates A set of estimated properties that are expecting updates.
     PointerEventArgs(const void* eventSource,
                      const std::string& eventType,
                      uint64_t timestampMillis,
+                     uint64_t detail,
                      const Point& point,
                      std::size_t pointerId,
                      int64_t deviceId,
@@ -625,7 +649,7 @@ public:
     /// \returns all modifiers for this pointer.
     uint16_t modifiers() const;
 
-    /// \returns pointer events not delivered since the last frame.
+    /// \returns pointer events not delivered since the last frame, including a copy of the current event.
     std::vector<PointerEventArgs> coalescedPointerEvents() const;
     
     /// \returns predicted pointer events that will arrive between now and the next frame.
@@ -758,16 +782,6 @@ public:
     friend std::ostream& operator << (std::ostream& os, const PointerEventArgs& e);
 
 private:
-    /// \brief The current button associated with this event.
-    int16_t _button = 0;
-    
-    /// \brief The current buttons being pressed.
-    uint16_t _buttons = 0;
-    
-    /// \brief The current modifiers being pressed.
-    uint16_t _modifiers = 0;
-    
-    
     /// \brief The location and orientation of the pointer.
     Point _point;
 
@@ -800,7 +814,16 @@ private:
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary = false;
 
-    /// \brief Pointer events not delivered since the last frame.
+    /// \brief The current button associated with this event.
+    int16_t _button = 0;
+    
+    /// \brief The current buttons being pressed.
+    uint16_t _buttons = 0;
+    
+    /// \brief The current modifiers being pressed.
+    uint16_t _modifiers = 0;
+    
+    /// \brief Pointer events not delivered since the last frame, including a copy of the current event.
     std::vector<PointerEventArgs> _coalescedPointerEvents;
 
     /// \brief Predicted pointer events that will arrive between now and the next frame.
@@ -828,40 +851,55 @@ inline std::ostream& operator << (std::ostream& os, const PointerEventArgs& e)
 }
 
     
-//void to_json(ofJson& j, const PointerEventArgs& p)
-//{
-////    j = ofJson
-////    {
-////        {"position", p.position()},
-////        {"precise_position", p.precisePosition()},
-////        {"shape", p.shape()},
-////        {"pressure", p.pressure()},
-////        {"tangential_pressure", p.tangentialPressure()},
-////        {"twist_deg", p.twistDeg()},
-////        {"tilt_x_deg", p.tiltXDeg()},
-////        {"tilt_y_deg", p.tiltYDeg()}
-////    };
-//}
-//
-//
-//void from_json(const ofJson& j, PointerEventArgs& p)
-//{
-////    p = Point(j.at("position").get<glm::vec2>(),
-////              j.at("precise_position").get<glm::vec2>(),
-////              j.at("shape").get<PointShape>(),
-////              j.at("pressure").get<float>(),
-////              j.at("tangential_pressure").get<float>(),
-////              j.at("twist_deg").get<float>(),
-////              j.at("tilt_x_deg").get<float>(),
-////              j.at("tilt_y_deg").get<float>());
-//}
+    
+inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
+{
+    const EventArgs* e = reinterpret_cast<const EventArgs*>(&v);
+    
+    j =
+    {
+        { "event_type", v.eventType() },
+        { "timestamp_millis", v.timestampMillis() },
+        { "detail", v.detail() },
+        { "point", v.point() },
+        { "pointer_id", v.pointerId() },
+        { "device_id", v.deviceId() },
+        { "pointer_index", v.pointerIndex() },
+        { "sequence_index", v.sequenceIndex() },
+        { "device_type", v.deviceType() },
+        { "is_primary", v.isPrimary() },
+        { "button", v.button() },
+        { "buttons", v.buttons() },
+        { "modifiers", v.modifiers() },
+        { "coalesced_pointer_events", v.coalescedPointerEvents() },
+        { "predicted_pointer_events", v.predictedPointerEvents() },
+        { "estimated_properties", v.estimatedProperties() },
+        { "estimated_properties_expecting_updates", v.estimatedPropertiesExpectingUpdates() },
+    };
+}
     
     
-    
-    
-    
-    
-    
+void from_json(const nlohmann::json& j, PointerEventArgs& v)
+{
+    v = PointerEventArgs(nullptr,
+                         j.value("event_type", EventArgs::EVENT_TYPE_UNKNOWN),
+                         j.value("timestamp_millis", uint64_t(0)),
+                         j.value("detail", uint64_t(0))),
+                         j.value("point", Point()),
+                         j.value("pointer_id", std::size_t(0)),
+                         j.value("device_id", uint64_t(0)),
+                         j.value("pointer_index", uint64_t(0)),
+                         j.value("sequence_index", uint64_t(0)),
+                         j.value("device_type", PointerEventArgs::TYPE_UNKNOWN),
+                         j.value("is_primary", false),
+                         j.value("button", int16_t(0)),
+                         j.value("buttons", uint16_t(0)),
+                         j.value("modifiers", uint16_t(0)),
+                         j.value("coalesced_pointer_events", std::vector<PointerEventArgs>()),
+                         j.value("predicted_pointer_events", std::vector<PointerEventArgs>()),
+                         j.value("estimated_properties", std::set<std::string>()),
+                         j.value("estimated_properties_expecting_updatess", std::set<std::string>()));
+}
 
 /// \brief
 ///
@@ -947,7 +985,8 @@ public:
     /// \param listener A pointer to the listener class.
     /// \param prio The event priority.
     template <class ListenerClass>
-    void registerPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
+    void registerPointerEvents(ListenerClass* listener,
+                               int prio = OF_EVENT_ORDER_AFTER_APP);
 
     /// \brief Unregister a pointer event listener.
     ///
@@ -965,7 +1004,8 @@ public:
     /// \param listener A pointer to the listener class.
     /// \param prio The event priority.
     template <class ListenerClass>
-    void unregisterPointerEvents(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP);
+    void unregisterPointerEvents(ListenerClass* listener,
+                                 int prio = OF_EVENT_ORDER_AFTER_APP);
 
     /// \brief Event that is triggered for any pointer event.
     ///
@@ -1012,8 +1052,7 @@ public:
     /// iPencil. To update the point, the user can compare the
     ///
     ///     PointerEventArgs::estimatedProperties()
-    /// \todo
-    
+    ///
     /// Triggered after pointerEvent, if pointerEvent is not consumed.
     ofEvent<PointerEventArgs> pointerUpdate;
 
@@ -1071,7 +1110,6 @@ protected:
     /// \brief The default source if the callback is missing.
     ofAppBaseWindow* _source = nullptr;
 
-    
 };
 
     
@@ -1353,11 +1391,7 @@ private:
     
 };
 
-    
-    
-    
-    
-    
+
 } // namespace ofx
 
 
@@ -1373,19 +1407,3 @@ inline void hash_combine(std::size_t& seed, const T& v)
 }
 
 
-//namespace ns
-//{
-//    PointShape
-//    Point
-//    PointerEventArgs
-//
-//    void to_json(json& j, const person& p) {
-//        j = json{{"name", p.name}, {"address", p.address}, {"age", p.age}};
-//    }
-//
-//    void from_json(const json& j, person& p) {
-//        p.name = j.at("name").get<std::string>();
-//        p.address = j.at("address").get<std::string>();
-//        p.age = j.at("age").get<int>();
-//    }
-//} // namespace ns

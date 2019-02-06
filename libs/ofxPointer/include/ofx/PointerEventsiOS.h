@@ -9,14 +9,18 @@
 #pragma once
 
 
-#if defined(OF_TARGET_IOS)
+#include "ofConstants.h"
+
+
+#if defined(TARGET_OF_IOS)
+
 
 #include "ofxiOS.h"
-
-#include "ofx/PointerEvents.h"
 #include "ofEvents.h"
 #include "ofAppBaseWindow.h"
 #include "ofAppRunner.h"
+#include "ofx/PointerEvents.h"
+
 
 
 /// \brief PointerView is a UIView subclass that intercepts and transforms touches as PointerEvents.
@@ -58,37 +62,39 @@
 namespace ofx {
 
 
-/// \brief The global PointerView associated with the single iOS window.
-/// \note Currently we only support one window. In the future we might support more if iOS allows it.
-static PointerView* pointerView = nullptr;
-
-    
 /// \brief This must be called to add the PointerView to the primary iOS window.
-static void EnableAdvancedPointerEventsiOS()
-{
-    if (!pointerView)
-    {
-        // Since iOS can only have one window, we initialize our PointerView on
-        // that window.
-        pointerView = [[PointerView alloc] initWithFrame:CGRectMake(0, 0, ofxiOSGetOFWindow()->getWidth(), ofxiOSGetOFWindow()->getHeight())];
-        
-        // Add the view. PointerView will now intercept all pointer input.
-        [[ofxiOSGetAppDelegate() uiViewController].view addSubview:pointerView];
-    }
-}
-    
+void EnableAdvancedPointerEventsiOS();
+
 /// \brief This must be called to remove the PointerView from the primary iOS window.
-static void DisableAdvancedPointerEventsiOS()
+void DisableAdvancedPointerEventsiOS();
+
+
+template <class ListenerClass>
+void RegisterAdvancedPointerEventsiOS(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
 {
-    if (pointerView)
-    {
-        [pointerView removeFromSuperview];
-        [pointerView release];
-        pointerView = nullptr;
-    }
+    EnableAdvancedPointerEventsiOS();
+    RegisterPointerEventsForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
+    ofAddListener(ofx::PointerEventsManager::instance().eventsForWindow(ofGetWindowPtr())->pointerUpdate,
+                  listener,
+                  &ListenerClass::onPointerUpdate, prio);
 }
 
 
+template <class ListenerClass>
+void UnregisterAdvancedPointerEventsiOS(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    UnregisterPointerEventsForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
+    ofRemoveListener(ofx::PointerEventsManager::instance().eventsForWindow(ofGetWindowPtr())->pointerUpdate,
+                     listener,
+                     &ListenerClass::onPointerUpdate, prio);
+    DisableAdvancedPointerEventsiOS();
+}
+
+    
+    
+
+    
+    
 } // namespace ofx
 
 
