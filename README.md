@@ -1,5 +1,4 @@
-ofxPointer
-==========
+# ofxPointer
 
 ## Description
 
@@ -11,13 +10,10 @@ Currently the openFrameworks pointer model separates touch and mouse events, mak
 
 Simply put, `ofxPointer` merges pointer, touch and pen input into a single extensible interface.
 
-This addon also keeps track of additional information like number of clicks, etc.
-
 A typical program will now look like this:
 
-```c++
 
-For iOS compatibility, see ofxPointerIOS for an advanced compatibility layer.
+```c++
 
 #pragma once
 
@@ -47,13 +43,13 @@ public:
     }
 
 
-    void pointerUp(ofx::PointerEventArgs& evt)
+    void onPointerUp(ofx::PointerEventArgs& evt)
     {
         ofLogNotice("ofApp::onPointerUp") << evt;
     }
 
 
-    void pointerDown(ofx::PointerEventArgs& evt)
+    void onPointerDown(ofx::PointerEventArgs& evt)
     {
         ofLogNotice("ofApp::onPointerDown") << evt;
     }
@@ -65,7 +61,7 @@ public:
     }
 
 
-    void pointerCancel(ofx::PointerEventArgs& evt)
+    void onPointerCancel(ofx::PointerEventArgs& evt)
     {
         ofLogNotice("ofApp::onPointerCancel") << evt;
     }
@@ -73,6 +69,9 @@ public:
 };
 
 ```
+
+For iOS compatibility, see see the simple and advanced iOS examples.
+
 
 ## Getting Started
 
