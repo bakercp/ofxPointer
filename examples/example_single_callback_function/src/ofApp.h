@@ -19,7 +19,7 @@ public:
     void update() override;
     void draw() override;
 
-    // Pointer Events
-    void pointerEvent(ofx::PointerEventArgs& e);
+    // All pointer events are sent to this single callback.
+    void onPointerEvent(ofx::PointerEventArgs& e);
 
 };

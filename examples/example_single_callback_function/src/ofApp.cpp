@@ -11,6 +11,12 @@
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
+    
+    // Calling ofx::RegisterPointerEvent, will register a single callback with
+    // the following method signature:
+    //
+    // void onPointerEvent(ofx::PointerEventArgs& evt)
+    //
     ofx::RegisterPointerEvent(this);
 }
 
@@ -25,7 +31,7 @@ void ofApp::draw()
 }
 
 
-void ofApp::pointerEvent(ofx::PointerEventArgs& evt)
+void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
     ofLogVerbose("ofApp::pointerEvent") << evt.toString();
 }
