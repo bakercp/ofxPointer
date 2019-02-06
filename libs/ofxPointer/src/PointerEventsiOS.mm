@@ -119,81 +119,8 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     _activeTouches = [[NSMutableDictionary alloc] init];
     _window = ofxiOSGetOFWindow();
     
-//    UITapGestureRecognizer *singleFingerTap;
-//    UITapGestureRecognizer *doubleFingerTap;
-//    UITapGestureRecognizer *tripleFingerTap;
-//    UITapGestureRecognizer *quadFingerTap;
-//    UITapGestureRecognizer *pentaFingerTap;
-
-
-//    quadFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-//    [quadFingerTap setNumberOfTapsRequired:1];
-//    [self addGestureRecognizer:quadFingerTap];
-
-//    tripleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-//    [tripleFingerTap setNumberOfTapsRequired:1];
-//    [tripleFingerTap setNumberOfTouchesRequired:3];
-//    [self addGestureRecognizer:tripleFingerTap];
-////
-    doubleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [doubleFingerTap setNumberOfTapsRequired:2];
-//    [doubleFingerTap setNumberOfTouchesRequired:2];
-//    [self addGestureRecognizer:doubleFingerTap];
-//
-    singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-    [singleFingerTap setNumberOfTapsRequired:1];
-//    [singleFingerTap requireGestureRecognizerToFail:doubleFingerTap];
-    //
-//    pentaFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-//    [pentaFingerTap setNumberOfTapsRequired:1];
-////    [pentaFingerTap setNumberOfTouchesRequired:2];
-//    [pentaFingerTap requireGestureRecognizerToFail:singleFingerTap];
-    
-//    pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-
-
-    
-//    [self addGestureRecognizer:doubleFingerTap];
-//    [self addGestureRecognizer:singleFingerTap];
-    
-    
-//    [self addGestureRecognizer:tripleFingerTap];
-
-    //    [self addGestureRecognizer:pan];
-
-    //    [self addGestureRecognizer:pentaFingerTap];
-
-    
     return self;
 }
-
-- (void)handleTap:(UITapGestureRecognizer *)recognizer
-{
-//    if (recognizer == pentaFingerTap)
-//        std::cout << "got tap pentaFingerTap! " << recognizer.numberOfTapsRequired << std::endl;
-//    if (recognizer == quadFingerTap)
-//        std::cout << "got tap quadFingerTap! " << recognizer.numberOfTapsRequired << std::endl;
-//    if (recognizer == tripleFingerTap)
-//        std::cout << "got tap tripleFingerTap! " << recognizer.numberOfTapsRequired << std::endl;
-    if (recognizer == doubleFingerTap)
-        std::cout << "got tap doubleFingerTap! " << recognizer.numberOfTapsRequired << std::endl;
-    if (recognizer == singleFingerTap)
-        std::cout << "got tap singleFingerTap! " << recognizer.numberOfTapsRequired << std::endl;
-
-}
-//
-//- (void)handlePan:(UIPanGestureRecognizer *)recognizer
-//{
-//
-//    std::cout << "got tap pan! "  << recognizer.state << "recognizer.numberOfTouches: " << recognizer.numberOfTouches << std::endl;
-//    
-//    
-//
-//    
-//}
-
-
-
 
 - (void)dealloc
 {
@@ -306,10 +233,6 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                                       withEvent:nil
                                withPointerIndex:std::numeric_limits<int64_t>::max()];
             dispatchPointerEvent(_window, evt);
-//
-//            std::cout << "Update for: " << [[touch estimationUpdateIndex] unsignedLongLongValue] << std::endl;
-            // auto evt = [self toPointerEventArgs:self withTouch:touch withEvent:nil];
-            // dispatchPointerEvent(self, evt);
         }
     }
     else

@@ -37,12 +37,6 @@
     /// accessible by calling ofxiOSGetOFWindow().
     ofAppiOSWindow* _window;
 
-    UITapGestureRecognizer *singleFingerTap;
-    UITapGestureRecognizer *doubleFingerTap;
-//    UITapGestureRecognizer *tripleFingerTap;
-//    UITapGestureRecognizer *quadFingerTap;
-//    UITapGestureRecognizer *pentaFingerTap;
-//    UIPanGestureRecognizer *pan;
 }
 
 - (void)resetTouches;
@@ -52,9 +46,6 @@
                                   withTouch:(UITouch*) touch
                                   withEvent:(UIEvent*) event
                                   withPointerIndex:(int64_t)pointerIndex;
-
-- (void)handleTap:(UITapGestureRecognizer *)recognizer;
-//- (void)handlePan:(UIPanGestureRecognizer *)recognizer;
 
 @end
 
