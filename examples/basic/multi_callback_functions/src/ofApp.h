@@ -19,10 +19,10 @@ public:
     void update() override;
     void draw() override;
 
-    void pointerUp(ofx::PointerEventArgs& e);
-    void pointerDown(ofx::PointerEventArgs& e);
-    void pointerMove(ofx::PointerEventArgs& e);
-    void pointerCancel(ofx::PointerEventArgs& e);
+    void onPointerUp(ofx::PointerEventArgs& e);
+    void onPointerDown(ofx::PointerEventArgs& e);
+    void onPointerMove(ofx::PointerEventArgs& e);
+    void onPointerCancel(ofx::PointerEventArgs& e);
 
     ofx::PointerDebugRenderer debugRenderer;
 

@@ -22,9 +22,9 @@ public:
     void drawSecondWindow(ofEventArgs& args);
 
     // Pointer Events
-    void pointerUp(ofx::PointerEventArgs& evt);
-    void pointerDown(ofx::PointerEventArgs& evt);
-    void pointerMove(ofx::PointerEventArgs& evt);
-    void pointerCancel(ofx::PointerEventArgs& evt);
+    void onPointerUp(ofx::PointerEventArgs& evt);
+    void onPointerDown(ofx::PointerEventArgs& evt);
+    void onPointerMove(ofx::PointerEventArgs& evt);
+    void onPointerCancel(ofx::PointerEventArgs& evt);
 
 };

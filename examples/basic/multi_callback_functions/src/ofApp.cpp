@@ -48,25 +48,25 @@ void ofApp::draw()
 }
 
 
-void ofApp::pointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
     events.push_back(evt);
 }
 
 
-void ofApp::pointerDown(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
     events.push_back(evt);
 }
 
 
-void ofApp::pointerMove(ofx::PointerEventArgs& evt)
+void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
     events.push_back(evt);
 }
 
 
-void ofApp::pointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
     events.push_back(evt);
 }

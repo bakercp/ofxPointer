@@ -26,25 +26,25 @@ void SecondApp::draw()
 }
 
 
-void SecondApp::pointerUp(ofx::PointerEventArgs& evt)
+void SecondApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("SecondApp::pointerUp") << evt.toString();
+    ofLogVerbose("SecondApp::onPointerUp") << evt.toString();
 }
 
 
-void SecondApp::pointerDown(ofx::PointerEventArgs& evt)
+void SecondApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("SecondApp::pointerDown") << evt.toString();
+    ofLogVerbose("SecondApp::onPointerDown") << evt.toString();
 }
 
 
-void SecondApp::pointerMove(ofx::PointerEventArgs& evt)
+void SecondApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("SecondApp::pointerMove") << evt.toString();
+    ofLogVerbose("SecondApp::onPointerMove") << evt.toString();
 }
 
 
-void SecondApp::pointerCancel(ofx::PointerEventArgs& evt)
+void SecondApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("SecondApp::pointerCancel") << evt.toString();
+    ofLogVerbose("SecondApp::onPointerCancel") << evt.toString();
 }

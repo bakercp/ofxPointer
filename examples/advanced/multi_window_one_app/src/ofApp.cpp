@@ -22,7 +22,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-	ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    ofDrawBitmapString(ofGetFrameRate(), 20, 20);
 }
 
 
@@ -32,25 +32,25 @@ void ofApp::drawSecondWindow(ofEventArgs& args)
 }
 
 
-void ofApp::pointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerUp") << evt.toString();
+    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
 }
 
 
-void ofApp::pointerDown(ofx::PointerEventArgs& evt)
+void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerDown") << evt.toString();
+    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
 }
 
 
-void ofApp::pointerMove(ofx::PointerEventArgs& evt)
+void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerMove") << evt.toString();
+    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
 }
 
 
-void ofApp::pointerCancel(ofx::PointerEventArgs& evt)
+void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerCancel") << evt.toString();
+    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
 }
