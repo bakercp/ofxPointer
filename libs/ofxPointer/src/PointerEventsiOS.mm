@@ -144,12 +144,16 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().events();
-    
+
     if (events)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self withTouch:touch withEvent:event withPointerIndex:POINTER_INDEX_UNKNOWN];
+            auto evt = [self toPointerEventArgs:self
+                                      withTouch:touch
+                                      withEvent:event
+                               withPointerIndex:POINTER_INDEX_UNKNOWN
+                                  withPredicted:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -163,12 +167,16 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().events();
-    
+
     if (events)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self withTouch:touch withEvent:event withPointerIndex:POINTER_INDEX_UNKNOWN];
+            auto evt = [self toPointerEventArgs:self
+                                      withTouch:touch
+                                      withEvent:event
+                               withPointerIndex:POINTER_INDEX_UNKNOWN
+                                  withPredicted:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -182,12 +190,16 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().events();
-    
+
     if (events)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self withTouch:touch withEvent:event withPointerIndex:POINTER_INDEX_UNKNOWN];
+            auto evt = [self toPointerEventArgs:self
+                                      withTouch:touch
+                                      withEvent:event
+                               withPointerIndex:POINTER_INDEX_UNKNOWN
+                                  withPredicted:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -202,12 +214,16 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().events();
-    
+
     if (events)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self withTouch:touch withEvent:event withPointerIndex:POINTER_INDEX_UNKNOWN];
+            auto evt = [self toPointerEventArgs:self
+                                      withTouch:touch
+                                      withEvent:event
+                               withPointerIndex:POINTER_INDEX_UNKNOWN
+                                  withPredicted:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -223,7 +239,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 - (void)touchesEstimatedPropertiesUpdated:(NSSet<UITouch *> *)touches NS_AVAILABLE_IOS(9_1);
 {
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().events();
-    
+
     if (events)
     {
         for (UITouch* touch in touches)
@@ -231,7 +247,8 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:self
                                       withTouch:touch
                                       withEvent:nil
-                               withPointerIndex:std::numeric_limits<int64_t>::max()];
+                               withPointerIndex:std::numeric_limits<int64_t>::max()
+                               withPredicted:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -248,6 +265,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                                   withTouch:(UITouch*)touch
                                   withEvent:(UIEvent*)event
                                   withPointerIndex:(int64_t)_pointerIndex
+                                  withPredicted:(bool)_isPredicted
 {
 #if defined(__IPHONE_8_0)
     CGFloat majorRadius = [touch majorRadius];
@@ -382,6 +400,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     float tangentialPressure = 0;
     float tiltXDeg = 0;
     float tiltYDeg = 0;
+    bool isPredicted = _isPredicted;
     bool isPrimary = (pointerIndex == 0); // We reserved 0 for primary pointers.
 
     std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
@@ -447,19 +466,27 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     if (event)
     {
         for (UITouch* _touch in [event coalescedTouchesForTouch:touch])
-            coalescedPointerEvents.push_back([self toPointerEventArgs:self withTouch:_touch withEvent:event withPointerIndex:pointerIndex]);
+            coalescedPointerEvents.push_back([self toPointerEventArgs:self
+                                                            withTouch:_touch
+                                                            withEvent:event
+                                                     withPointerIndex:pointerIndex
+                                                        withPredicted:false]);
     }
-    
+
     std::vector<PointerEventArgs> predictedPointerEvents;
-    
+
     if (event)
     {
         for (UITouch* _touch in [event predictedTouchesForTouch:touch])
-            predictedPointerEvents.push_back([self toPointerEventArgs:self withTouch:_touch withEvent:event withPointerIndex:pointerIndex]);
+            predictedPointerEvents.push_back([self toPointerEventArgs:self
+                                                            withTouch:_touch
+                                                            withEvent:event
+                                                     withPointerIndex:pointerIndex
+                                                        withPredicted:true]);
     }
-        
+
     const void* eventSource = self->_window;
-    
+
     std::size_t pointerId = 0;
     hash_combine(pointerId, deviceId);
     hash_combine(pointerId, pointerIndex);
@@ -475,6 +502,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                             pointerIndex,
                             sequenceIndex,
                             deviceType,
+                            isPredicted,
                             isPrimary,
                             button,
                             buttons,

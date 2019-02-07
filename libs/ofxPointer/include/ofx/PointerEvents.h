@@ -573,6 +573,7 @@ public:
     /// \param pointerIndex The unique pointer index for the given device id.
     /// \param sequenceIndex The sequence index for this event or zero if not supported..
     /// \param deviceType The device type string.
+    /// \param isPredicted Is this event predicted rather than measured.
     /// \param isPrimary True if this pointer is the primary pointer.
     /// \param button The button id for this event.
     /// \param buttons All pressed buttons for this pointer.
@@ -593,6 +594,7 @@ public:
                      int64_t pointerIndex,
                      uint64_t sequenceIndex,
                      const std::string& deviceType,
+                     bool isPredicted,
                      bool isPrimary,
                      int16_t button,
                      uint16_t buttons,
@@ -651,6 +653,12 @@ public:
     /// \returns a device description string.
     std::string deviceType() const;
 
+    /// \returns true if this event was predicted rather than measured.
+    bool isPredicted() const;
+    
+    /// \returns true if estimatedProperties().size() > 0.
+    bool isEstimated() const;
+    
     /// \brief Determine if this pointer is the primary pointer.
     /// \returns true if this pointer is the primary pointer.
     /// \sa https://w3c.github.io/pointerevents/#the-primary-pointer
@@ -836,6 +844,9 @@ private:
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary = false;
 
+    /// \brief Indicates if the event is predicted rather than measured.
+    bool _isPredicted = false;
+    
     /// \brief The current button associated with this event.
     int16_t _button = 0;
     
@@ -889,6 +900,7 @@ inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
         { "pointer_index", v.pointerIndex() },
         { "sequence_index", v.sequenceIndex() },
         { "device_type", v.deviceType() },
+        { "is_predicted", v.isPredicted() },
         { "is_primary", v.isPrimary() },
         { "button", v.button() },
         { "buttons", v.buttons() },
@@ -913,6 +925,7 @@ void from_json(const nlohmann::json& j, PointerEventArgs& v)
                          j.value("pointer_index", uint64_t(0)),
                          j.value("sequence_index", uint64_t(0)),
                          j.value("device_type", PointerEventArgs::TYPE_UNKNOWN),
+                         j.value("is_predicted", false),
                          j.value("is_primary", false),
                          j.value("button", int16_t(0)),
                          j.value("buttons", uint16_t(0)),

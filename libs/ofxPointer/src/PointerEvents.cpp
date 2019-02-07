@@ -381,6 +381,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    int64_t pointerIndex,
                                    uint64_t sequenceIndex,
                                    const std::string& deviceType,
+                                   bool isPredicted,
                                    bool isPrimary,
                                    int16_t button,
                                    uint16_t buttons,
@@ -396,6 +397,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
     _pointerIndex(pointerIndex),
     _sequenceIndex(sequenceIndex),
     _deviceType(deviceType),
+    _isPredicted(isPredicted),
     _isPrimary(isPrimary),
     _button(button),
     _buttons(buttons),
@@ -460,6 +462,18 @@ std::string PointerEventArgs::deviceType() const
     return _deviceType;
 }
 
+    
+bool PointerEventArgs::isPredicted() const
+{
+    return _isPredicted;
+}
+    
+
+bool PointerEventArgs::isEstimated() const
+{
+    return !_estimatedProperties.empty();
+}
+    
 
 bool PointerEventArgs::isPrimary() const
 {
@@ -666,6 +680,8 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     // ofTouchEventArgs.
     std::string deviceType = PointerEventArgs::TYPE_TOUCH;
 
+    bool isPredicted = false;
+
     // If the id is 0, it is primary -- theoretically. But in the current legacy
     // implementation, 0 can be reused even if the there are active touches.
     // So, openFrameworks treats this as primary (synthesizes mouse events from
@@ -691,6 +707,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
                             e.id,
                             sequenceIndex,
                             deviceType,
+                            isPredicted,
                             isPrimary,
                             button,
                             buttons,
@@ -757,6 +774,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
+    bool isPredicted = false;
     bool isPrimary = true; // A mouse is primary.
 
     // Calculate modifiers.
@@ -788,6 +806,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
                             pointerIndex,
                             sequenceIndex,
                             deviceType,
+                            isPredicted,
                             isPrimary,
                             button,
                             buttons,
