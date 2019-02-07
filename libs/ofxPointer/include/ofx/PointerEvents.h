@@ -18,7 +18,6 @@
 #include "ofAppRunner.h"
 #include "ofRectangle.h"
 #include "ofLog.h"
-//#include "ofxSerializer.h"
 
 
 namespace ofx {
