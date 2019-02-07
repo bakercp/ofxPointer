@@ -886,8 +886,6 @@ inline std::ostream& operator << (std::ostream& os, const PointerEventArgs& e)
 
 inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
 {
-    const EventArgs* e = reinterpret_cast<const EventArgs*>(&v);
-    
     j =
     {
         { "event_type", v.eventType() },
