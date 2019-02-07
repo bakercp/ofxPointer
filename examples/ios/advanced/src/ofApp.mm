@@ -1,12 +1,17 @@
-#include "ofApp.h"
+//
+// Copyright (c) 2019 Christopher Baker <https://christopherbaker.net>
+//
+// SPDX-License-Identifier:	MIT
+//
 
-#include "ofx/PointerEventsiOS.h"
+
+#include "ofApp.h"
 
 
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
-    
+
     // The simplest way to get all advanced PointerEvents. This method will
     // create a subview window that will captures all touch events before they
     // are passed to the standard ofxiOSApp window.

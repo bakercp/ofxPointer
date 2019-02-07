@@ -1,10 +1,17 @@
+//
+// Copyright (c) 2019 Christopher Baker <https://christopherbaker.net>
+//
+// SPDX-License-Identifier:	MIT
+//
+
+
 #include "ofApp.h"
 
 
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
-    
+
     // The simplest way to get basic PointerEvents. This method will capture
     // the default touch events and convert them into pointer events.
     //

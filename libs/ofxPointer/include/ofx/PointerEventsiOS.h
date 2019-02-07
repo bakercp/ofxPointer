@@ -1,9 +1,8 @@
 //
-// Copyright (c) 2018 Christopher Baker <https://christopherbaker.net>
+// Copyright (c) 2019 Christopher Baker <https://christopherbaker.net>
 //
-// SPDX-License-Identifier:    MIT
+// SPDX-License-Identifier:	MIT
 //
-
 
 
 #pragma once
