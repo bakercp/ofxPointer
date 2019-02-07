@@ -28,7 +28,7 @@ class PointShape;
 class Point;
 class PointerEventArgs;
 
-    
+
 /// \brief A base class describing the basic components of event arguments.
 ///
 /// Loosely based on DOM events.
@@ -52,7 +52,7 @@ public:
 
     /// \brief Destroy the EventArgs.
     virtual ~EventArgs();
-    
+
     /// \returns the source of the event if available.
     const void* eventSource() const;
 
@@ -87,7 +87,7 @@ private:
     ///
     /// \sa https://dom.spec.whatwg.org/#dom-customevent-detail
     uint64_t _detail = 0;
-    
+
 };
 
 
@@ -107,7 +107,7 @@ public:
         ELLIPSE, /// \brief Interpret width, height and angle as a rotated ellipse.
         RECTANGLE /// \brief Interpret width, height and angle as a rotated rectangle.
     };
-    
+
     /// \brief Create a default PointShape.
     PointShape();
 
@@ -118,7 +118,7 @@ public:
     PointShape(ShapeType shapeType,
                float size,
                float sizeTolerance);
-    
+
     /// \brief Create a PointShape with parameters.
     /// \param shapeType The type of the shape.
     /// \param width The width of the shape.
@@ -138,7 +138,7 @@ public:
 
     /// \returns the ShapeType, which determines how to intepret dimensions.
     ShapeType shapeType() const;
-    
+
     /// \returns the width the shape.
     float width() const;
 
@@ -152,7 +152,7 @@ public:
     ///
     /// \returns the tolerance of the shape width.
     float widthTolerance() const;
-    
+
     /// \brief Get the tolerance of the shape height.
     ///
     /// The width range of the shape will be:
@@ -163,17 +163,17 @@ public:
 
     /// \returns the the angle of the shape in degrees.
     float angleDeg() const;
-    
+
     /// \returns the the angle of the shape in radians.
     float angleRad() const;
-    
+
     /// \brief Get the axis-aligned width of the shape.
     ///
     /// This will be equal to width if the shape or rotation is 0.
     ///
     /// \returns the axis-aligned width of the shape.
     float axisAlignedWidth() const;
-    
+
     /// \brief Get the axis-aligned height of the shape.
     ///
     /// This will be equal to height if the shape or rotation is 0.
@@ -184,7 +184,7 @@ public:
 protected:
     /// \brief Shape type for the pointer.
     ShapeType _shapeType = ShapeType::ELLIPSE;
-    
+
     /// \brief The width of the rotated shape.
     float _width = 1;
 
@@ -196,19 +196,19 @@ protected:
 
     /// \brief Height tolerance.
     float _heightTolerance = 0;
-    
+
     /// \brief Shape angle in degrees.
     float _angleDeg = 0;
 
     /// \brief Caclulate AABB for the shape on demand.
     void _calculateAxisAlignedSize() const;
-    
+
     /// \brief True if the axis alignment was cached.
     mutable bool _axisAlignedSizeCached = false;
-    
+
     /// \brief Axis-aligned bounding box width.
     mutable float _axisAlignedWidth = 0;
-    
+
     /// \brief Axis-aligned box height.
     ///
     /// _height == 0 means the _height has not yet been calculated.
@@ -232,14 +232,14 @@ inline std::string to_string(PointShape::ShapeType v)
 
     return "ELLIPSE";
 }
-    
-    
+
+
 inline void to_json(nlohmann::json& j, const PointShape::ShapeType& v)
 {
     j = to_string(v);
 }
 
-    
+
 inline void from_json(const nlohmann::json& j, PointShape::ShapeType& v)
 {
     std::string s = j.get<std::string>();
@@ -256,13 +256,13 @@ inline void from_json(const nlohmann::json& j, PointShape::ShapeType& v)
             return;
         }
     }
-    
+
     ofLogWarning("from_json") << "Unknown value: " << s;
     v = PointShape::ShapeType::ELLIPSE;
     return;
 }
 
-    
+
 inline void to_json(nlohmann::json& j, const PointShape& v)
 {
     j = {
@@ -371,7 +371,7 @@ public:
     ///
     /// \returns the twist in degrees.
     float twistDeg() const;
-    
+
     /// \brief Get the Point's twist in radians.
     ///
     /// The clockwise rotation (in degrees, in the range of [0,2*PI]) of a
@@ -424,13 +424,13 @@ public:
     /// \brief Get the shape of the Point.
     /// \returns The PointShape.
     const PointShape& shape() const;
-    
+
     /// \brief A debug utility for viewing the contents of Point.
     /// \returns A string representation of the Point.
     std::string toString() const
     {
         std::stringstream ss;
-        
+
         ss << "------------" << std::endl;
         ss << "        Position: " << position().x << "," << position().y << std::endl;
         ss << "Precise Position: " << precisePosition().x << "," << precisePosition().y << std::endl;
@@ -440,11 +440,11 @@ public:
         ss << "           TiltX: " << tiltXDeg() << std::endl;
         ss << "           TiltY: " << tiltYDeg() << std::endl;
 //        ss << "           Shape: " << std::endl << shape().toString();
-        
+
         return ss.str();
     }
 
-    
+
 private:
     /// \brief The position in screen coordinates.
     glm::vec2 _position;
@@ -481,7 +481,7 @@ private:
     friend PointerEventArgs;
 };
 
-    
+
 // \todo This function is a replacement for automatic glm serialization using ofxSerializer.
 inline glm::vec2 to_vec_2_temp(const nlohmann::json& j)
 {
@@ -499,7 +499,7 @@ inline nlohmann::json to_json_temp(const glm::vec2& v)
     return j;
 }
 
-    
+
 inline void to_json(nlohmann::json& j, const Point& v)
 {
     j =
@@ -603,8 +603,8 @@ public:
                      const std::vector<PointerEventArgs>& predictedPointerEvents,
                      const std::set<std::string>& estimatedProperties,
                      const std::set<std::string>& estimatedPropertiesExpectingUpdates);
-    
-    
+
+
     /// \brief Destroy the pointer event args.
     virtual ~PointerEventArgs();
 
@@ -622,7 +622,7 @@ public:
     /// \sa https://w3c.github.io/pointerevents/#dom-pointerevent-pointerid
     /// \returns a single unique id for a device id and Pointer index.
     std::size_t pointerId() const;
-    
+
     /// \brief Get the unique input device id.
     /// \returns the unique input device id.
     int64_t deviceId() const;
@@ -634,7 +634,7 @@ public:
     ///
     /// \returns the unique pointer index for the given device id or -1 if not supported.
     int64_t pointerIndex() const;
-    
+
     /// \brief Get sequence index for this event.
     ///
     /// When supported it is a monotonically number. When unsupported, it is
@@ -642,7 +642,7 @@ public:
     ///
     /// \returns the sequence index for this event or -1 if not supported.
     uint64_t sequenceIndex() const;
-    
+
 //    /// \return a unique event key.
 //    PointerKey pointerKey() const;
 
@@ -655,15 +655,15 @@ public:
 
     /// \returns true if this event was predicted rather than measured.
     bool isPredicted() const;
-    
+
     /// \returns true if estimatedProperties().size() > 0.
     bool isEstimated() const;
-    
+
     /// \brief Determine if this pointer is the primary pointer.
     /// \returns true if this pointer is the primary pointer.
     /// \sa https://w3c.github.io/pointerevents/#the-primary-pointer
     bool isPrimary() const;
-    
+
     /// \brief Get the button id for this event.
     /// \returns the button id for this event.
     /// \todo This is not currently behaving to spec.
@@ -681,13 +681,13 @@ public:
 
     /// \returns pointer events not delivered since the last frame, including a copy of the current event.
     std::vector<PointerEventArgs> coalescedPointerEvents() const;
-    
+
     /// \returns predicted pointer events that will arrive between now and the next frame.
     std::vector<PointerEventArgs> predictedPointerEvents() const;
-    
+
     /// \returns a set of estimated properties.
     std::set<std::string> estimatedProperties() const;
-    
+
     /// \returns a set of estimated properties that are expecting updates.
     std::set<std::string> estimatedPropertiesExpectingUpdates() const;
 
@@ -701,7 +701,7 @@ public:
     ///
     /// \returns true if this event was successfully updated.
     bool updateEstimatedPropertiesWithEvent(const PointerEventArgs& e);
-    
+
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
     /// \param source The event source.
     /// \param e The touch event to convert.
@@ -733,12 +733,12 @@ public:
         ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
         ss << "Touch Index: " << pointerIndex() << std::endl;
-        
+
 //        ofJson json;
 //        Point _point;
 //        from_json(json, _point);
 //        ss << "      Point: " << json.dump(4);
-        
+
         return ss.str();
     }
 
@@ -746,7 +746,7 @@ public:
     ///
     /// The name of the property is sent with the event.
     ofEvent<std::string> pointerPropertyUpdate;
-    
+
     /// \brief The mouse pointer type.
     static const std::string TYPE_MOUSE;
 
@@ -796,7 +796,7 @@ public:
 
     /// \brief The lost pointer capture event type.
     static const std::string LOST_POINTER_CAPTURE;
-    
+
     /// \brief Property key for position.
     static const std::string PROPERTY_POSITION;
 
@@ -808,7 +808,7 @@ public:
 
     /// \brief Property key for tilt y.
     static const std::string PROPERTY_TILT_Y;
-    
+
     friend std::ostream& operator << (std::ostream& os, const PointerEventArgs& e);
 
 private:
@@ -829,7 +829,7 @@ private:
 
     /// \brief The monotonically increasing sequence index for this event.
     uint64_t _sequenceIndex = 0;
-    
+
     /// \brief The type of device that generated this Point.
     std::string _deviceType = TYPE_UNKNOWN;
 
@@ -846,16 +846,16 @@ private:
 
     /// \brief Indicates if the event is predicted rather than measured.
     bool _isPredicted = false;
-    
+
     /// \brief The current button associated with this event.
     int16_t _button = 0;
-    
+
     /// \brief The current buttons being pressed.
     uint16_t _buttons = 0;
-    
+
     /// \brief The current modifiers being pressed.
     uint16_t _modifiers = 0;
-    
+
     /// \brief Pointer events not delivered since the last frame, including a copy of the current event.
     std::vector<PointerEventArgs> _coalescedPointerEvents;
 
@@ -867,7 +867,7 @@ private:
 
     /// \param A set of estimated properties that are expecting updates.
     std::set<std::string> _estimatedPropertiesExpectingUpdates;
-    
+
     friend class PointerEvents;
 
 };
@@ -883,8 +883,8 @@ inline std::ostream& operator << (std::ostream& os, const PointerEventArgs& e)
     return os;
 }
 
-    
-    
+
+
 inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
 {
     const EventArgs* e = reinterpret_cast<const EventArgs*>(&v);
@@ -911,8 +911,8 @@ inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
         { "estimated_properties_expecting_updates", v.estimatedPropertiesExpectingUpdates() },
     };
 }
-    
-    
+
+
 void from_json(const nlohmann::json& j, PointerEventArgs& v)
 {
     v = PointerEventArgs(nullptr,
@@ -956,7 +956,7 @@ public:
 //        LEGACY_EVENTS,
 //        EXTERNAL_EVENTS
 //    };
-    
+
     /// \brief Create a PointerEvents object with the given source.
     /// \param source The window that will provide the events.
     PointerEvents(ofAppBaseWindow* window);
@@ -1003,7 +1003,7 @@ public:
 
 //    void setEnableLegacyEvents(bool enable);
 //    bool getEnableLegacyEvents() const;
-    
+
     /// \brief Register a pointer event listener.
     ///
     /// Event listeners registered via this function must have the following
@@ -1103,7 +1103,7 @@ protected:
 
     /// \brief If true, the legacy events will be intercepted and converted to pointer events.
     bool _interceptLegacyEvents = true;
-    
+
 #if !defined(TARGET_OF_IOS) && !defined(TARGET_ANDROID)
     /// \brief Mouse moved event listener.
     ofEventListener _mouseMovedListener;
@@ -1147,7 +1147,7 @@ protected:
 
 };
 
-    
+
 template <class ListenerClass>
 void PointerEvents::registerPointerEvents(ListenerClass* listener, int prio)
 {
@@ -1166,7 +1166,7 @@ void PointerEvents::unregisterPointerEvents(ListenerClass* listener, int prio)
     ofRemoveListener(pointerMove, listener, &ListenerClass::onPointerMove, prio);
     ofRemoveListener(pointerCancel, listener, &ListenerClass::onPointerCancel, prio);
 }
-    
+
 
 /// \brief Manages PointerEvents objects based on their ofAppBaseWindow source.
 class PointerEventsManager
@@ -1287,9 +1287,9 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
     UnregisterPointerEventForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
 }
 
-    
-    
-    
+
+
+
 ///// \brief A stroke gesture.
 //class PointerStrokeGesture
 //{
@@ -1299,17 +1299,17 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
 //    void pointerEvent(PointerEventArgs& evt);
 //
 //private:
-//    
-//    
+//
+//
 //};
 //
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
 
 /// \brief A utility class for visualizing Pointer events.
 class PointerDebugRenderer
@@ -1363,7 +1363,7 @@ private:
 
 };
 
-    
+
 /// \brief A class for organiaing and querying collections of pointers.
 class PointerEventCollection
 {
@@ -1373,45 +1373,45 @@ public:
 
     /// \brief Destroy the PointerEventCollection.
     virtual ~PointerEventCollection();
-    
+
     /// \returns the number of events in the collection.
     std::size_t size() const;
-    
+
     /// \returns true if the size == 0.
     bool empty() const;
-    
+
     /// \brief Clear all events in the collection.
     void clear();
-    
+
     /// \returns the number of pointers currently tracked.
     std::size_t numPointers() const;
-    
+
     /// \brief Determine if the PointerEventCollection has the given pointer event key.
     /// \param pointerEventKey The pointer event key to query.
     /// \returns true if the set already has the pointer event key.
     bool hasPointerId(std::size_t pointerId);
-    
+
     /// \brief Add a pointer event to the set.
     /// \param pointerEvent The pointer event to add.
     void add(const PointerEventArgs& pointerEvent);
-    
+
     /// \brief Remove all events for the given pointerId.
     /// \param pointerId The pointer events to remove.
     void removeEventsForPointerId(std::size_t pointerId);
-    
+
     /// \returns all pointer events in the collection.
     std::vector<PointerEventArgs> events() const;
-    
+
     /// \brief Get the pointer events for a given key.
     /// \param pointerId The pointer id to query.
     /// \returns the pointer events for the given key or an empty set if none.
     std::vector<PointerEventArgs> eventsForPointerId(std::size_t pointerId) const;
-    
+
     /// \brief Get a pointer to the first event for a given pointer id.
     /// \param pointerId The pointer id to query.
     /// \returns a const pointer to the first event or nullptr if none.
     const PointerEventArgs* firstEventForPointerId(std::size_t pointerId) const;
-    
+
     /// \brief Get a pointer to the last event for a given pointer id.
     /// \param pointerId The pointer id to query.
     /// \returns a const pointer to the last event or nullptr if none.
@@ -1420,10 +1420,10 @@ public:
 private:
     /// \brief The set of pointer events in order of addition.
     std::vector<PointerEventArgs> _events;
-    
+
     /// \brief A mapping between the pointer event keys and the pointer events.
     std::map<std::size_t, std::vector<PointerEventArgs*>> _eventsForPointerId;
-    
+
 };
 
 
@@ -1440,5 +1440,3 @@ inline void hash_combine(std::size_t& seed, const T& v)
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 }
-
-

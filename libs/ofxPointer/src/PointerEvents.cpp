@@ -1125,6 +1125,16 @@ void PointerDebugRenderer::onPointerEvent(PointerEventArgs& evt)
 //        }
 //    }
 }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 //void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
 //{

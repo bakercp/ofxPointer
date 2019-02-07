@@ -25,7 +25,7 @@ const int64_t POINTER_INDEX_UNKNOWN = std::numeric_limits<int64_t>::lowest();
 UITouchProperties toUITouchProperties(const std::set<std::string>& properties)
 {
     UITouchProperties result = 0;
-    
+
     for (const auto& property: properties)
     {
         if (property == PointerEventArgs::PROPERTY_PRESSURE)
@@ -37,7 +37,7 @@ UITouchProperties toUITouchProperties(const std::set<std::string>& properties)
         else
             ofLogWarning("toUITouchProperties") << "Unknown UITouchProperty: " << property;
     }
-    
+
     return result;
 }
 
@@ -48,10 +48,10 @@ std::set<std::string> toPopertySet(UITouchProperties properties)
 
     if (properties & UITouchPropertyForce)
         result.insert(PointerEventArgs::PROPERTY_PRESSURE);
-    
+
     if (properties & UITouchPropertyAzimuth || properties & UITouchPropertyAltitude)
         result.insert({ PointerEventArgs::PROPERTY_TILT_X, PointerEventArgs::PROPERTY_TILT_Y });
-    
+
     if (properties & UITouchPropertyLocation)
         result.insert(PointerEventArgs::PROPERTY_POSITION);
 
@@ -62,16 +62,16 @@ std::set<std::string> toPopertySet(UITouchProperties properties)
 bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 {
 //    std::cout << "dispatchPointerEvent: "  << source  << " window: " << window<< std::endl;
-    
+
     bool consumed = false;
-    
+
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().eventsForWindow(window);
-    
+
     if (events)
     {
         // All pointer events get dispatched via pointerEvent.
         consumed = ofNotifyEvent(events->pointerEvent, e, window);
-        
+
         // If the pointer was not consumed, then send it along to the standard five.
         if (!consumed)
         {
@@ -102,7 +102,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         ofLogError("PointerViewIOS::touchesEnded") << "Invalid event, passing.";
     }
 
-    
+
     return /*events->consumeLegacyEvents ||*/ consumed;
 }
 
@@ -118,7 +118,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     _activeTouches = [[NSMutableDictionary alloc] init];
     _window = ofxiOSGetOFWindow();
-    
+
     return self;
 }
 
@@ -274,30 +274,30 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     CGFloat majorRadius = 0.5;
     CGFloat majorRadiusTolerance = 0;
 #endif
-    
+
     PointShape shape(PointShape::ShapeType::ELLIPSE,
                      majorRadius * 2,
                      majorRadiusTolerance * 2);
-    
+
     // NSUInteger tapCount = [touch tapCount];
-    
+
     CGPoint position = [touch locationInView:view];
-    
+
 #if defined(__IPHONE_9_1)
     CGPoint precisePosition = [touch preciseLocationInView:view];
 #else
     CGFloat precisePosition = position;
 #endif
-    
+
     uint64_t buttons = 0;
-    
+
     std::string eventType = PointerEventArgs::EVENT_TYPE_UNKNOWN;
     uint64_t detail = 0;
-    
+
     uint64_t sequenceIndex = [[touch estimationUpdateIndex] unsignedLongLongValue];
-        
+
     std::set<std::string> estimatedProperties = toPopertySet([touch estimatedProperties]);
-    
+
     std::set<std::string> estimatedPropertiesExpectingUpdates = toPopertySet([touch estimatedPropertiesExpectingUpdates]);
 
     // UITouch objects are kept for the duration of the touch and are often
@@ -307,35 +307,35 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     // easier to keep track of primary pointers and matches expected
     // ofTouchEvent indices (even though they shouldn't be relied upon according
     // to the PointerEvent spec.
-    
+
     // Pointer indices == POINTER_INDEX_UNKNOWN (i.e. that have not been set)
     // will be set below. Otherwise, the pointer index passed into the function
     // will be set with the new function.
     int64_t pointerIndex = _pointerIndex;
 
     //std::cout << [touch phase] << std::endl;
-    
+
     switch ([touch phase])
     {
         case UITouchPhaseBegan:
         {
             eventType = PointerEventArgs::POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-            
+
             // This strategy, as opposed to the existing while() strategy
             // will ensure that the 0 pointer is reserved for the primary
             // pointer.
-            
+
             if (pointerIndex == POINTER_INDEX_UNKNOWN)
             {
                 if ([_activeTouches count] > 0)
                     pointerIndex = [[[_activeTouches allValues] valueForKeyPath:@"@max.intValue"] intValue] + 1;
                 else
                     pointerIndex = 0;
-                
+
                 [_activeTouches setObject:[NSNumber numberWithInt:pointerIndex] forKey:[NSValue valueWithPointer:touch]];
             }
-            
+
             break;
         }
         case UITouchPhaseMoved:
@@ -343,7 +343,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         {
             eventType = PointerEventArgs::POINTER_MOVE;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-            
+
             if (pointerIndex == POINTER_INDEX_UNKNOWN)
             {
                 pointerIndex = [[_activeTouches objectForKey:[NSValue valueWithPointer:touch]] intValue];
@@ -371,35 +371,36 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             break;
         }
     }
-    
+
     // Update the event type for certain situations.
     if (pointerIndex == POINTER_INDEX_UPDATE)
     {
         eventType = PointerEventArgs::POINTER_UPDATE;
-        
+
         // TODO ... this shouldn't happen.
         if ([touch estimatedPropertiesExpectingUpdates] > 0)
             assert(false);
 
     }
-    
+
     // By default our pressure depends on if a "button" is pressed.
     CGFloat pressure = buttons > 0 ? 0.5 : 0;
-    
+
 #if defined(__IPHONE_9_0)
     // If force is supported, then we try to update it.
     CGFloat maximumPossibleForce = [touch maximumPossibleForce];
-    
+
     if (maximumPossibleForce > 0)
     {
         pressure = [touch force] / maximumPossibleForce;
     }
 #endif
-    
+
     float twistDeg = 0;
     float tangentialPressure = 0;
     float tiltXDeg = 0;
     float tiltYDeg = 0;
+
     bool isPredicted = _isPredicted;
     bool isPrimary = (pointerIndex == 0); // We reserved 0 for primary pointers.
 
@@ -427,11 +428,11 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             // Azimuth angle. Valid only for stylus touch types. Zero radians points along the positive X axis.
             // Passing a nil for the view parameter will return the azimuth relative to the touch's window.
             CGFloat azimuthAngleInViewRad = [touch azimuthAngleInView:view];
-            
+
             // Zero radians indicates that the stylus is parallel to the screen surface,
             // while M_PI/2 radians indicates that it is normal to the screen surface.
             CGFloat altitudeAngleRad = [touch altitudeAngle];
-            
+
             // Get the unit tilt vector then scale to degrees +/- 90 degrees.
             float lengthXY = std::cos(altitudeAngleRad);
             tiltXDeg = std::sin(azimuthAngleInViewRad) * lengthXY * 90;
@@ -440,7 +441,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         }
 #endif
     }
-    
+
     ofx::Point point({ position.x, position.y },
                      { precisePosition.x, precisePosition.y },
                      shape,
@@ -449,19 +450,19 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                      twistDeg,
                      tiltXDeg,
                      tiltYDeg);
-    
+
     uint64_t modifiers = 0;
-    
+
     modifiers |= ofGetKeyPressed(OF_KEY_CONTROL) ? OF_KEY_CONTROL : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_ALT)     ? OF_KEY_ALT     : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
-    
+
     // Convert seconds to milliseconds.
     uint64_t timestampMillis = [touch timestamp] * 1000;
     std::size_t deviceId = 0;
     uint64_t button = 0;
-    
+
     std::vector<PointerEventArgs> coalescedPointerEvents;
     if (event)
     {
@@ -550,7 +551,7 @@ void DisableAdvancedPointerEventsiOS()
         pointerView = nullptr;
     }
 }
-    
+
 
 } // namespace ofx
 

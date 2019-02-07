@@ -22,12 +22,12 @@ int main()
     settings.depthType = ofxiOSRendererDepthFormat::DEPTH_NONE;
     settings.stencilType = ofxiOSRendererStencilFormat::STENCIL_NONE;
     settings.windowMode = OF_FULLSCREEN;
-    
+
     settings.enableMultiTouch = true;
-    
+
     auto mainWindow = ofCreateWindow(settings);
     auto mainApp = std::make_shared<ofApp>();
-    
+
     ofRunApp(mainWindow, mainApp);
 
     return ofRunMainLoop();

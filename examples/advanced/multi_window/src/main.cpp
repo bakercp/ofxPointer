@@ -13,7 +13,7 @@
 int main()
 {
     ofGLFWWindowSettings settings;
-    
+
     settings.setSize(600, 600);
     settings.setPosition(glm::vec2(300, 0));
     settings.resizable = true;

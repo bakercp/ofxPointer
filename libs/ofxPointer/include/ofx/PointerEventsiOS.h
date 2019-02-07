@@ -29,7 +29,7 @@
 @protected
     /// \brief A list of the current active touches.
     NSMutableDictionary* _activeTouches;
-    
+
     /// \brief A pointer to the current iOS window.
     ///
     /// This may not be necessary as there can only be one window currently
@@ -80,11 +80,7 @@ void UnregisterAdvancedPointerEventsiOS(ListenerClass* listener, int prio = OF_E
     DisableAdvancedPointerEventsiOS();
 }
 
-    
-    
 
-    
-    
 } // namespace ofx
 
 

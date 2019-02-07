@@ -25,8 +25,7 @@ public:
     void onPointerUpdate(ofx::PointerEventArgs& evt);
 
     void pointerPropertyUpdate(const void* source, std::string& evt);
-    
-    
+
     void addEvent(ofx::PointerEventArgs& evt);
     
     std::map<uint64_t, ofx::PointerEventArgs> t;
@@ -35,5 +34,3 @@ public:
   //  PointerDebugRenderer renderer;
 
 };
-
-

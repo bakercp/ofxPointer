@@ -18,7 +18,7 @@ void ofApp::setup()
 void ofApp::update()
 {
     auto now = ofGetElapsedTimeMillis();
-    
+
     auto iter = events.begin();
     while (iter != events.end())
     {
