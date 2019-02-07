@@ -44,8 +44,8 @@
 - (ofx::PointerEventArgs)toPointerEventArgs:(UIView*) view
                                   withTouch:(UITouch*) touch
                                   withEvent:(UIEvent*) event
-                                  withPointerIndex:(int64_t)pointerIndex;
-
+                                  withPointerIndex:(int64_t) pointerIndex
+                                  withPredicted:(bool) isPredicted;
 @end
 
 
