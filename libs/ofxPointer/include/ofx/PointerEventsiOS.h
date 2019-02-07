@@ -81,6 +81,28 @@ void UnregisterAdvancedPointerEventsiOS(ListenerClass* listener, int prio = OF_E
 }
 
 
+template <class ListenerClass>
+void RegisterAdvancedPointerEventiOS(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    EnableAdvancedPointerEventsiOS();
+    RegisterPointerEventForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
+    ofAddListener(ofx::PointerEventsManager::instance().eventsForWindow(ofGetWindowPtr())->pointerUpdate,
+                  listener,
+                  &ListenerClass::onPointerEvent, prio);
+}
+
+
+template <class ListenerClass>
+void UnregisterAdvancedPointerEventiOS(ListenerClass* listener, int prio = OF_EVENT_ORDER_AFTER_APP)
+{
+    UnregisterPointerEventForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
+    ofRemoveListener(ofx::PointerEventsManager::instance().eventsForWindow(ofGetWindowPtr())->pointerUpdate,
+                     listener,
+                     &ListenerClass::onPointerEvent, prio);
+    DisableAdvancedPointerEventsiOS();
+}
+
+
 } // namespace ofx
 
 
