@@ -5,26 +5,31 @@
 ################################################################################
 
 # Doxygen-Related
-docs/html/*
-docs/*
-!docs/Doxyfile
+/docs/*
+!/docs/Doxyfile
 
 # Instructions and other documentation files.
-!docs/*.md
-!docs/*.txt
+!/docs/*.md
+!/docs/*.txt
 
 ################################################################################
 # Examples
 ################################################################################
 
 # bin/data Folder
-example*/bin/data/*
-!example*/bin/data/data.txt
+/example*/**/bin/data/*
+
+# Include data.txt ...
+# TODO
+
+# mediaAssets
+/example*/**/mediaAssets/*
 
 # Project files
-example*/*
-!example*/src/
-!example*/addons.make
+/example*/**/*.plist
+/example*/**/*.pch
+/example*/**/*.xcconfig
+/example*/**/*.xcodeproj
 
 
 ################################################################################
@@ -32,13 +37,13 @@ example*/*
 ################################################################################
 
 # bin/data Folder
-tests/*/bin/data/*
-!tests/*/bin/data/data.txt
+/tests/*/bin/data/*
+/!tests/*/bin/data/data.txt
 
 # Project files
-tests/*/*
-!tests/*/src/
-!tests/*/addons.make
+/tests/*/*
+!/tests/*/src/
+!/tests/*/addons.make
 
 ################################################################################
 # Libraries
@@ -54,8 +59,8 @@ libs/*
 # Shared Data
 ################################################################################
 
-shared/data/*
-!shared/data/*.sh
+/shared/data/*
+!/shared/data/*.sh
 
 ################################################################################
 # Scripts
@@ -74,12 +79,15 @@ build-example*/
 # Utility Stuff
 ################################################################################
 
+# Things to exclude quickly.
+_*
+
 # Local folders, use for temporary storage, etc.
 __*/*
 
 # Temporary files.
-*.autosave
+**.autosave
 
 # OSX
-.DS_Store
-.AppleDouble
+**.DS_Store
+**.AppleDouble
