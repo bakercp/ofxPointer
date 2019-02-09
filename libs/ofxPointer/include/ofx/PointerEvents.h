@@ -422,6 +422,42 @@ public:
     /// \returns the Tilt Y angle in radians.
     float tiltYRad() const;
 
+    /// \brief Get the azimuth angle in degress.
+    ///
+    /// The azimuth angle, in the range 0 to 360 degrees. 0 represents a stylus
+    /// whose cap is pointing in the direction of increasing screen X values.
+    /// 180 degrees represents a stylus whose cap is pointing in the direction
+    /// of increasing screen Y values. The value is 0 if undefined.
+    ///
+    /// \returns the azimuth in degress.
+    float azimuthDeg() const;
+
+    /// \brief Get the azimuth angle in radians.
+    ///
+    /// The azimuth angle, in the range 0 to 2π radians. 0 represents a stylus
+    /// whose cap is pointing in the direction of increasing screen X values.
+    /// π/2 radians represents a stylus whose cap is pointing in the direction
+    /// of increasing screen Y values. The value is 0 if undefined.
+    ///
+    /// \returns the azimuth in degress.
+    float azimuthRad() const;
+
+    /// \brief Get the altitude angle in degrees.
+    ///
+    /// The altitude angle, in the range 0 degrees (parallel to the surface) to
+    /// 90 degrees (perpendicular to the surface). The value is 0 if undefined.
+    ///
+    /// \returns the altitude in degrees.
+    float altitudeDeg() const;
+
+    /// \brief Get the altitude angle in degrees.
+    ///
+    /// The altitude angle, in the range 0 radians (parallel to the surface) to
+    /// π/2 radians (perpendicular to the surface). The value is 0 if undefined.
+    ///
+    /// \returns the altitude in radians.
+    float altitudeRad() const;
+
     /// \brief Get the shape of the Point.
     /// \returns The PointShape.
     const PointShape& shape() const;
@@ -478,6 +514,18 @@ private:
 
     /// \brief The Point tilt Y angle in degrees.
     float _tiltYDeg = 0;
+
+    /// \brief A utility function for caching the azimuth and altitude.
+    void _cacheAzimuthAltitude() const;
+
+    /// \brief True if the azimuth and altitude are cached.
+    mutable bool _azimuthAltitudeCached = false;
+
+    /// \brief The cached azimuth in degrees.
+    mutable float _azimuthDeg = 0;
+
+    /// \brief The cached altitude in degrees.
+    mutable float _altitudeDeg = 0;
 
     friend PointerEventArgs;
 };

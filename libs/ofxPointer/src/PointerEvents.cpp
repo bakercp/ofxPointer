@@ -319,6 +319,70 @@ float Point::tiltYRad() const
 }
 
 
+float Point::azimuthDeg() const
+{
+    if (!_azimuthAltitudeCached)
+        _cacheAzimuthAltitude();
+    return _azimuthDeg;
+}
+
+
+float Point::azimuthRad() const
+{
+    return glm::radians(azimuthDeg());
+}
+
+
+float Point::altitudeDeg() const
+{
+    if (!_azimuthAltitudeCached)
+        _cacheAzimuthAltitude();
+    return _altitudeDeg;
+}
+
+
+float Point::altitudeRad() const
+{
+    return glm::radians(altitudeDeg());
+}
+
+
+void Point::_cacheAzimuthAltitude() const
+{
+    double _azimuthRad = 0;
+    double _altitudeRad = 0;
+
+    bool tiltXIsZero = ofIsFloatEqual(_tiltXDeg, 0.0f);
+    bool tiltYIsZero = ofIsFloatEqual(_tiltYDeg, 0.0f);
+
+    // Take care of edge cases where std::tan(...) is undefined.
+    if (!tiltXIsZero && !tiltYIsZero)
+    {
+        double _tanTy = std::tan(tiltYRad());
+        _azimuthRad = std::atan2(_tanTy, std::tan(tiltXRad()));
+        _altitudeRad = std::atan(std::sin(_azimuthRad) / _tanTy);
+    }
+    else if (tiltXIsZero)
+    {
+        _azimuthRad = tiltYRad() > 0 ? glm::half_pi<double>() : glm::three_over_two_pi<double>();
+        _altitudeRad = tiltYRad();
+    }
+    else if (tiltYIsZero)
+    {
+        _azimuthRad = tiltXRad() > 0 ? 0 : glm::pi<double>();
+        _altitudeRad = tiltXRad();
+    }
+
+    // Put into range 0 - 2PI.
+    if (_azimuthRad < 0)
+        _azimuthRad += glm::two_pi<double>();
+
+    _azimuthDeg = glm::degrees(_azimuthRad);
+    _altitudeDeg = glm::degrees(_altitudeRad);
+
+    _azimuthAltitudeCached = true;
+}
+
 const PointShape& Point::shape() const
 {
     return _shape;

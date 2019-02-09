@@ -445,16 +445,28 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
             // Azimuth angle. Valid only for stylus touch types. Zero radians points along the positive X axis.
             // Passing a nil for the view parameter will return the azimuth relative to the touch's window.
-            CGFloat azimuthAngleInViewRad = [touch azimuthAngleInView:view];
+            CGFloat azimuthRad = [touch azimuthAngleInView:view];
+
+            // Put into range 0 - 2PI
+            if (azimuthRad < 0)
+                azimuthRad += glm::two_pi<CGFloat>();
 
             // Zero radians indicates that the stylus is parallel to the screen surface,
             // while M_PI/2 radians indicates that it is normal to the screen surface.
-            CGFloat altitudeAngleRad = [touch altitudeAngle];
+            CGFloat altitudeRad = [touch altitudeAngle];
 
+            // Alternative way to calculate tiltX, tiltY.
             // Get the unit tilt vector then scale to degrees +/- 90 degrees.
-            float lengthXY = std::cos(altitudeAngleRad);
-            tiltXDeg = std::sin(azimuthAngleInViewRad) * lengthXY * 90;
-            tiltYDeg = std::cos(azimuthAngleInViewRad) * lengthXY * 90;
+            // - Reference: https://books.google.com/books?id=iYALAAAAQBAJ&pg=PA471&lpg=PA471&dq=azimuth+unit+vector+to+tiltX+tiltY&source=bl&ots=Z_M3-2caR8&sig=ACfU3U1vPG4qwkXBMqd9eT3k65wGLhbA3A&hl=en&sa=X&ved=2ahUKEwjGh-bbvargAhWmj4MKHR1sCRwQ6AEwDnoECAgQAQ#v=onepage&q=azimuth%20unit%20vector%20to%20tiltX%20tiltY&f=false
+            // double lengthXY = std::cos(altitudeAngleRad);
+            // tiltXDeg = std::cos(az) * lengthXY * 90;
+            // tiltYDeg = std::sin(az) * lengthXY * 90;
+            // tiltZDeg = std::cos(altitudeAngleRad) * 90;
+
+            double tanAltitude = std::tan(altitudeRad);
+            tiltXDeg = glm::degrees(std::atan(std::cos(azimuthRad) / tanAltitude));
+            tiltYDeg = glm::degrees(std::atan(std::sin(azimuthRad) / tanAltitude));
+
             break;
         }
 #endif
