@@ -36,6 +36,9 @@
     /// accessible by calling ofxiOSGetOFWindow().
     ofAppiOSWindow* _window;
 
+    ofxiOSGLKView* _viewGLK;
+    ofxiOSEAGLView* _viewEAGL;
+
     NSTimeInterval _startTimeSeconds;
 }
 
@@ -47,6 +50,10 @@
                                   withEvent:(UIEvent*) event
                                   withPointerIndex:(int64_t) pointerIndex
                                   withPredicted:(bool) isPredicted;
+
+/// \brief Orient the touch point depending on the current orientation.
+- (CGPoint)orientateTouchPoint:(CGPoint)touchPoint;
+
 @end
 
 

@@ -13,6 +13,7 @@
 
 #include "ofx/PointerEventsiOS.h"
 #include "ofx/PointerEvents.h"
+#include "ofMath.h"
 
 
 using namespace ofx;
@@ -119,6 +120,17 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     _activeTouches = [[NSMutableDictionary alloc] init];
     _window = ofxiOSGetOFWindow();
 
+    if(_window->getWindowControllerType() == METAL_KIT
+    || _window->getWindowControllerType() == GL_KIT)
+    {
+        if ([ofxiOSGLKView getInstance])
+            _viewGLK = [ofxiOSGLKView getInstance];
+    }
+    else
+    {
+        if ([ofxiOSEAGLView getInstance])
+            _viewEAGL = [ofxiOSEAGLView getInstance];
+    }
 
     _startTimeSeconds = [[NSProcessInfo processInfo] systemUptime];
 
@@ -152,7 +164,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self
+            auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
                                withPointerIndex:POINTER_INDEX_UNKNOWN
@@ -175,7 +187,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self
+            auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
                                withPointerIndex:POINTER_INDEX_UNKNOWN
@@ -198,7 +210,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self
+            auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
                                withPointerIndex:POINTER_INDEX_UNKNOWN
@@ -222,7 +234,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self
+            auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
                                withPointerIndex:POINTER_INDEX_UNKNOWN
@@ -247,7 +259,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     {
         for (UITouch* touch in touches)
         {
-            auto evt = [self toPointerEventArgs:self
+            auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:nil
                                withPointerIndex:std::numeric_limits<int64_t>::max()
@@ -282,14 +294,21 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                      majorRadius * 2,
                      majorRadiusTolerance * 2);
 
-    // NSUInteger tapCount = [touch tapCount];
+    CGPoint position;
+    CGPoint precisePosition;
 
-    CGPoint position = [touch locationInView:view];
+    position = [touch locationInView:view];
+    position.x *= view.contentScaleFactor;
+    position.y *= view.contentScaleFactor;
+    position = [self orientateTouchPoint:position];
 
 #if defined(__IPHONE_9_1)
-    CGPoint precisePosition = [touch preciseLocationInView:view];
+    precisePosition = [touch preciseLocationInView:view];
+    precisePosition.x *= view.contentScaleFactor;
+    precisePosition.y *= view.contentScaleFactor;
+    precisePosition = [self orientateTouchPoint:precisePosition];
 #else
-    CGFloat precisePosition = position;
+    precisePosition = position;
 #endif
 
     uint64_t buttons = 0;
@@ -469,7 +488,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     if (event)
     {
         for (UITouch* _touch in [event coalescedTouchesForTouch:touch])
-            coalescedPointerEvents.push_back([self toPointerEventArgs:self
+            coalescedPointerEvents.push_back([self toPointerEventArgs:view
                                                             withTouch:_touch
                                                             withEvent:event
                                                      withPointerIndex:pointerIndex
@@ -481,7 +500,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     if (event)
     {
         for (UITouch* _touch in [event predictedTouchesForTouch:touch])
-            predictedPointerEvents.push_back([self toPointerEventArgs:self
+            predictedPointerEvents.push_back([self toPointerEventArgs:view
                                                             withTouch:_touch
                                                             withEvent:event
                                                      withPointerIndex:pointerIndex
@@ -515,6 +534,44 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                             estimatedProperties,
                             estimatedPropertiesExpectingUpdates);
 }
+
+- (CGPoint)orientateTouchPoint:(CGPoint)touchPoint
+{
+    if (!_window)
+    {
+        ofLogError("PointerView::orientateTouchPoint") << "Window is nil.";
+        return touchPoint;
+    }
+
+    if (_window->doesHWOrientation())
+        return touchPoint;
+
+    ofOrientation orientation = _window->getOrientation();
+    CGPoint touchPointOriented = CGPointZero;
+
+    switch(orientation)
+    {
+        case OF_ORIENTATION_180:
+            touchPointOriented.x = _window->getWidth() - touchPoint.x;
+            touchPointOriented.y = _window->getHeight() - touchPoint.y;
+            break;
+        case OF_ORIENTATION_90_LEFT:
+            touchPointOriented.x = touchPoint.y;
+            touchPointOriented.y = _window->getHeight() - touchPoint.x;
+            break;
+        case OF_ORIENTATION_90_RIGHT:
+            touchPointOriented.x = _window->getWidth() - touchPoint.y;
+            touchPointOriented.y = touchPoint.x;
+            break;
+        case OF_ORIENTATION_DEFAULT:
+        default:
+            touchPointOriented = touchPoint;
+            break;
+    }
+
+    return touchPointOriented;
+}
+
 
 @end
 
