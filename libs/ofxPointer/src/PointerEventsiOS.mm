@@ -528,7 +528,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     return PointerEventArgs(eventSource,
                             eventType,
-                            timestampMillis,
+                            timestampMicros,
                             detail,
                             point,
                             pointerId,
