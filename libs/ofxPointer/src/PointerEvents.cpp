@@ -19,7 +19,7 @@ const std::string EventArgs::EVENT_TYPE_UNKNOWN = "EVENT_TYPE_UNKNOWN";
 
 EventArgs::EventArgs(): EventArgs(nullptr,
                                   EVENT_TYPE_UNKNOWN,
-                                  ofGetElapsedTimeMillis(),
+                                  ofGetElapsedTimeMicros(),
                                   0)
 {
 }
@@ -27,11 +27,11 @@ EventArgs::EventArgs(): EventArgs(nullptr,
 
 EventArgs::EventArgs(const void* eventSource,
                      const std::string& eventType,
-                     uint64_t timestampMillis,
+                     uint64_t timestampMicros,
                      uint64_t detail):
     _eventSource(eventSource),
     _eventType(eventType),
-    _timestampMillis(timestampMillis),
+    _timestampMicros(timestampMicros),
     _detail(detail)
 {
 }
@@ -56,10 +56,16 @@ std::string EventArgs::eventType() const
 
 uint64_t EventArgs::timestampMillis() const
 {
-    return _timestampMillis;
+    return timestampMicros() / 1000;
 }
 
-    
+
+uint64_t EventArgs::timestampMicros() const
+{
+    return _timestampMicros;
+}
+
+
 uint64_t EventArgs::detail() const
 {
     return _detail;
@@ -373,7 +379,7 @@ PointerEventArgs::PointerEventArgs()
 
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
-                                   uint64_t timestampMillis,
+                                   uint64_t timestampMicros,
                                    uint64_t detail,
                                    const Point& point,
                                    std::size_t pointerId,
@@ -390,7 +396,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::vector<PointerEventArgs>& predictedPointerEvents,
                                    const std::set<std::string>& estimatedProperties,
                                    const std::set<std::string>& estimatedPropertiesExpectingUpdates):
-    EventArgs(eventSource, eventType, timestampMillis, detail),
+    EventArgs(eventSource, eventType, timestampMicros, detail),
     _point(point),
     _pointerId(pointerId),
     _deviceId(deviceId),
@@ -636,7 +642,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     modifiers |= ofGetKeyPressed(OF_KEY_SHIFT)   ? OF_KEY_SHIFT   : 0;
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
-    uint64_t timestampMillis = ofGetElapsedTimeMillis();
+    uint64_t timestampMicros = ofGetElapsedTimeMicros();
 
     std::string eventType = EVENT_TYPE_UNKNOWN;
 
@@ -699,7 +705,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     return PointerEventArgs(eventSource,
                             eventType,
-                            timestampMillis,
+                            timestampMicros,
                             detail,
                             point,
                             pointerId,
@@ -755,7 +761,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     }
 
     // Record a timestamp.
-    uint64_t timestampMillis = ofGetElapsedTimeMillis();
+    uint64_t timestampMicros = ofGetElapsedTimeMicros();
 
     // Create the point, if a button is pressed, the pressure is 0.5.
     Point point(glm::vec2(e.x, e.y), PointShape(), (e.button > 0 ? 0.5 : 0));
@@ -798,7 +804,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     return PointerEventArgs(eventSource,
                             eventType,
-                            timestampMillis,
+                            timestampMicros,
                             detail,
                             point,
                             pointerId,

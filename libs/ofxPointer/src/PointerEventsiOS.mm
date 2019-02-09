@@ -119,6 +119,9 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     _activeTouches = [[NSMutableDictionary alloc] init];
     _window = ofxiOSGetOFWindow();
 
+
+    _startTimeSeconds = [[NSProcessInfo processInfo] systemUptime];
+
     return self;
 }
 
@@ -455,7 +458,10 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     modifiers |= ofGetKeyPressed(OF_KEY_SUPER)   ? OF_KEY_SUPER   : 0;
 
     // Convert seconds to milliseconds.
-    uint64_t timestampMillis = [touch timestamp] * 1000;
+    NSTimeInterval timestampSeconds = [touch timestamp];
+    NSTimeInterval elapsedTimestampSeconds = timestampSeconds - _startTimeSeconds;
+    uint64_t timestampMicros = elapsedTimestampSeconds * 1000000.0;
+
     std::size_t deviceId = 0;
     uint64_t button = 0;
 

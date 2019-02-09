@@ -36,6 +36,7 @@
     /// accessible by calling ofxiOSGetOFWindow().
     ofAppiOSWindow* _window;
 
+    NSTimeInterval _startTimeSeconds;
 }
 
 - (void)resetTouches;

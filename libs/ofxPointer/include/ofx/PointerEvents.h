@@ -42,11 +42,11 @@ public:
     /// \brief Create a BaseEventArgs with the given paramaters.
     /// \param eventSource The source of the event.
     /// \param eventType A string describing the type of the event.
-    /// \param timestampMillis The timestamp of the event.
+    /// \param timestampMicros The timestamp of the event in microseconds.
     /// \param detail Optional event detail.
     EventArgs(const void* eventSource,
               const std::string& eventType,
-              uint64_t timestampMillis,
+              uint64_t timestampMicros,
               uint64_t detail);
 
     /// \brief Destroy the EventArgs.
@@ -60,6 +60,9 @@ public:
 
     /// \returns the timestamp of this event in milliseconds.
     uint64_t timestampMillis() const;
+
+    /// \returns the timestamp of this event in microseconds.
+    uint64_t timestampMicros() const;
 
     /// \returns the optional event detail.
     uint64_t detail() const;
@@ -75,9 +78,8 @@ private:
     /// \sa https://dom.spec.whatwg.org/#dom-event-type
     std::string _eventType;
 
-    /// \brief The timestamp of this event in milliseconds.
-    /// \sa https://dom.spec.whatwg.org/#dom-event-timestamp
-    uint64_t _timestampMillis = 0;
+    /// \brief The timestamp of this event in microseconds.
+    uint64_t _timestampMicros = 0;
 
     /// \brief Detail for the event.
     ///
@@ -564,7 +566,7 @@ public:
     /// \brief Create a PointerEventArgs with parameters.
     /// \param eventSource The event source if available.
     /// \param eventType The pointer event type.
-    /// \param timestampMillis The timestamp of this event in milliseconds
+    /// \param timestampMicros The timestamp of this event in microseconds
     /// \param detail The optional event details.
     /// \param point The point.
     /// \param pointerId The unique pointer id.
@@ -585,7 +587,7 @@ public:
     /// \param estimatedPropertiesExpectingUpdates A set of estimated properties that are expecting updates.
     PointerEventArgs(const void* eventSource,
                      const std::string& eventType,
-                     uint64_t timestampMillis,
+                     uint64_t timestampMicros,
                      uint64_t detail,
                      const Point& point,
                      std::size_t pointerId,
@@ -889,7 +891,7 @@ inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
     j =
     {
         { "event_type", v.eventType() },
-        { "timestamp_millis", v.timestampMillis() },
+        { "timestamp_micros", v.timestampMicros() },
         { "detail", v.detail() },
         { "point", v.point() },
         { "pointer_id", v.pointerId() },
@@ -914,7 +916,7 @@ void from_json(const nlohmann::json& j, PointerEventArgs& v)
 {
     v = PointerEventArgs(nullptr,
                          j.value("event_type", EventArgs::EVENT_TYPE_UNKNOWN),
-                         j.value("timestamp_millis", uint64_t(0)),
+                         j.value("timestamp_micros", uint64_t(0)),
                          j.value("detail", uint64_t(0)),
                          j.value("point", Point()),
                          j.value("pointer_id", std::size_t(0)),
