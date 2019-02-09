@@ -1285,29 +1285,6 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
 }
 
 
-
-
-///// \brief A stroke gesture.
-//class PointerStrokeGesture
-//{
-//public:
-//    /// \brief A callback for all Pointer Events.
-//    /// \param evt The Pointer Event arguments.
-//    void pointerEvent(PointerEventArgs& evt);
-//
-//private:
-//
-//
-//};
-//
-
-
-
-
-
-
-
-
 /// \brief A utility class for visualizing Pointer events.
 class PointerDebugRenderer
 {

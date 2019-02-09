@@ -313,8 +313,6 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     // will be set with the new function.
     int64_t pointerIndex = _pointerIndex;
 
-    //std::cout << [touch phase] << std::endl;
-
     switch ([touch phase])
     {
         case UITouchPhaseBegan:
@@ -391,9 +389,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     CGFloat maximumPossibleForce = [touch maximumPossibleForce];
 
     if (maximumPossibleForce > 0)
-    {
         pressure = [touch force] / maximumPossibleForce;
-    }
 #endif
 
     float twistDeg = 0;
@@ -536,8 +532,8 @@ void EnableAdvancedPointerEventsiOS()
                                                                     ofxiOSGetOFWindow()->getWidth(),
                                                                     ofxiOSGetOFWindow()->getHeight())];
 
-        // Add the view. PointerView will now intercept all pointer input.
         [[ofxiOSGetAppDelegate() uiViewController].view addSubview:pointerView];
+
     }
 }
 

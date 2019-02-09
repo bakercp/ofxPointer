@@ -108,7 +108,7 @@ PointShape::ShapeType PointShape::shapeType() const
     return _shapeType;
 }
 
-    
+
 float PointShape::width() const
 {
     return _width;
@@ -151,7 +151,7 @@ float PointShape::axisAlignedWidth() const
         return _axisAlignedWidth;
 
     _calculateAxisAlignedSize();
-    
+
     return _axisAlignedWidth;
 }
 
@@ -160,17 +160,17 @@ float PointShape::axisAlignedHeight() const
 {
     if (_axisAlignedSizeCached)
         return _axisAlignedHeight;
-    
+
     _calculateAxisAlignedSize();
-    
+
     return _axisAlignedHeight;
 }
 
-    
+
 void PointShape::_calculateAxisAlignedSize() const
 {
     float _angleRad = angleRad();
-    
+
     switch (_shapeType)
     {
         case ShapeType::ELLIPSE:
@@ -193,11 +193,11 @@ void PointShape::_calculateAxisAlignedSize() const
             break;
         }
     }
-    
+
     _axisAlignedSizeCached = true;
 }
 
-    
+
 Point::Point(): Point(glm::vec2(0, 0))
 {
 }
@@ -276,31 +276,31 @@ float Point::tangentialPressure() const
     return _tangentialPressure;
 }
 
-    
+
 float Point::twistDeg() const
 {
     return _twistDeg;
 }
 
-    
+
 float Point::twistRad() const
 {
     return glm::radians(_twistDeg);
 }
-    
+
 
 float Point::tiltXDeg() const
 {
     return _tiltXDeg;
 }
 
-    
+
 float Point::tiltXRad() const
 {
     return glm::radians(_tiltXDeg);
 }
 
-    
+
 float Point::tiltYDeg() const
 {
     return _tiltYDeg;
@@ -343,7 +343,7 @@ const std::string PointerEventArgs::PROPERTY_PRESSURE = "PROPERTY_PRESSURE";
 const std::string PointerEventArgs::PROPERTY_TILT_X = "PROPERTY_TILT_X";
 const std::string PointerEventArgs::PROPERTY_TILT_Y = "PROPERTY_TILT_Y";
 
-    
+
 PointerEventArgs::PointerEventArgs()
 {
 }
@@ -438,13 +438,13 @@ int64_t PointerEventArgs::pointerIndex() const
     return _pointerIndex;
 }
 
-    
+
 uint64_t PointerEventArgs::sequenceIndex() const
 {
     return _sequenceIndex;
 }
 
-    
+
 std::size_t PointerEventArgs::pointerId() const
 {
     return _pointerId;
@@ -462,25 +462,25 @@ std::string PointerEventArgs::deviceType() const
     return _deviceType;
 }
 
-    
+
 bool PointerEventArgs::isPredicted() const
 {
     return _isPredicted;
 }
-    
+
 
 bool PointerEventArgs::isEstimated() const
 {
     return !_estimatedProperties.empty();
 }
-    
+
 
 bool PointerEventArgs::isPrimary() const
 {
     return _isPrimary;
 }
 
-    
+
 int16_t PointerEventArgs::button() const
 {
     return _button;
@@ -498,7 +498,7 @@ uint16_t PointerEventArgs::modifiers() const
     return _modifiers;
 }
 
-    
+
 std::vector<PointerEventArgs> PointerEventArgs::coalescedPointerEvents() const
 {
     return _coalescedPointerEvents;
@@ -510,19 +510,19 @@ std::vector<PointerEventArgs> PointerEventArgs::predictedPointerEvents() const
     return _predictedPointerEvents;
 }
 
-    
+
 std::set<std::string> PointerEventArgs::estimatedProperties() const
 {
     return _estimatedProperties;
 }
 
-    
+
 std::set<std::string> PointerEventArgs::estimatedPropertiesExpectingUpdates() const
 {
     return _estimatedPropertiesExpectingUpdates;
 }
-    
-    
+
+
 bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs& e)
 {
     if (e.sequenceIndex() != sequenceIndex())
@@ -530,13 +530,13 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
         ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence numbers do not match.";
         return false;
     }
-    
+
 //    auto otherExpected = e.estimatedPropertiesExpectingUpdates();
 
 //    std::cout << "Other Expected: " << std::endl;
 //    for (auto& e: otherExpected)
 //        std::cout << "\t" << e << std::endl;
-    
+
     auto newEstimatedProperties = e.estimatedProperties();
 //
     std::cout << "New Estimated: " << std::endl;
@@ -565,9 +565,9 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
 //        }
 //        ++iter;
 //    }
-    
+
     std::vector<std::string> propertiesToUpdate;
-    
+
     std::set_difference(_estimatedPropertiesExpectingUpdates.begin(),
                         _estimatedPropertiesExpectingUpdates.end(),
                         newEstimatedProperties.begin(),
@@ -604,12 +604,12 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
 
         _estimatedPropertiesExpectingUpdates.erase(property);
     }
-    
-    
+
+
     return true;
-    
+
 }
-    
+
 
 PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
                                                       const ofTouchEventArgs& e)
@@ -618,7 +618,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     // and height. If neither are defined, use 1 and 1.
     float majorAxis = e.majoraxis > 0 ? e.majoraxis : e.width;
     float minorAxis = e.minoraxis > 0 ? e.minoraxis : e.height;
-    
+
     majorAxis = std::max(majorAxis, 1.f);
     minorAxis = std::max(minorAxis, 1.f);
 
@@ -641,7 +641,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     std::string eventType = EVENT_TYPE_UNKNOWN;
 
     uint64_t detail = 0;
-    
+
     uint64_t button = 0;
 
     uint64_t buttons = 0;
@@ -673,9 +673,9 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     // 0.5. If no pressure is reported and no button is pressed, then the
     // pressure is 0.
     float pressure = e.pressure > 0 ? e.pressure : (buttons > 0 ? 0.5 : 0);
-    
+
     Point point(glm::vec2(e.x, e.y), shape, pressure);
-    
+
     // Since we can't know for sure, we assume TOUCH because it came from a
     // ofTouchEventArgs.
     std::string deviceType = PointerEventArgs::TYPE_TOUCH;
@@ -689,14 +689,14 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     //
     // https://www.w3.org/TR/pointerevents/#dfn-primary-pointer
     bool isPrimary = (e.id == 0);
-    
+
     std::size_t pointerId = 0;
     hash_combine(pointerId, deviceId);
     hash_combine(pointerId, e.id);
     hash_combine(pointerId, deviceType);
 
     int64_t sequenceIndex = 0;
-    
+
     return PointerEventArgs(eventSource,
                             eventType,
                             timestampMillis,
@@ -788,9 +788,9 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     std::size_t deviceId = 0;
     int64_t pointerIndex = 0;
     uint64_t sequenceIndex = 0;
-    
+
     std::string deviceType = PointerEventArgs::TYPE_MOUSE;
-    
+
     std::size_t pointerId = 0;
     hash_combine(pointerId, deviceId);
     hash_combine(pointerId, pointerIndex);
@@ -860,8 +860,8 @@ bool PointerEvents::onPointerEvent(const void* source, PointerEventArgs& e)
     return _dispatchPointerEvent(source, e);
 }
 
-    
-    
+
+
 bool PointerEvents::onMouseEvent(const void* source, ofMouseEventArgs& e)
 {
     auto p = PointerEventArgs::toPointerEventArgs(source, e);
@@ -900,14 +900,14 @@ bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& 
         ofLogError("PointerEvents::_dispatchPointerEvent") << "Mismatched source.";
         return false;
     }
-    
+
     if (e.eventType() == PointerEventArgs::EVENT_TYPE_UNKNOWN)
     {
         // We don't deliver unknown event types.
         // These are usually double-tap events from OF core.
         return true;
     }
-    
+
     // All pointer events get dispatched via pointerEvent.
     bool consumed = ofNotifyEvent(pointerEvent, e, _source);
 
@@ -1125,16 +1125,7 @@ void PointerDebugRenderer::onPointerEvent(PointerEventArgs& evt)
 //        }
 //    }
 }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
 //void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
 //{
@@ -1255,13 +1246,13 @@ PointerEventCollection::~PointerEventCollection()
 //    return _pointerEventTypes;
 //}
 
-    
+
 //void PointerEventCollection::setMaxNumEventKeys(std::size_t maxNumEventKeys)
 //{
 //    clear();
 //    _maxNumEventKeys = maxNumEventKeys;
 //}
-//    
+//
 //
 //std::size_t PointerEventCollection::getMaxNumEventKeys() const
 //{
@@ -1292,8 +1283,8 @@ std::size_t PointerEventCollection::numPointers() const
 {
     return _eventsForPointerId.size();
 }
-    
-    
+
+
 bool PointerEventCollection::hasPointerId(std::size_t pointerId)
 {
     return _eventsForPointerId.find(pointerId) != _eventsForPointerId.end();
@@ -1303,7 +1294,7 @@ bool PointerEventCollection::hasPointerId(std::size_t pointerId)
 void PointerEventCollection::add(const PointerEventArgs& pointerEvent)
 {
     _events.push_back(pointerEvent);
-    
+
     auto iter = _eventsForPointerId.find(pointerEvent.pointerId());
 
     if (iter != _eventsForPointerId.end())
@@ -1313,13 +1304,13 @@ void PointerEventCollection::add(const PointerEventArgs& pointerEvent)
 
 }
 
-    
+
 void PointerEventCollection::removeEventsForPointerId(std::size_t pointerId)
 {
     _eventsForPointerId.erase(pointerId);
-    
+
     auto iter = _events.begin();
-    
+
     while (iter != _events.end())
     {
         if (iter->pointerId() == pointerId)
@@ -1328,8 +1319,8 @@ void PointerEventCollection::removeEventsForPointerId(std::size_t pointerId)
             ++iter;
     }
 }
-    
-    
+
+
 std::vector<PointerEventArgs> PointerEventCollection::events() const
 {
     return _events;
@@ -1339,44 +1330,43 @@ std::vector<PointerEventArgs> PointerEventCollection::events() const
 std::vector<PointerEventArgs> PointerEventCollection::eventsForPointerId(std::size_t pointerId) const
 {
     std::vector<PointerEventArgs> results;
-    
+
     auto iter = _eventsForPointerId.find(pointerId);
-    
+
     if (iter != _eventsForPointerId.end())
     {
         for (auto* event: iter->second)
             results.push_back(*event);
     }
-    
+
     return results;
 }
-    
-    
-    
+
+
 const PointerEventArgs* PointerEventCollection::firstEventForPointerId(std::size_t pointerId) const
 {
     auto iter = _eventsForPointerId.find(pointerId);
-    
+
     if (iter != _eventsForPointerId.end())
     {
         return iter->second.front();
     }
-    
+
     return nullptr;
 }
- 
-    
+
+
 const PointerEventArgs* PointerEventCollection::lastEventForPointerId(std::size_t pointerId) const
 {
     auto iter = _eventsForPointerId.find(pointerId);
-    
+
     if (iter != _eventsForPointerId.end())
     {
         return iter->second.back();
     }
-    
+
     return nullptr;
 }
 
-    
+
 } // namespace ofx
