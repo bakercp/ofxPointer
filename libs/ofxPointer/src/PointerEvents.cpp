@@ -358,6 +358,11 @@ void Point::_cacheAzimuthAltitude() const
         _azimuthRad = std::atan2(_tanTy, std::tan(tiltXRad()));
         _altitudeRad = std::atan(std::sin(_azimuthRad) / _tanTy);
     }
+    else if (tiltXIsZero && tiltYIsZero)
+    {
+        _azimuthRad = 0;
+        _altitudeRad = 0;
+    }
     else if (tiltXIsZero)
     {
         _azimuthRad = tiltYRad() > 0 ? glm::half_pi<double>() : glm::three_over_two_pi<double>();
