@@ -127,6 +127,8 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     _startTimeSeconds = [[NSProcessInfo processInfo] systemUptime];
 
+    [self resetTouches];
+
     return self;
 }
 
@@ -138,6 +140,12 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
 -(void) resetTouches
 {
+    _activePointerIndices[UITouchTypeDirect] = {};
+    _activePointerIndices[UITouchTypeIndirect] = {};
+    _activePointerIndices[UITouchTypePencil] = {};
+    _primaryPointerIndices[UITouchTypeDirect] = -1;
+    _primaryPointerIndices[UITouchTypeIndirect] = -1;
+    _primaryPointerIndices[UITouchTypePencil] = -1;
 }
 
 
