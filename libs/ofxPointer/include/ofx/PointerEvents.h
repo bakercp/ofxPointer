@@ -879,8 +879,8 @@ private:
     /// \brief The id of the device producing the pointer events.
     uint64_t _deviceId = 0;
 
-    /// \briief The index of the pointer.
-    uint64_t _pointerIndex = 0;
+    /// \brief The index of the pointer.
+    int64_t _pointerIndex = 0;
 
     /// \brief The monotonically increasing sequence index for this event.
     uint64_t _sequenceIndex = 0;
