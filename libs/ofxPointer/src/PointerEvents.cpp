@@ -599,6 +599,12 @@ std::set<std::string> PointerEventArgs::estimatedPropertiesExpectingUpdates() co
 
 bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs& e)
 {
+    if (e.sequenceIndex() == 0 || sequenceIndex() == 0)
+    {
+        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence number(s) are zero.";
+        return false;
+    }
+
     if (e.sequenceIndex() != sequenceIndex())
     {
         ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence numbers do not match.";
@@ -1101,153 +1107,338 @@ PointerEventsManager::~PointerEventsManager()
 }
 
 
+
+PointerStroke::PointerStroke()
+{
+}
+
+
+PointerStroke::~PointerStroke()
+{
+}
+
+
+bool PointerStroke::add(const PointerEventArgs& e)
+{
+    if (_events.empty())
+        _pointerId = e.pointerId();
+
+    if (_pointerId != e.pointerId())
+        return false;
+
+    if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
+    {
+        auto riter = _events.rbegin();
+        while (riter != _events.rend())
+        {
+            if (riter->sequenceIndex() == e.sequenceIndex())
+            {
+                if (!riter->updateEstimatedPropertiesWithEvent(e))
+                    ofLogError("PointerStroke::add") << "Error updating matching property.";
+                return true;
+            }
+            ++riter;
+        }
+
+        return false;
+    }
+
+    // Remove predicted events.
+    _events.erase(std::remove_if(_events.begin(),
+                                 _events.end(),
+                                [](const PointerEventArgs& x) { return x.isPredicted(); }),
+                 _events.end());
+
+    // Add coalesced events, this includes the current event.
+    auto coalesced = e.coalescedPointerEvents();
+    _events.insert(_events.end(), coalesced.begin(), coalesced.end());
+
+    if (coalesced.empty())
+        ofLogError("PointerStroke::add") << "No coalesced events!";
+
+    // Add predicted events.
+    auto predicted = e.predictedPointerEvents();
+    _events.insert(_events.end(), predicted.begin(), predicted.end());
+
+    _minSequenceIndex = std::min(e.sequenceIndex(), _minSequenceIndex);
+    _maxSequenceIndex = std::max(e.sequenceIndex(), _maxSequenceIndex);
+
+    return true;
+}
+
+
+std::size_t PointerStroke::pointerId() const
+{
+    return _pointerId;
+}
+
+
+uint64_t PointerStroke::minSequenceIndex() const
+{
+    return _minSequenceIndex;
+}
+
+
+uint64_t PointerStroke::maxSequenceIndex() const
+{
+    return _maxSequenceIndex;
+}
+
+
+uint64_t PointerStroke::minTimestampMicros() const
+{
+    if (_events.empty())
+        return 0;
+
+    return _events.front().timestampMicros();
+}
+
+
+uint64_t PointerStroke::maxTimestampMicros() const
+{
+    if (_events.empty())
+        return 0;
+
+    return _events.back().timestampMicros();
+}
+
+
+bool PointerStroke::isFinished() const
+{
+    return !_events.empty() && (_events.back().eventType() == PointerEventArgs::POINTER_CANCEL
+                             || _events.back().eventType() == PointerEventArgs::POINTER_UP);
+}
+
+
+bool PointerStroke::isCancelled() const
+{
+    return !_events.empty() && _events.back().eventType() == PointerEventArgs::POINTER_CANCEL;
+}
+
+
+bool PointerStroke::isExpectingUpdates() const
+{
+    // Start at the end, because newer events are likely the ones with estimated
+    // properties.
+    auto riter = _events.rbegin();
+    while (riter != _events.rend())
+    {
+        if (!riter->estimatedProperties().empty())
+            return true;
+
+        ++riter;
+    }
+
+    return false;
+}
+
+
+std::size_t PointerStroke::size() const
+{
+    return _events.size();
+}
+
+
+bool PointerStroke::empty() const
+{
+    return _events.empty();
+}
+
+
+const std::vector<PointerEventArgs>& PointerStroke::events() const
+{
+    return _events;
+}
+
+
 PointerDebugRenderer::PointerDebugRenderer()
 {
-    setEnabled(true);
 }
 
 
 PointerDebugRenderer::~PointerDebugRenderer()
 {
-    setEnabled(false);
 }
 
 
-void PointerDebugRenderer::update(ofEventArgs& args)
+void PointerDebugRenderer::setup(const Settings& settings)
 {
-    auto now = ofGetElapsedTimeMillis();
-
-    auto iter = _savedStrokes.begin();
-
-    while (iter != _savedStrokes.end())
-    {
-        if ((iter->back().timestampMillis() + _timeoutMillis) < now)
-        {
-            iter = _savedStrokes.erase(iter);
-        }
-        else
-        {
-            ++iter;
-        }
-    }
+    _settings = settings;
 }
 
 
-void PointerDebugRenderer::draw(ofEventArgs& args)
+void PointerDebugRenderer::update()
 {
-    for (auto& events: _activeStrokes)
+    if (!_strokes.empty())
     {
-        ofMesh mesh;
+        auto now = ofGetElapsedTimeMillis();
 
-        if (events.second.size() > 2)
+        // Avoid rollover by subtracting from an unsigned now.
+        if (now < _settings.timeoutMillis)
+            return;
+
+        auto lastValidTime = now - _settings.timeoutMillis;
+
+        auto iter = _strokes.begin();
+
+        while (iter != _strokes.end())
         {
-            for (std::size_t index = 0; index < events.second.size(); ++index)
+            if (iter->second.empty())
+                iter = _strokes.erase(iter);
+            else
             {
-                // float width = 0;
-
-                if (index > 1 && events.second.size() > 2)
-                {
-                    std::size_t i1 = index - 1;
-                    std::size_t i2 = index;
-                    std::size_t i3 = index + 1;
-                    const auto& p1 = events.second[i1].point().position();
-                    const auto& p2 = events.second[i2].point().position();
-                    const auto& p3 = events.second[i3].point().position();
-                    auto v1(p1 - p2); // vector to previous point
-                    auto v2(p3 - p2); // vector to next point
-                    v1 = glm::normalize(v1);
-                    v2 = glm::normalize(v2);
-                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
-                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
-                    ofSetColor(ofColor::red);
-                    ofDrawLine(p2, p2 + glm::vec2(normal) * 50);
-                }
-
-                ofSetColor(ofColor::white, 80);
-                ofDrawCircle(events.second[index].point().position(), 10);
+                iter->second.erase(std::remove_if(iter->second.begin(),
+                                                  iter->second.end(),
+                                                  [&](const PointerStroke& x)
+                                                  { return lastValidTime > x.events().back().timestampMillis(); }),
+                                    iter->second.end());
+                ++iter;
             }
         }
     }
 }
 
 
-void PointerDebugRenderer::setTimeoutMillis(uint64_t timeoutMillis)
+void PointerDebugRenderer::draw() const
 {
-    _timeoutMillis = timeoutMillis;
+    for (auto& strokes: _strokes)
+        for (auto& stroke: strokes.second)
+            draw(stroke);
 }
 
 
-uint64_t PointerDebugRenderer::getTimeoutMillis() const
+void PointerDebugRenderer::draw(const PointerStroke& stroke) const
 {
-    return _timeoutMillis;
-}
-
-
-void PointerDebugRenderer::setEnabled(bool enabled)
-{
-    if (enabled != _enabled)
+    if (stroke.size() > 2)
     {
-        _enabled = enabled;
-
-        if (_enabled)
+        for (std::size_t index = 0; index < stroke.size(); ++index)
         {
-            ofAddListener(ofEvents().update, this, &PointerDebugRenderer::update, OF_EVENT_ORDER_AFTER_APP);
-            ofAddListener(ofEvents().draw, this, &PointerDebugRenderer::draw, OF_EVENT_ORDER_AFTER_APP);
-            RegisterPointerEvent(this);
+            if (index > 1)
+            {
+                std::size_t i1 = index - 1;
+                std::size_t i2 = index;
+                std::size_t i3 = index + 1;
+                //                    const auto& p1 = events.second[i1].point().position();
+                //                    const auto& p2 = events.second[i2].point().position();
+                //                    const auto& p3 = events.second[i3].point().position();
+                //                    auto v1(p1 - p2); // vector to previous point
+                //                    auto v2(p3 - p2); // vector to next point
+                //                    v1 = glm::normalize(v1);
+                //                    v2 = glm::normalize(v2);
+                //                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
+                //                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
+                //                    ofSetColor(ofColor::red);
+                //                    ofDrawLine(p2, p2 + glm::vec2(normal) * 50);
+
+
+                if (stroke.events()[i2].isPrimary())
+                {
+                    ofDrawRectangle(stroke.events()[i2].position(), 100, 100);
+                }
+
+
+                ofDrawBitmapString(ofToString(stroke.events()[i2].pointerIndex()), stroke.events()[i2].position() + glm::vec2{ 100, -100} );
+
+
+                ofSetColor(0);
+                ofPushMatrix();
+                ofTranslate(stroke.events()[i2].position());
+                ofRotateXDeg(180-stroke.events()[i2].point().tiltYDeg());
+                ofRotateYDeg(180-stroke.events()[i2].point().tiltXDeg());
+                //                    ofDrawLine(0, 0, 0, 0, 0, 100);
+
+
+
+                
+                if (stroke.events()[index].isPredicted())
+                {
+                    ofSetColor(ofColor::blue, 80);
+                    ofDrawCircle(0,0, 50);
+                    //                        ofDrawCircle(events.second[index].point().position(), 50);
+                }
+                else
+                {
+                    ofNoFill();
+                    ofSetColor(ofColor::hotPink, 80);
+                    //                        ofDrawCircle(events.second[index].point().position(), 20
+                    ofDrawCircle(0,0, 100);
+
+                }
+                ofPopMatrix();
+            }
+
+            //                if (events.second[index].isPredicted())
+            //                {
+            //                    ofSetColor(ofColor::blue, 80);
+            //                    ofDrawCircle(events.second[index].point().position(), 50);
+            //                }
+            //                else
+            //                {
+            //                    ofSetColor(ofColor::hotPink, 80);
+            //                    ofDrawCircle(events.second[index].point().position(), 20
+            //                                 );
+            //                }
+
         }
-        else
+    }
+
+}
+
+
+PointerDebugRenderer::Settings PointerDebugRenderer::settings() const
+{
+    return _settings;
+}
+
+
+void PointerDebugRenderer::clear()
+{
+    _strokes.clear();
+}
+
+
+void PointerDebugRenderer::add(const PointerEventArgs& e)
+{
+    auto strokesIter = _strokes.find(e.pointerId());
+
+    if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
+    {
+        bool foundIt = false;
+        if (strokesIter != _strokes.end())
         {
-            ofRemoveListener(ofEvents().update, this, &PointerDebugRenderer::update, OF_EVENT_ORDER_AFTER_APP);
-            ofRemoveListener(ofEvents().draw, this, &PointerDebugRenderer::draw, OF_EVENT_ORDER_AFTER_APP);
-            UnregisterPointerEvent(this);
+            for (auto& stroke: strokesIter->second)
+            {
+                foundIt = stroke.add(e);
+                if (foundIt)
+                    break;
+            }
         }
+
+        if (!foundIt)
+            ofLogError("PointerDebugRenderer::add") << "The sequence to be updated was nowhere to be found. This probably should not happen.";
+
+        return;
     }
-}
 
-
-bool PointerDebugRenderer::isEnabled() const
-{
-    return _enabled;
-}
-
-
-void PointerDebugRenderer::onPointerEvent(PointerEventArgs& evt)
-{
-    if (evt.eventType() == PointerEventArgs::POINTER_UP
-    ||  evt.eventType() == PointerEventArgs::POINTER_CANCEL)
+    // Process all events.
+    if (strokesIter == _strokes.end())
     {
-        // finish the associated stroke, move it to saved stroke, if any.
+        bool result;
+        std::tie(strokesIter, result) = _strokes.insert(std::make_pair(e.pointerId(), std::vector<PointerStroke>()));
     }
-    else if (evt.eventType() == PointerEventArgs::POINTER_UP)
+
+    if (strokesIter->second.empty() || strokesIter->second.back().isFinished())
     {
-        
+        strokesIter->second.push_back(PointerStroke());
     }
-    else if (evt.eventType() != PointerEventArgs::POINTER_MOVE
-         || (evt.eventType() == PointerEventArgs::POINTER_MOVE && evt.buttons() > 0))
+
+    // Get a reference to the current stroke.
+    auto& stroke = strokesIter->second.back();
+
+    if (!stroke.add(e))
     {
-        // Add the stroke to the active stroke if one.
-        // if none
+        ofLogError("PointerDebugRenderer::add") << "Could not add event.";
     }
-
-
-
-//
-//
-//    // We only want pointer "move" events if a pointer is "down".
-//    if (evt.eventType() != PointerEventArgs::POINTER_MOVE
-//    || (evt.eventType() == PointerEventArgs::POINTER_MOVE && evt.buttons() > 0))
-//    {
-//        auto iter = _eventMap.find(evt.id());
-//
-//        if (iter != _eventMap.end())
-//        {
-//            iter->second.push_back(evt);
-//        }
-//        else
-//        {
-//            _eventMap[evt.id()] = { evt };
-//        }
-//    }
 }
 
 

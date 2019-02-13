@@ -1342,55 +1342,107 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
 }
 
 
+/// \brief A PointerStroke is a collection of events with the same pointer id.
+///
+/// A pointer stroke begins with a pointerdown event and ends with a pointerup
+/// or pointercancel event.
+class PointerStroke
+{
+public:
+    PointerStroke();
+    ~PointerStroke();
+    
+    /// \brief Add the given pointer event to the stroke.
+    /// \returns true if the event was successfully added.
+    bool add(const PointerEventArgs& e);
+
+    /// \returns the PointerId of this PointerStroke.
+    std::size_t pointerId() const;
+
+    /// \returns the minimum sequence index.
+    uint64_t minSequenceIndex() const;
+
+    /// \returns the maximum sequence index.
+    uint64_t maxSequenceIndex() const;
+
+    /// \returns the minimum timestamp in microseconds.
+    uint64_t minTimestampMicros() const;
+
+    /// \returns the maximum timestamp in microseconds.
+    uint64_t maxTimestampMicros() const;
+
+    /// \returns true if the last event is a pointerup or pointercancel event.
+    bool isFinished() const;
+
+    /// \returns true if the last event is a pointercancel.
+    bool isCancelled() const;
+
+    /// \returns true if any events are still expecting updates.
+    bool isExpectingUpdates() const;
+
+    /// \returns the number of events.
+    std::size_t size() const;
+
+    /// \returns true if size() == 0.
+    bool empty() const;
+
+    /// \returns the events.
+    const std::vector<PointerEventArgs>& events() const;
+
+private:
+    std::size_t _pointerId = -1;
+
+    uint64_t _minSequenceIndex = std::numeric_limits<uint64_t>::max();
+    uint64_t _maxSequenceIndex = std::numeric_limits<uint64_t>::lowest();
+
+    std::vector<PointerEventArgs> _events;
+
+};
+
+
+
 /// \brief A utility class for visualizing Pointer events.
 class PointerDebugRenderer
 {
 public:
+    typedef std::size_t PointerId;
+
+    struct Settings;
+
     /// \brief Create a default debug renderer.
     PointerDebugRenderer();
 
     /// \brief Destroy the renderer.
     ~PointerDebugRenderer();
 
-    void update(ofEventArgs& args);
-    void draw(ofEventArgs& args);
+    void setup(const Settings& settings);
 
-    /// \brief Set the time an event will remain on screen in milliseconds.
-    /// \param timeoutMillis The onscreen timeout in milliseconds.
-    void setTimeoutMillis(uint64_t timeoutMillis);
+    void update();
+    void draw() const;
 
-    /// \returns the time an event will remain on screen in milliseconds.
-    uint64_t getTimeoutMillis() const;
+    void draw(const PointerStroke& stroke) const;
 
-    /// \brief Enable or disable the renderer.
-    /// \param enabled True of the renderer should be enabled.
-    void setEnabled(bool enabled);
+    /// \brief Reset all data.
+    void clear();
 
-    /// \returns true if enabled.
-    bool isEnabled() const;
+    /// \returns the Settings.
+    Settings settings() const;
 
     /// \brief A callback for all Pointer Events.
-    /// \param evt The Pointer Event arguments.
-    void onPointerEvent(PointerEventArgs& evt);
+    /// \param e The Pointer Event arguments.
+    void add(const PointerEventArgs& e);
 
-    enum
+    struct Settings
     {
-        /// \brief The default timeout for a stroke to be rendered.
-        DEFAULT_TIMEOUT_MILLIS = 5000
+        uint64_t timeoutMillis = 5000;
     };
 
 private:
-    /// \brief True if enabled.
-    bool _enabled = false;
+    /// \brief The Settings.
+    Settings _settings;
 
-    /// \brief The time an event will remain on screen in milliseconds.
-    uint64_t _timeoutMillis = DEFAULT_TIMEOUT_MILLIS;
-
-    /// \brief A map of active strokes.
-    std::map<std::size_t, std::vector<PointerEventArgs>> _activeStrokes;
-
-    /// \brief A collection of saved strokes.
-    std::vector<std::vector<PointerEventArgs>> _savedStrokes;
+    /// \brief A map of strokes.
+    std::map<PointerId, std::vector<PointerStroke>> _strokes;
 
 };
 
