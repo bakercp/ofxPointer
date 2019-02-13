@@ -606,51 +606,17 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
 {
     if (e.sequenceIndex() == 0 || sequenceIndex() == 0)
     {
-        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence number(s) are zero.";
+        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "One or more of the sequence indices are zero.";
         return false;
     }
 
     if (e.sequenceIndex() != sequenceIndex())
     {
-        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence numbers do not match.";
+        ofLogVerbose("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Sequence indices do not match.";
         return false;
     }
 
-//    auto otherExpected = e.estimatedPropertiesExpectingUpdates();
-
-//    std::cout << "Other Expected: " << std::endl;
-//    for (auto& e: otherExpected)
-//        std::cout << "\t" << e << std::endl;
-
     auto newEstimatedProperties = e.estimatedProperties();
-//
-//    std::cout << "New Estimated: " << std::endl;
-//    for (auto& ee: newEstimatedProperties)
-//        std::cout << "\t" << ee << std::endl;
-//
-//    auto expected = estimatedPropertiesExpectingUpdates();
-//    std::cout << "Expecting: " << std::endl;
-//    for (auto& e: expected)
-//        std::cout << "\t" << e << std::endl;
-//
-//    auto estimated = estimatedProperties();
-//    std::cout << "Estimated: " << std::endl;
-//    for (auto& e: estimated)
-//        std::cout << "\t" << e << std::endl;
-
-    // Go through the updates we are expecting.
-//    auto iter = _estimatedPropertiesExpectingUpdates.begin();
-//    while (iter != _estimatedPropertiesExpectingUpdates.end())
-//    {
-//        auto property = *iter;
-//
-//        if (otherEstimated.find(*iter) == otherEstimated.end())
-//        {
-//
-//        }
-//        ++iter;
-//    }
-
     std::vector<std::string> propertiesToUpdate;
 
     std::set_difference(_estimatedPropertiesExpectingUpdates.begin(),
@@ -658,11 +624,6 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
                         newEstimatedProperties.begin(),
                         newEstimatedProperties.end(),
                         std::inserter(propertiesToUpdate, propertiesToUpdate.begin()));
-
-    //    std::cout << "New Estimated: " << std::endl;
-    //    for (auto& ee: newEstimatedProperties)
-    //        std::cout << "\t" << ee << std::endl;
-    //
 
     for (auto& property: propertiesToUpdate)
     {
@@ -697,9 +658,7 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
         _estimatedPropertiesExpectingUpdates.erase(property);
     }
 
-
     return true;
-
 }
 
 
