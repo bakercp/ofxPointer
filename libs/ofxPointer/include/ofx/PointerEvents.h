@@ -757,6 +757,7 @@ public:
     bool updateEstimatedPropertiesWithEvent(const PointerEventArgs& e);
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \todo Does not set "isPrimary" correctly since it has no context.
     /// \param source The event source.
     /// \param e The touch event to convert.
     /// \returns a PointerEventArgs.
@@ -764,6 +765,7 @@ public:
                                                const ofTouchEventArgs& e);
 
     /// \brief Utility to convert ofTouchEventArgs events to PointerEventArgs.
+    /// \todo Does not set "isPrimary" correctly since it has no context.
     /// \param e The touch event to convert.
     /// \param source The event source.
     /// \returns a PointerEventArgs.
@@ -788,11 +790,6 @@ public:
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
         ss << "Touch Index: " << pointerIndex() << std::endl;
         ss << "Sequence Id: " << sequenceIndex() << std::endl;
-
-//        ofJson json;
-//        Point _point;
-//        from_json(json, _point);
-//        ss << "      Point: " << json.dump(4);
 
         return ss.str();
     }

@@ -770,12 +770,6 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     bool isCoalesced = false;
     bool isPredicted = false;
 
-    // If the id is 0, it is primary -- theoretically. But in the current legacy
-    // implementation, 0 can be reused even if the there are active touches.
-    // So, openFrameworks treats this as primary (synthesizes mouse events from
-    // touches), but it doesn't work according to the PointerEvents spec.
-    //
-    // https://www.w3.org/TR/pointerevents/#dfn-primary-pointer
     bool isPrimary = (e.id == 0);
 
     std::size_t pointerId = 0;
