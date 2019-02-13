@@ -394,7 +394,6 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     float tiltYDeg = 0;
 
     bool isPredicted = _isPredicted;
-    bool isPrimary = (pointerIndex == 0); // We reserved 0 for primary pointers.
     bool isCoalesced = _isCoalesced;
     bool isPrimary = (pointerIndex == _primaryPointerIndices[[touch type]]);
 
