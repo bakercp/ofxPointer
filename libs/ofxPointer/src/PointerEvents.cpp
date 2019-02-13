@@ -153,10 +153,8 @@ float PointShape::angleRad() const
 
 float PointShape::axisAlignedWidth() const
 {
-    if (_axisAlignedSizeCached)
-        return _axisAlignedWidth;
-
-    _calculateAxisAlignedSize();
+    if (!_axisAlignedSizeCached)
+        _calculateAxisAlignedSize();
 
     return _axisAlignedWidth;
 }
@@ -164,10 +162,8 @@ float PointShape::axisAlignedWidth() const
 
 float PointShape::axisAlignedHeight() const
 {
-    if (_axisAlignedSizeCached)
-        return _axisAlignedHeight;
-
-    _calculateAxisAlignedSize();
+    if (!_axisAlignedSizeCached)
+        _calculateAxisAlignedSize();
 
     return _axisAlignedHeight;
 }
@@ -609,10 +605,10 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
 
     auto newEstimatedProperties = e.estimatedProperties();
 //
-    std::cout << "New Estimated: " << std::endl;
-    for (auto& e: newEstimatedProperties)
-        std::cout << "\t" << e << std::endl;
-
+//    std::cout << "New Estimated: " << std::endl;
+//    for (auto& ee: newEstimatedProperties)
+//        std::cout << "\t" << ee << std::endl;
+//
 //    auto expected = estimatedPropertiesExpectingUpdates();
 //    std::cout << "Expecting: " << std::endl;
 //    for (auto& e: expected)
@@ -644,6 +640,11 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
                         newEstimatedProperties.end(),
                         std::inserter(propertiesToUpdate, propertiesToUpdate.begin()));
 
+    //    std::cout << "New Estimated: " << std::endl;
+    //    for (auto& ee: newEstimatedProperties)
+    //        std::cout << "\t" << ee << std::endl;
+    //
+
     for (auto& property: propertiesToUpdate)
     {
         if (property == PointerEventArgs::PROPERTY_PRESSURE)
@@ -669,7 +670,7 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
         }
         else
         {
-            ofLogWarning("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Uknown property to update: " << property;
+            ofLogWarning("PointerEventArgs::updateEstimatedPropertiesWithEvent") << "Unknown property to update: " << property;
         }
 
         _estimatedPropertiesExpectingUpdates.erase(property);
@@ -926,7 +927,6 @@ PointerEvents::~PointerEvents()
 
 bool PointerEvents::onPointerEvent(const void* source, PointerEventArgs& e)
 {
-    std::cout << "here" << std::endl;
     return _dispatchPointerEvent(source, e);
 }
 
@@ -941,8 +941,6 @@ bool PointerEvents::onMouseEvent(const void* source, ofMouseEventArgs& e)
 
 bool PointerEvents::onTouchEvent(const void* source, ofTouchEventArgs& e)
 {
-    std::cout << "2 here" << std::endl;
-
     auto p = PointerEventArgs::toPointerEventArgs(source, e);
     return _dispatchPointerEvent(source, p);
 }

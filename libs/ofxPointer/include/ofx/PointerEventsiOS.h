@@ -36,6 +36,7 @@
     ofxiOSGLKView* _viewGLK;
     ofxiOSEAGLView* _viewEAGL;
 
+    /// \brief The start time of the program to calculate set timestamps based on elapsed time.
     NSTimeInterval _startTimeSeconds;
 
     /// \brief Keep track of active pointers based on UITouchType.

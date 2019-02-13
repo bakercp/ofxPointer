@@ -782,6 +782,7 @@ public:
         ss << "    Buttons: " << ofToBinary(buttons()) << std::endl;
         ss << "  Modifiers: " << ofToBinary(modifiers()) << std::endl;
         ss << "Touch Index: " << pointerIndex() << std::endl;
+        ss << "Sequence Id: " << sequenceIndex() << std::endl;
 
 //        ofJson json;
 //        Point _point;
@@ -982,10 +983,6 @@ void from_json(const nlohmann::json& j, PointerEventArgs& v)
                          j.value("estimated_properties", std::set<std::string>()),
                          j.value("estimated_properties_expecting_updatess", std::set<std::string>()));
 }
-
-/// \brief
-///
-///
 
 
 /// \brief A class for converting touch and mouse events into pointer events.

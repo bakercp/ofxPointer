@@ -58,8 +58,6 @@ std::set<std::string> toPopertySet(UITouchProperties properties)
 
 bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 {
-//    std::cout << "dispatchPointerEvent: "  << source  << " window: " << window<< std::endl;
-
     bool consumed = false;
 
     ofx::PointerEvents* events = ofx::PointerEventsManager::instance().eventsForWindow(window);
@@ -99,7 +97,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         ofLogError("PointerViewIOS::touchesEnded") << "Invalid event, passing.";
     }
 
-
+    // TODO address consumeLegacy events.
     return /*events->consumeLegacyEvents ||*/ consumed;
 }
 
