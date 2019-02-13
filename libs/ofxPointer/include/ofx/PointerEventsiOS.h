@@ -54,7 +54,9 @@
                                   withTouch:(UITouch*) touch
                                   withEvent:(UIEvent*) event
                                   withPointerIndex:(int64_t) pointerIndex
-                                  withPredicted:(bool) isPredicted;
+                                  withCoalesced:(bool)_isCoalesced
+                                  withPredicted:(bool)_isPredicted
+                                  withUpdate:(bool)_isUpdate;
 
 /// \brief Orient the touch point depending on the current orientation.
 - (CGPoint)orientateTouchPoint:(CGPoint)touchPoint;

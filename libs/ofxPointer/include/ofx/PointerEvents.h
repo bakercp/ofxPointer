@@ -622,6 +622,7 @@ public:
     /// \param pointerIndex The unique pointer index for the given device id.
     /// \param sequenceIndex The sequence index for this event or zero if not supported..
     /// \param deviceType The device type string.
+    /// \param isCoalesced Is this event delivered as coalesced.
     /// \param isPredicted Is this event predicted rather than measured.
     /// \param isPrimary True if this pointer is the primary pointer.
     /// \param button The button id for this event.
@@ -643,6 +644,7 @@ public:
                      int64_t pointerIndex,
                      uint64_t sequenceIndex,
                      const std::string& deviceType,
+                     bool isCoalesced,
                      bool isPredicted,
                      bool isPrimary,
                      int16_t button,
@@ -701,6 +703,9 @@ public:
     ///
     /// \returns a device description string.
     std::string deviceType() const;
+
+    /// \returns true if the event was delivered as a coalesced event.
+    bool isCoalesced() const;
 
     /// \returns true if this event was predicted rather than measured.
     bool isPredicted() const;
@@ -894,6 +899,9 @@ private:
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary = false;
 
+    /// \brief Indicates if the event was delivered as a coalesced event.
+    bool _isCoalesced = false;
+
     /// \brief Indicates if the event is predicted rather than measured.
     bool _isPredicted = false;
 
@@ -948,6 +956,7 @@ inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
         { "pointer_index", v.pointerIndex() },
         { "sequence_index", v.sequenceIndex() },
         { "device_type", v.deviceType() },
+        { "is_coalesced", v.isCoalesced() },
         { "is_predicted", v.isPredicted() },
         { "is_primary", v.isPrimary() },
         { "button", v.button() },
@@ -973,6 +982,7 @@ void from_json(const nlohmann::json& j, PointerEventArgs& v)
                          j.value("pointer_index", uint64_t(0)),
                          j.value("sequence_index", uint64_t(0)),
                          j.value("device_type", PointerEventArgs::TYPE_UNKNOWN),
+                         j.value("is_coalesced", false),
                          j.value("is_predicted", false),
                          j.value("is_primary", false),
                          j.value("button", int16_t(0)),

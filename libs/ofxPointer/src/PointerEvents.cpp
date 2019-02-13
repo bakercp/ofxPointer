@@ -447,6 +447,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    int64_t pointerIndex,
                                    uint64_t sequenceIndex,
                                    const std::string& deviceType,
+                                   bool isCoalesced,
                                    bool isPredicted,
                                    bool isPrimary,
                                    int16_t button,
@@ -463,6 +464,7 @@ PointerEventArgs::PointerEventArgs(const void* eventSource,
     _pointerIndex(pointerIndex),
     _sequenceIndex(sequenceIndex),
     _deviceType(deviceType),
+    _isCoalesced(isCoalesced),
     _isPredicted(isPredicted),
     _isPrimary(isPrimary),
     _button(button),
@@ -526,6 +528,12 @@ std::size_t PointerEventArgs::pointerId() const
 std::string PointerEventArgs::deviceType() const
 {
     return _deviceType;
+}
+
+
+bool PointerEventArgs::isCoalesced() const
+{
+    return _isCoalesced;
 }
 
 
@@ -751,6 +759,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     // ofTouchEventArgs.
     std::string deviceType = PointerEventArgs::TYPE_TOUCH;
 
+    bool isCoalesced = false;
     bool isPredicted = false;
 
     // If the id is 0, it is primary -- theoretically. But in the current legacy
@@ -845,6 +854,7 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
 
+    bool isCoalesced = false;
     bool isPredicted = false;
     bool isPrimary = true; // A mouse is primary.
 

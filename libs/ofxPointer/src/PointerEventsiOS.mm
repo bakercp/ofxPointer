@@ -290,7 +290,9 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                                   withTouch:(UITouch*)touch
                                   withEvent:(UIEvent*)event
                                   withPointerIndex:(int64_t)_pointerIndex
+                                  withCoalesced:(bool)_isCoalesced
                                   withPredicted:(bool)_isPredicted
+                                     withUpdate:(bool)_isUpdate
 {
     CGFloat majorRadius = 0.5;
     CGFloat majorRadiusTolerance = 0;
@@ -393,6 +395,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     bool isPredicted = _isPredicted;
     bool isPrimary = (pointerIndex == 0); // We reserved 0 for primary pointers.
+    bool isCoalesced = _isCoalesced;
     bool isPrimary = (pointerIndex == _primaryPointerIndices[[touch type]]);
 
     std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
@@ -469,14 +472,21 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     uint64_t button = 0;
 
     std::vector<PointerEventArgs> coalescedPointerEvents;
+
     if (event)
     {
-        for (UITouch* _touch in [event coalescedTouchesForTouch:touch])
+        NSArray<UITouch*>* coalescedTouchesForTouch = [event coalescedTouchesForTouch:touch];
+        UITouch* thisTouch = [coalescedTouchesForTouch lastObject];
+        for (UITouch* _touch in coalescedTouchesForTouch)
+        {
             coalescedPointerEvents.push_back([self toPointerEventArgs:view
                                                             withTouch:_touch
                                                             withEvent:event
                                                      withPointerIndex:pointerIndex
-                                                        withPredicted:false]);
+                                                        withCoalesced:(_touch != thisTouch)
+                                                        withPredicted:false
+                                                           withUpdate:false]);
+        }
     }
 
     std::vector<PointerEventArgs> predictedPointerEvents;
@@ -488,7 +498,9 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                                                             withTouch:_touch
                                                             withEvent:event
                                                      withPointerIndex:pointerIndex
-                                                        withPredicted:true]);
+                                                        withCoalesced:false
+                                                        withPredicted:true
+                                                           withUpdate:false]);
     }
 
     const void* eventSource = self->_window;
@@ -508,6 +520,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                             pointerIndex,
                             sequenceIndex,
                             deviceType,
+                            isCoalesced,
                             isPredicted,
                             isPrimary,
                             button,
