@@ -663,11 +663,13 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
         else if (property == PointerEventArgs::PROPERTY_TILT_X)
         {
             _point._tiltXDeg = e.point().tiltXDeg();
+            _point._azimuthAltitudeCached = false;
             ofNotifyEvent(pointerPropertyUpdate, property, this);
         }
         else if (property == PointerEventArgs::PROPERTY_TILT_Y)
         {
             _point._tiltYDeg = e.point().tiltYDeg();
+            _point._azimuthAltitudeCached = false;
             ofNotifyEvent(pointerPropertyUpdate, property, this);
         }
         else if (property == PointerEventArgs::PROPERTY_POSITION)
