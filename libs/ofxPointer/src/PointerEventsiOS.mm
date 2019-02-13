@@ -292,12 +292,12 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
                                   withPointerIndex:(int64_t)_pointerIndex
                                   withPredicted:(bool)_isPredicted
 {
-#if defined(__IPHONE_8_0)
-    CGFloat majorRadius = [touch majorRadius];
-    CGFloat majorRadiusTolerance = [touch majorRadiusTolerance];
-#else
     CGFloat majorRadius = 0.5;
     CGFloat majorRadiusTolerance = 0;
+
+#if defined(__IPHONE_8_0)
+    majorRadius = [touch majorRadius];
+    majorRadiusTolerance = [touch majorRadiusTolerance];
 #endif
 
     PointShape shape(PointShape::ShapeType::ELLIPSE,
@@ -433,6 +433,8 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             // tiltYDeg = std::sin(az) * lengthXY * 90;
             // tiltZDeg = std::cos(altitudeAngleRad) * 90;
 
+            // Instead we use a conversion that is easily reversible. See:
+            // Point::_cacheAzimuthAltitude().
             double tanAltitude = std::tan(altitudeRad);
             tiltXDeg = glm::degrees(std::atan(std::cos(azimuthRad) / tanAltitude));
             tiltYDeg = glm::degrees(std::atan(std::sin(azimuthRad) / tanAltitude));
