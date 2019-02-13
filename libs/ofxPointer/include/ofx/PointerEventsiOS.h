@@ -27,9 +27,6 @@
 @interface PointerView: UIView {
 
 @protected
-    /// \brief A list of the current active touches.
-    NSMutableDictionary* _activeTouches;
-
     /// \brief A pointer to the current iOS window.
     ///
     /// This may not be necessary as there can only be one window currently
@@ -40,6 +37,13 @@
     ofxiOSEAGLView* _viewEAGL;
 
     NSTimeInterval _startTimeSeconds;
+
+    /// \brief Keep track of active pointers based on UITouchType.
+    std::map<UITouchType, std::set<int64_t>> _activePointerIndices;
+
+    /// \brief Keep track of the primary pointer for each UITouchType.
+    std::map<UITouchType, int64_t> _primaryPointerIndices;
+
 }
 
 - (void)resetTouches;

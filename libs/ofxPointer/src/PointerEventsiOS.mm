@@ -19,10 +19,6 @@
 using namespace ofx;
 
 
-const int64_t POINTER_INDEX_UPDATE = std::numeric_limits<int64_t>::max();
-const int64_t POINTER_INDEX_UNKNOWN = std::numeric_limits<int64_t>::lowest();
-
-
 UITouchProperties toUITouchProperties(const std::set<std::string>& properties)
 {
     UITouchProperties result = 0;
@@ -117,7 +113,6 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     self = [super initWithFrame:frame];
     self.multipleTouchEnabled = true;
 
-    _activeTouches = [[NSMutableDictionary alloc] init];
     _window = ofxiOSGetOFWindow();
 
     if(_window->getWindowControllerType() == METAL_KIT
@@ -139,14 +134,12 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
 - (void)dealloc
 {
-    [_activeTouches release];
     [super dealloc];
 }
 
 
 -(void) resetTouches
 {
-    [_activeTouches removeAllObjects];
 }
 
 
@@ -167,8 +160,10 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
-                               withPointerIndex:POINTER_INDEX_UNKNOWN
-                                  withPredicted:false];
+                               withPointerIndex:[touch hash]
+                                  withCoalesced:false
+                                  withPredicted:false
+                                     withUpdate:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -190,8 +185,10 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
-                               withPointerIndex:POINTER_INDEX_UNKNOWN
-                                  withPredicted:false];
+                               withPointerIndex:[touch hash]
+                                  withCoalesced:false
+                                  withPredicted:false
+                                     withUpdate:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -213,8 +210,10 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
-                               withPointerIndex:POINTER_INDEX_UNKNOWN
-                                  withPredicted:false];
+                               withPointerIndex:[touch hash]
+                                  withCoalesced:false
+                                  withPredicted:false
+                                     withUpdate:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -237,8 +236,10 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:event
-                               withPointerIndex:POINTER_INDEX_UNKNOWN
-                                  withPredicted:false];
+                               withPointerIndex:[touch hash]
+                                  withCoalesced:false
+                                  withPredicted:false
+                                     withUpdate:false];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -262,8 +263,11 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             auto evt = [self toPointerEventArgs:(_viewGLK ? _viewGLK : _viewEAGL)
                                       withTouch:touch
                                       withEvent:nil
-                               withPointerIndex:std::numeric_limits<int64_t>::max()
-                               withPredicted:false];
+                               withPointerIndex:[touch hash]
+                                  withCoalesced:false
+                                  withPredicted:false
+                                     withUpdate:true
+                                ];
             dispatchPointerEvent(_window, evt);
         }
     }
@@ -322,17 +326,6 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     std::set<std::string> estimatedPropertiesExpectingUpdates = toPopertySet([touch estimatedPropertiesExpectingUpdates]);
 
-    // UITouch objects are kept for the duration of the touch and are often
-    // reused. The pointer to the touch object can thus be used as a unique id.
-    // int64_t pointerIndex = *reinterpret_cast<int64_t*>(&touch);
-    // We could use the above method but the activeTouches method makes it
-    // easier to keep track of primary pointers and matches expected
-    // ofTouchEvent indices (even though they shouldn't be relied upon according
-    // to the PointerEvent spec.
-
-    // Pointer indices == POINTER_INDEX_UNKNOWN (i.e. that have not been set)
-    // will be set below. Otherwise, the pointer index passed into the function
-    // will be set with the new function.
     int64_t pointerIndex = _pointerIndex;
 
     switch ([touch phase])
@@ -341,21 +334,9 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         {
             eventType = PointerEventArgs::POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-
-            // This strategy, as opposed to the existing while() strategy
-            // will ensure that the 0 pointer is reserved for the primary
-            // pointer.
-
-            if (pointerIndex == POINTER_INDEX_UNKNOWN)
-            {
-                if ([_activeTouches count] > 0)
-                    pointerIndex = [[[_activeTouches allValues] valueForKeyPath:@"@max.intValue"] intValue] + 1;
-                else
-                    pointerIndex = 0;
-
-                [_activeTouches setObject:[NSNumber numberWithInt:pointerIndex] forKey:[NSValue valueWithPointer:touch]];
-            }
-
+            if (_activePointerIndices[[touch type]].empty())
+                _primaryPointerIndices[[touch type]] = pointerIndex;
+            _activePointerIndices[[touch type]].insert(pointerIndex);
             break;
         }
         case UITouchPhaseMoved:
@@ -363,44 +344,29 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         {
             eventType = PointerEventArgs::POINTER_MOVE;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
-
-            if (pointerIndex == POINTER_INDEX_UNKNOWN)
-            {
-                pointerIndex = [[_activeTouches objectForKey:[NSValue valueWithPointer:touch]] intValue];
-            }
             break;
         }
         case UITouchPhaseEnded:
         {
             eventType = PointerEventArgs::POINTER_UP;
-            if (pointerIndex == POINTER_INDEX_UNKNOWN)
-            {
-                pointerIndex = [[_activeTouches objectForKey:[NSValue valueWithPointer:touch]] intValue];
-                [_activeTouches removeObjectForKey:[NSValue valueWithPointer:touch]];
-            }
+            _activePointerIndices[[touch type]].erase(pointerIndex);
             break;
         }
         case UITouchPhaseCancelled:
         {
             eventType = PointerEventArgs::POINTER_CANCEL;
-            if (pointerIndex == POINTER_INDEX_UNKNOWN)
-            {
-                pointerIndex = [[_activeTouches objectForKey:[NSValue valueWithPointer:touch]] intValue];
-                [_activeTouches removeObjectForKey:[NSValue valueWithPointer:touch]];
-            }
+            _activePointerIndices[[touch type]].erase(pointerIndex);
             break;
         }
     }
 
-    // Update the event type for certain situations.
-    if (pointerIndex == POINTER_INDEX_UPDATE)
+    // If this is an update, we change its event type.
+    if (_isUpdate)
     {
         eventType = PointerEventArgs::POINTER_UPDATE;
-
         // TODO ... this shouldn't happen.
         if ([touch estimatedPropertiesExpectingUpdates] > 0)
             assert(false);
-
     }
 
     // By default our pressure depends on if a "button" is pressed.
@@ -421,6 +387,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 
     bool isPredicted = _isPredicted;
     bool isPrimary = (pointerIndex == 0); // We reserved 0 for primary pointers.
+    bool isPrimary = (pointerIndex == _primaryPointerIndices[[touch type]]);
 
     std::string deviceType = PointerEventArgs::TYPE_UNKNOWN;
 
@@ -434,15 +401,12 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
         case UITouchTypeIndirect:
         {
             deviceType = PointerEventArgs::TYPE_MOUSE;
-            isPrimary = true; // Mice are always primary.
             break;
         }
 #if defined(__IPHONE_9_1)
         case UITouchTypePencil:
         {
             deviceType = PointerEventArgs::TYPE_PEN;
-            isPrimary = true; // Pens are always primary.
-
             // Azimuth angle. Valid only for stylus touch types. Zero radians points along the positive X axis.
             // Passing a nil for the view parameter will return the azimuth relative to the touch's window.
             CGFloat azimuthRad = [touch azimuthAngleInView:view];
