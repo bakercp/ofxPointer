@@ -779,8 +779,6 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
             eventType = POINTER_DOWN;
             break;
         case ofMouseEventArgs::Dragged:
-            eventType = POINTER_MOVE;
-            break;
         case ofMouseEventArgs::Moved:
             eventType = POINTER_MOVE;
             break;
