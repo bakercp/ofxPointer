@@ -931,17 +931,20 @@ bool PointerEvents::onPointerEvent(const void* source, PointerEventArgs& e)
 }
 
 
-
 bool PointerEvents::onMouseEvent(const void* source, ofMouseEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(source, e);
+    // We use _source here because ofMouseEventArgs events aren't currently
+    // delivered with a source.
+    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
     return _dispatchPointerEvent(source, p);
 }
 
 
 bool PointerEvents::onTouchEvent(const void* source, ofTouchEventArgs& e)
 {
-    auto p = PointerEventArgs::toPointerEventArgs(source, e);
+    // We use _source here because ofTouchEventArgs events aren't currently
+    // delivered with a source.
+    auto p = PointerEventArgs::toPointerEventArgs(_source, e);
     return _dispatchPointerEvent(source, p);
 }
 
