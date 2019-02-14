@@ -1428,6 +1428,9 @@ public:
     /// \param e The Pointer Event arguments.
     void add(const PointerEventArgs& e);
 
+    // \returns the stroke map.
+    const std::map<std::size_t, std::vector<PointerStroke>>& strokes() const;
+
     struct Settings
     {
         Settings();

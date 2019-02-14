@@ -1409,6 +1409,12 @@ void PointerDebugRenderer::add(const PointerEventArgs& e)
 }
 
 
+const std::map<std::size_t, std::vector<PointerStroke>>& PointerDebugRenderer::strokes() const
+{
+    return _strokes;
+}
+
+
 PointerEventCollection::PointerEventCollection()
 {
 }
