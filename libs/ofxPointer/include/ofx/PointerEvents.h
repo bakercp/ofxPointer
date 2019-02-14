@@ -13,6 +13,7 @@
 #include <string>
 #include "json.hpp"
 #include "ofEvents.h"
+#include "ofColor.h"
 #include "ofUtils.h"
 #include "ofAppBaseWindow.h"
 #include "ofAppRunner.h"
@@ -1414,7 +1415,23 @@ public:
 
     struct Settings
     {
+        Settings();
+
+        /// \brief Set the amount of time before the stroke is removed.
         uint64_t timeoutMillis = 5000;
+
+        /// \brief The maximum width of the stroke in pixels.
+        float strokeWidth = 100;
+
+        /// \brief The color of normal points.
+        ofColor pointColor;
+
+        /// \brief The color of coalesced points.
+        ofColor coalescedPointColor;
+
+        /// \brief The color of predicted points.
+        ofColor predictedPointColor;
+
     };
 
 private:

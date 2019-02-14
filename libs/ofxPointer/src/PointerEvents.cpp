@@ -1187,6 +1187,14 @@ const std::vector<PointerEventArgs>& PointerStroke::events() const
 }
 
 
+PointerDebugRenderer::Settings::Settings():
+    pointColor(ofColor::blue),
+    coalescedPointColor(ofColor::red),
+    predictedPointColor(ofColor::darkGray)
+{
+}
+
+
 PointerDebugRenderer::PointerDebugRenderer()
 {
 }
@@ -1245,79 +1253,91 @@ void PointerDebugRenderer::draw() const
 
 void PointerDebugRenderer::draw(const PointerStroke& stroke) const
 {
-    if (stroke.size() > 2)
+    auto nowMillis = ofGetElapsedTimeMillis();
+
+    auto lastValidTimeMillis = nowMillis - _settings.timeoutMillis;
+
+    if (nowMillis < _settings.timeoutMillis)
+        lastValidTimeMillis = 0;
+
+    ofMesh mesh;
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+
+    bool useZ = false;
+    float R = _settings.strokeWidth;
+    auto fadeTimeMillis = std::min(uint64_t(50), _settings.timeoutMillis);
+
+    const auto& events = stroke.events();
+
+    for (std::size_t i = 0; i < events.size(); ++i)
     {
-        for (std::size_t index = 0; index < stroke.size(); ++index)
+        const auto& e = events[i];
+
+        // Pen tip.
+        glm::vec3 p0 = { e.position().x, e.position().y, 0 };
+        glm::vec3 p1 = p0;
+
+        float az = e.point().azimuthRad();
+        float al = e.point().altitudeRad();
+
+        if (!ofIsFloatEqual(az, 0.0f) || !ofIsFloatEqual(al, 0.0f))
         {
-            if (index > 1)
-            {
-                std::size_t i1 = index - 1;
-                std::size_t i2 = index;
-                std::size_t i3 = index + 1;
-                //                    const auto& p1 = events.second[i1].point().position();
-                //                    const auto& p2 = events.second[i2].point().position();
-                //                    const auto& p3 = events.second[i3].point().position();
-                //                    auto v1(p1 - p2); // vector to previous point
-                //                    auto v2(p3 - p2); // vector to next point
-                //                    v1 = glm::normalize(v1);
-                //                    v2 = glm::normalize(v2);
-                //                    glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
-                //                    glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1});
-                //                    ofSetColor(ofColor::red);
-                //                    ofDrawLine(p2, p2 + glm::vec2(normal) * 50);
+            float cosAl = std::cos(al);
+            p1.x += R * std::cos(az) * cosAl;
+            p1.y += R * std::sin(az) * cosAl;
 
-
-                if (stroke.events()[i2].isPrimary())
-                {
-                    ofDrawRectangle(stroke.events()[i2].position(), 100, 100);
-                }
-
-
-                ofDrawBitmapString(ofToString(stroke.events()[i2].pointerIndex()), stroke.events()[i2].position() + glm::vec2{ 100, -100} );
-
-
-                ofSetColor(0);
-                ofPushMatrix();
-                ofTranslate(stroke.events()[i2].position());
-                ofRotateXDeg(180-stroke.events()[i2].point().tiltYDeg());
-                ofRotateYDeg(180-stroke.events()[i2].point().tiltXDeg());
-                //                    ofDrawLine(0, 0, 0, 0, 0, 100);
-
-
-
-                
-                if (stroke.events()[index].isPredicted())
-                {
-                    ofSetColor(ofColor::blue, 80);
-                    ofDrawCircle(0,0, 50);
-                    //                        ofDrawCircle(events.second[index].point().position(), 50);
-                }
-                else
-                {
-                    ofNoFill();
-                    ofSetColor(ofColor::hotPink, 80);
-                    //                        ofDrawCircle(events.second[index].point().position(), 20
-                    ofDrawCircle(0,0, 100);
-
-                }
-                ofPopMatrix();
-            }
-
-            //                if (events.second[index].isPredicted())
-            //                {
-            //                    ofSetColor(ofColor::blue, 80);
-            //                    ofDrawCircle(events.second[index].point().position(), 50);
-            //                }
-            //                else
-            //                {
-            //                    ofSetColor(ofColor::hotPink, 80);
-            //                    ofDrawCircle(events.second[index].point().position(), 20
-            //                                 );
-            //                }
-
+            if (useZ)
+                p1.z += R * std::sin(al);
         }
+        else
+        {
+            // If no altitude / azimuth are available, use tangents to simulate.
+            if (i > 0 && i < events.size() - 1)
+            {
+                std::size_t i1 = i - 1;
+                std::size_t i2 = i;
+                std::size_t i3 = i + 1;
+                const auto& p_1 = events[i1].position();
+                const auto& p_2 = events[i2].position();
+                const auto& p_3 = events[i3].position();
+                auto v1(p_1 - p_2); // vector to previous point
+                auto v2(p_3 - p_2); // vector to next point
+                v1 = glm::normalize(v1);
+                v2 = glm::normalize(v2);
+                glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
+                glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1 });
+                auto pp0 = p_2 + normal * R / 2;
+                auto pp1 = p_2 - normal * R / 2;
+                p0 = { pp0.x, pp0.y, 0 };
+                p1 = { pp1.x, pp1.y, 0 };
+            }
+        }
+
+        // Here we combine the age of the line and the pressure to fade out
+        // the line via an opacity change.
+        float pressure = e.point().pressure();
+
+        double timeRemainingMillis = double(e.timestampMillis()) - double(lastValidTimeMillis);
+        float fader = ofMap(timeRemainingMillis, fadeTimeMillis, 0, 1, 0, true);
+        float pressureFader = pressure * fader;
+
+        ofColor c0, c1;
+
+        // Here we color the points based on the point type.
+        if (e.isPredicted())
+            c0 = c1 = ofColor(_settings.predictedPointColor);
+        else if (e.isCoalesced())
+            c0 = c1 = ofColor(_settings.coalescedPointColor, pressureFader * 255);
+        else
+            c0 = c1 = ofColor(_settings.pointColor, pressureFader * 255);
+
+        mesh.addVertex(p0);
+        mesh.addColor(c0);
+        mesh.addVertex(p1);
+        mesh.addColor(c1);
     }
 
+    mesh.draw();
 }
 
 
