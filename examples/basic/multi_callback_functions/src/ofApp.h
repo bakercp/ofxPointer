@@ -24,6 +24,6 @@ public:
     void onPointerMove(ofx::PointerEventArgs& e);
     void onPointerCancel(ofx::PointerEventArgs& e);
 
-    ofx::PointerDebugRenderer debugRenderer;
+    ofx::PointerDebugRenderer renderer;
 
 };
