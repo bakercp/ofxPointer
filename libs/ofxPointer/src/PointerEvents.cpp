@@ -1353,6 +1353,12 @@ void PointerDebugRenderer::clear()
 
 void PointerDebugRenderer::add(const PointerEventArgs& e)
 {
+    // Ignore mouse just rolling around.
+    if (e.deviceType() == PointerEventArgs::TYPE_MOUSE
+    && e.eventType() == PointerEventArgs::POINTER_MOVE
+    && e.buttons() == 0)
+        return;
+
     auto strokesIter = _strokes.find(e.pointerId());
 
     if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
