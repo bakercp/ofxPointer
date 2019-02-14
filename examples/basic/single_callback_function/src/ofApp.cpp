@@ -10,6 +10,7 @@
 
 void ofApp::setup()
 {
+    ofSetBackgroundColor(255);
     ofSetLogLevel(OF_LOG_VERBOSE);
 
     // Calling ofx::RegisterPointerEvent, will register a single callback with
@@ -23,15 +24,17 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    renderer.update();
 }
 
 
 void ofApp::draw()
 {
+    renderer.draw();
 }
 
 
 void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerEvent") << evt.toString();
+    renderer.add(evt);
 }

@@ -22,4 +22,5 @@ public:
     // All pointer events are sent to this single callback.
     void onPointerEvent(ofx::PointerEventArgs& e);
 
+    ofx::PointerDebugRenderer renderer;
 };
