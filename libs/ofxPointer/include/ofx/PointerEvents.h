@@ -1333,7 +1333,10 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
 class PointerStroke
 {
 public:
+    /// \brief Construct a default PointerStroke.
     PointerStroke();
+
+    /// \brief Destroy the PointerStroke.
     ~PointerStroke();
     
     /// \brief Add the given pointer event to the stroke.
@@ -1374,11 +1377,16 @@ public:
     const std::vector<PointerEventArgs>& events() const;
 
 private:
+    /// \brief The pointer id of all events in this stroke.
     std::size_t _pointerId = -1;
 
+    /// \brief The minimum update sequence index.
     uint64_t _minSequenceIndex = std::numeric_limits<uint64_t>::max();
+
+    /// \brief The maximum update sequence index.
     uint64_t _maxSequenceIndex = std::numeric_limits<uint64_t>::lowest();
 
+    /// \brief All events associated with this stroke.
     std::vector<PointerEventArgs> _events;
 
 };
@@ -1396,9 +1404,16 @@ public:
     /// \brief Destroy the renderer.
     ~PointerDebugRenderer();
 
+    /// \brief Configure the PointerDebugRenderer with the given settings.
+    /// \p settings The settings values to set.
     void setup(const Settings& settings);
 
+    /// \brief Update the strokes.
+    ///
+    /// This will remove strokes that have timed out.
     void update();
+
+    /// \brief Draw the strokes.
     void draw() const;
 
     void draw(const PointerStroke& stroke) const;
