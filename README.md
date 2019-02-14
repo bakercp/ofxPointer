@@ -2,7 +2,7 @@
 
 ## Description
 
-This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevents/) specification to work with openFrameworks. A compatibility layer for iOS includes support for high-frequency coalesced events, predicted events, event updates, tilt, pressure and other advanced
+This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevents/) specification to work with openFrameworks. A compatibility layer for iOS / `UITouch` includes support for high-frequency coalesced events, predicted events, event property updates, tilt, pressure and other advanced properties.
 
 ## Features
 
@@ -116,6 +116,7 @@ public:
 
 iOS Currently supports all advanced `UITouch` features including tiltX/Y, elevation, azimuth, precise location, pressure, predicted and coalesced events, estimated properties and estimated property updates. See the iOS examples for more.
 
+![Screenshot](https://github.com/bakercp/ofxPointer/raw/master/docs/ios_screenshot.png)
 
 ## Getting Started
 
