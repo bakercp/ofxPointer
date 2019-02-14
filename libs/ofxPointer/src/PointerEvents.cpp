@@ -1205,6 +1205,12 @@ PointerDebugRenderer::PointerDebugRenderer()
 }
 
 
+PointerDebugRenderer::PointerDebugRenderer(const Settings& settings):
+    _settings(settings)
+{
+}
+
+
 PointerDebugRenderer::~PointerDebugRenderer()
 {
 }

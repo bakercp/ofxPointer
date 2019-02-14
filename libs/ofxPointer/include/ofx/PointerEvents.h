@@ -1401,6 +1401,10 @@ public:
     /// \brief Create a default debug renderer.
     PointerDebugRenderer();
 
+    /// \brief Create a default debug renderer with the given settings.
+    /// \p settings The settings values to set.
+    PointerDebugRenderer(const Settings& settings);
+
     /// \brief Destroy the renderer.
     ~PointerDebugRenderer();
 
