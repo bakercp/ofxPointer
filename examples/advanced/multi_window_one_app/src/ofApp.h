@@ -21,10 +21,9 @@ public:
 
     void drawSecondWindow(ofEventArgs& args);
 
-    // Pointer Events
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
+    // All pointer events for both windows arrive here.
+    void onPointerEvent(ofx::PointerEventArgs& evt);
+
+    std::map<const ofAppBaseWindow*, ofx::PointerDebugRenderer> renderers;
 
 };

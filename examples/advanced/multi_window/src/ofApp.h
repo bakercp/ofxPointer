@@ -21,11 +21,9 @@ public:
     void draw() override;
 
     // Pointer Events
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
+    void onPointerEvent(ofx::PointerEventArgs& evt);
 
     std::shared_ptr<SecondApp> secondApp;
 
+    ofx::PointerDebugRenderer renderer;
 };

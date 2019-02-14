@@ -17,34 +17,18 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    renderer.update();
 }
 
 
 void ofApp::draw()
 {
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    renderer.draw();
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
-}
-
-
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
-}
-
-
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
-}
-
-
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
+    renderer.add(evt);
 }

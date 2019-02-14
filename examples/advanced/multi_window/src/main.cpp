@@ -27,8 +27,8 @@ int main()
     auto mainApp = std::make_shared<ofApp>();
     auto secondApp = std::make_shared<SecondApp>();
 
-    ofx::RegisterPointerEventsForWindow(mainWindow.get(), mainApp.get());
-    ofx::RegisterPointerEventsForWindow(secondWindow.get(), secondApp.get());
+    ofx::RegisterPointerEventForWindow(mainWindow.get(), mainApp.get());
+    ofx::RegisterPointerEventForWindow(secondWindow.get(), secondApp.get());
 
     mainApp->secondApp = secondApp;
 

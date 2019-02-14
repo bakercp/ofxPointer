@@ -17,40 +17,28 @@ void ofApp::setup()
 
 void ofApp::update()
 {
+    for (auto& renderer: renderers)
+        renderer.second.update();
 }
 
 
 void ofApp::draw()
 {
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    renderers[ofGetCurrentWindow().get()].draw();
 }
 
 
 void ofApp::drawSecondWindow(ofEventArgs& args)
 {
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    renderers[ofGetCurrentWindow().get()].draw();
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::onPointerUp") << evt.toString();
+    renderers[reinterpret_cast<const ofAppBaseWindow*>(evt.eventSource())].add(evt);
 }
 
 
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerDown") << evt.toString();
-}
-
-
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerMove") << evt.toString();
-}
-
-
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("ofApp::onPointerCancel") << evt.toString();
-}

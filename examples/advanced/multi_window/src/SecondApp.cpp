@@ -12,39 +12,29 @@ void SecondApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetWindowTitle("SecondApp");
+
+
+    ofx::PointerDebugRenderer::Settings settings;
+    settings.pointColor = ofColor::red;
+    renderer.setup(settings);
 }
 
 
 void SecondApp::update()
 {
+    renderer.update();
 }
 
 
 void SecondApp::draw()
 {
     ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+    renderer.draw();
 }
 
 
-void SecondApp::onPointerUp(ofx::PointerEventArgs& evt)
+void SecondApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("SecondApp::onPointerUp") << evt.toString();
+    renderer.add(evt);
 }
 
-
-void SecondApp::onPointerDown(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("SecondApp::onPointerDown") << evt.toString();
-}
-
-
-void SecondApp::onPointerMove(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("SecondApp::onPointerMove") << evt.toString();
-}
-
-
-void SecondApp::onPointerCancel(ofx::PointerEventArgs& evt)
-{
-    ofLogVerbose("SecondApp::onPointerCancel") << evt.toString();
-}

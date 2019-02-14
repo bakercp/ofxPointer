@@ -28,8 +28,16 @@ int main()
 
     auto mainApp = std::make_shared<ofApp>();
 
-    ofx::RegisterPointerEventsForWindow(mainWindow.get(), mainApp.get());
-    ofx::RegisterPointerEventsForWindow(secondWindow.get(), mainApp.get());
+    ofx::RegisterPointerEventForWindow(mainWindow.get(), mainApp.get());
+    ofx::RegisterPointerEventForWindow(secondWindow.get(), mainApp.get());
+
+    // Set up renderers for each window.
+    ofx::PointerDebugRenderer::Settings rendererSettings;
+    rendererSettings.strokeWidth = 50;
+    mainApp.get()->renderers[mainWindow.get()] = ofx::PointerDebugRenderer(rendererSettings);
+    rendererSettings.strokeWidth = 100;
+    rendererSettings.pointColor = ofColor::red;
+    mainApp.get()->renderers[secondWindow.get()] = ofx::PointerDebugRenderer(rendererSettings);
 
     ofAddListener(secondWindow->events().draw,
                   mainApp.get(),
