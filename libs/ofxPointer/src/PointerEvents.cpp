@@ -671,9 +671,11 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     uint64_t detail = 0;
 
-    uint64_t button = 0;
+    // TODO https://www.w3.org/TR/pointerevents/#the-button-property
+    // This is not correctly implemented.
+    int16_t button = -1;
 
-    uint64_t buttons = 0;
+    uint16_t buttons = 0;
 
     std::size_t deviceId = 0;
 
@@ -801,14 +803,13 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     // Record a timestamp.
     uint64_t timestampMicros = ofGetElapsedTimeMicros();
 
-    // Create the point, if a button is pressed, the pressure is 0.5.
-    Point point(glm::vec2(e.x, e.y), PointShape(), (e.button > 0 ? 0.5 : 0));
-
+    // TODO https://www.w3.org/TR/pointerevents/#the-button-property
+    // This is not correctly implemented.
     // Note the mouse button associated with this event.
-    uint64_t button = e.button;
+    int16_t button = -1;
 
     // Calculate buttons.
-    uint64_t buttons = 0;
+    uint16_t buttons = 0;
 
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_1) ? (1 << OF_MOUSE_BUTTON_1) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_2) ? (1 << OF_MOUSE_BUTTON_2) : 0;
@@ -817,6 +818,9 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_5) ? (1 << OF_MOUSE_BUTTON_5) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_6) ? (1 << OF_MOUSE_BUTTON_6) : 0;
     buttons |= ofGetMousePressed(OF_MOUSE_BUTTON_7) ? (1 << OF_MOUSE_BUTTON_7) : 0;
+
+    // Create the point, if a button is pressed, the pressure is 0.5.
+    Point point(glm::vec2(e.x, e.y), PointShape(), (buttons > 0 ? 0.5 : 0));
 
     bool isCoalesced = false;
     bool isPredicted = false;
