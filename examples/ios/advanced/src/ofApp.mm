@@ -12,9 +12,17 @@ void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
 
-    // The simplest way to get all advanced PointerEvents. This method will
-    // create a subview window that will captures all touch events before they
-    // are passed to the standard ofxiOSApp window.
+    ofBackground(255);
+
+    // This example demonstrates the simplest way to get all advanced
+    // PointerEvents. This method will creates a subview window that intercepts
+    // all touch events before they are passed to the standard ofxiOSApp window.
+    // Thus, in this advanced method, no events will be passed to the standard
+    // ofxiOSApp::touch*(...) callbacks.
+    //
+    // Like the basic mode (e.g. ofx::RegisterPointerEvent(...) and
+    // ofx::RegisterPointerEvents(...), one can call one can receve all pointer
+    // events in seperate callbacks or in one unified callback.
     //
     // When calling ofx::RegisterAdvancedPointerEventsiOS(this), it is expected
     // that the following standard ofxPointer event methods are present in the
@@ -29,103 +37,44 @@ void ofApp::setup()
     //
     //  void onPointerUpdate(ofx::PointerEventArgs& evt);
     //
-    // The onPointerUpdate is called when iOS updates previously estimated
+    // The onPointerUpdate(...) is called when iOS updates previously estimated
     // point data. If the previous points are not preserved, then these events
     // should be ignored. Otherwise, they can be matched with previous events
-    // by examining the sequenceIndex() of the stored and updated events.
+    // by examining the pointerId() and sequenceIndex() of the the stored
+    // events. The PointerDebugRenderer::add(...) method demonstrates one way
+    // this can be done.
+    //
+    // Alternatively, by calling ofx::RegisterAdvancedPointerEventiOS(this),
+    // a single method with the signature of:
+    //
+    // void onPointerEvent(ofx::PointerEventArgs& evt)
+    //
+    // will receive all events, including pointerUpdate events.
 
-    ofx::RegisterAdvancedPointerEventsiOS(this);
+    // Register a single advanced iOS PointerEvents callback.
+    ofx::RegisterAdvancedPointerEventiOS(this);
 
+    // There are several settings that can be set in the debug renderer.
+    ofx::PointerDebugRenderer::Settings settings;
+    settings.timeoutMillis = 2000;
+    settings.strokeWidth = 200;
+    renderer.setup(settings);
 }
 
 
 void ofApp::update()
 {
+    renderer.update();
 }
 
 
 void ofApp::draw()
 {
+    renderer.draw();
 }
 
 
-void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    addEvent(evt);
+    renderer.add(evt);
 }
-
-
-void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
-{
-    addEvent(evt);
-}
-
-
-void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
-{
-    addEvent(evt);
-}
-
-
-void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
-{
-    addEvent(evt);
-}
-
-void ofApp::onPointerUpdate(ofx::PointerEventArgs& evt)
-{
-    std::cout << "update: " << evt.sequenceIndex() << ": " << evt.eventType() << std::endl;
-
-    auto iter = t.find(evt.sequenceIndex());
-    
-    if (iter != t.end())
-    {
-        if (!iter->second.updateEstimatedPropertiesWithEvent(evt))
-        {
-            std::cout << "update failed." << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << "-- Did not find event to update." << std::endl;
-    }
-}
-
-void ofApp::addEvent(ofx::PointerEventArgs& evt)
-{
-//    std::cout << "add: " << evt.sequenceIndex() << ": " << std::this_thread::get_id() << " ... events.size(): " << t.size();
-    // t[evt.sequenceIndex()] = evt;
-    
-    for (auto& e: evt.coalescedPointerEvents())
-    {
-        // If we want to listen to the event we need to carefully do it.
-        auto i = t.insert(std::make_pair(e.sequenceIndex(), e));
-        ofAddListener(i.first->second.pointerPropertyUpdate,
-                      this,
-                      &ofApp::pointerPropertyUpdate);
-    }
-    
-    if (t.find(evt.sequenceIndex()) == t.end())
-    {
-        std::cout << "Found one that wasn't added: " << evt.eventType() << std::endl;
-    }
-    
-    
-//    evt.coalescedPointerEvents()
-    
-    
-//    std::cout << " complete." << std::endl;
-}
-
-void ofApp::pointerPropertyUpdate(const void* source, std::string& evt)
-{
-    const ofx::PointerEventArgs* s = reinterpret_cast<const ofx::PointerEventArgs*>(source);
-    
-    std::uint64_t i = 0;
-    if (s)
-        i = s->sequenceIndex();
-    
-    std::cout << "updated: " << evt << " for seq: " << i << std::endl;
-}
-
-

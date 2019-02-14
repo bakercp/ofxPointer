@@ -20,6 +20,7 @@
 #include "ofLog.h"
 
 
+
 namespace ofx {
 
 
@@ -593,23 +594,8 @@ void from_json(const nlohmann::json& j, Point& v)
 class PointerEventArgs: public EventArgs
 {
 public:
-//    /// \brief A typedef defining a key for a pointer.
-//    ///
-//    /// Where first is the event id, and second is the event button. Create a
-//    /// new key like this:
-//    ///
-//    ///     PointerKey key(e.pointerId(), e.deviceId(), e.pointerIndex(), e.button());
-//    ///
-//    typedef std::tuple<std::size_t, int64_t, int64_t, int16_t> PointerKey;
-
     /// \brief Create a default PointerEventArgs.
     PointerEventArgs();
-
-//    /// \brief Create a PointerEventArgs with a new event type.
-//    /// \param eventType The event type.
-//    /// \param e The event to copy.
-//    PointerEventArgs(const std::string& eventType,
-//                     const PointerEventArgs& e);
 
     /// \brief Create a PointerEventArgs with parameters.
     /// \param eventSource The event source if available.
@@ -1397,13 +1383,10 @@ private:
 };
 
 
-
 /// \brief A utility class for visualizing Pointer events.
 class PointerDebugRenderer
 {
 public:
-    typedef std::size_t PointerId;
-
     struct Settings;
 
     /// \brief Create a default debug renderer.
@@ -1439,7 +1422,7 @@ private:
     Settings _settings;
 
     /// \brief A map of strokes.
-    std::map<PointerId, std::vector<PointerStroke>> _strokes;
+    std::map<std::size_t, std::vector<PointerStroke>> _strokes;
 
 };
 

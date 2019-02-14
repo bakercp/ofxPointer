@@ -18,19 +18,8 @@ public:
     void update() override;
     void draw() override;
 
-    void onPointerUp(ofx::PointerEventArgs& evt);
-    void onPointerDown(ofx::PointerEventArgs& evt);
-    void onPointerMove(ofx::PointerEventArgs& evt);
-    void onPointerCancel(ofx::PointerEventArgs& evt);
-    void onPointerUpdate(ofx::PointerEventArgs& evt);
+    void onPointerEvent(ofx::PointerEventArgs& evt);
 
-    void pointerPropertyUpdate(const void* source, std::string& evt);
-
-    void addEvent(ofx::PointerEventArgs& evt);
-    
-    std::map<uint64_t, ofx::PointerEventArgs> t;
-
-    
-  //  PointerDebugRenderer renderer;
+    ofx::PointerDebugRenderer renderer;
 
 };

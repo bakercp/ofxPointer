@@ -420,28 +420,6 @@ PointerEventArgs::PointerEventArgs()
 }
 
 
-//PointerEventArgs::PointerEventArgs(const std::string& eventType,
-//                                   const PointerEventArgs& e):
-//    PointerEventArgs(e.eventSource(),
-//                     eventType,
-//                     e.timestampMillis(),
-//                     e.point(),
-//                     e.pointerId(),
-//                     e.deviceId(),
-//                     e.pointerIndex(),
-//                     e.sequenceIndex(),
-//                     e.deviceType(),
-//                     e.isPrimary(),
-//                     e.button(),
-//                     e.buttons(),
-//                     e.modifiers(),
-//                     e.coalescedPointerEvents(),
-//                     e.predictedPointerEvents(),
-//                     e.estimatedProperties(),
-//                     e.estimatedPropertiesExpectingUpdates())
-//{
-//}
-
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
                                    uint64_t timestampMicros,
@@ -1400,137 +1378,14 @@ void PointerDebugRenderer::add(const PointerEventArgs& e)
 }
 
 
-//void PointerDebugUtilities::draw(const PointerEventArgs& evt, float alpha)
-//{
-//    const auto& point = evt.point();
-//
-//    auto position = point.position();
-//
-//    ofPushMatrix();
-//    ofTranslate(point.position());
-//
-//    float w = point.shape().ellipseMajorAxis();
-//    float h = point.shape().ellipseMinorAxis();
-//
-//    float defaultAxis = 60.f;
-//    ofColor typeColor;
-//
-//    if (evt.eventType() == PointerEventArgs::POINTER_DOWN)
-//    {
-//        typeColor = ofColor::green;
-//        defaultAxis *= 2;
-//    }
-//    else if (evt.eventType() == PointerEventArgs::POINTER_MOVE)
-//    {
-//        typeColor = ofColor::yellow;
-//        defaultAxis /= 2;
-//    }
-//    else if (evt.eventType() == PointerEventArgs::POINTER_UP)
-//    {
-//        typeColor = ofColor::blue;
-//        defaultAxis *= 2;
-//    }
-//    else if (evt.eventType() == PointerEventArgs::POINTER_CANCEL)
-//    {
-//        typeColor = ofColor::red;
-//        defaultAxis *= 4;
-//    }
-//    else
-//    {
-//        std::cout << "EVENT: " << evt.eventType() << std::endl;
-//        typeColor = ofColor::purple;
-//    }
-//
-//    float defaultPressureScaler = defaultAxis / 2;
-//
-//    // In case the width / height info is not available.
-//    if (w <= 0) w = defaultAxis;
-//    if (h <= 0) h = defaultAxis;
-//
-//    float halfW = w / 2.0f;
-//    float halfH = h / 2.0f;
-//
-//    float pressure = point.pressure() * defaultPressureScaler;
-//
-//    // In case the pressure is not available.
-//    if (pressure <= 0) pressure = defaultPressureScaler;
-//
-//    ofNoFill();
-//    ofSetColor(typeColor, 60 * alpha);
-//    ofRotateZDeg(point.shape().ellipseAngleDeg());
-//
-//    if (evt.deviceType() == PointerEventArgs::TYPE_PEN)
-//    {
-//        ofDrawRectangle(-halfW, -halfH, w, h);
-//        ofFill();
-//        ofSetColor(typeColor, 100 * alpha);
-//        ofDrawRectangle(-pressure/2, -pressure/2, pressure, pressure);
-//    }
-//    else
-//    {
-//        ofDrawEllipse(0, 0, w, h);
-//        ofFill();
-//        ofSetColor(typeColor, 100 * alpha);
-//        ofDrawEllipse(0, 0, pressure, pressure);
-//    }
-//
-////    ofSetColor(255, 100);
-////    ofDrawLine(-halfW, 0.f, halfW, 0.f);
-////    ofDrawLine(0.f, -halfH, 0.f, halfH);
-//
-//    ofPopMatrix();
-//
-////    ofFill();
-////    ofSetColor(255);
-////    ofDrawBitmapString(ofToString(evt.eventType()), position.x - 6, position.y + 3);
-////    ofSetColor(255, 255, 255, 100);
-//}
-
-//std::string PointerDebugUtilities::toString(PointerEventArgs& evt)
-//{
-//
-//}
-
-
 PointerEventCollection::PointerEventCollection()
 {
 }
 
 
-//PointerEventCollection::PointerEventCollection(const std::set<std::string>& pointerEventTypes):
-//    _pointerEventTypes(pointerEventTypes)
-//{
-//}
-
-
 PointerEventCollection::~PointerEventCollection()
 {
 }
-
-//void PointerEventCollection::setPointerEventTypes(const std::set<std::string>& pointerEventTypes)
-//{
-//    clear();
-//    _pointerEventTypes = pointerEventTypes;
-//}
-//
-//
-//std::set<std::string> PointerEventCollection::getPointerEventTypes() const
-//{
-//    return _pointerEventTypes;
-//}
-
-
-//void PointerEventCollection::setMaxNumEventKeys(std::size_t maxNumEventKeys)
-//{
-//    clear();
-//    _maxNumEventKeys = maxNumEventKeys;
-//}
-//
-//
-//std::size_t PointerEventCollection::getMaxNumEventKeys() const
-//{
-//    return _maxNumEventKeys;
-//}
 
 
 std::size_t PointerEventCollection::size() const
