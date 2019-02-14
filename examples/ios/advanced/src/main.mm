@@ -10,7 +10,6 @@
 int main()
 {
     ofiOSWindowSettings settings;
-    settings.windowControllerType = ofxiOSWindowControllerType::METAL_KIT;
     settings.enableMultiTouch = true;
 
     auto mainWindow = ofCreateWindow(settings);
