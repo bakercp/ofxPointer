@@ -11,6 +11,7 @@
 void ofApp::setup()
 {
     ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetBackgroundColor(255);
 
     // The simplest way to get basic PointerEvents. This method will capture
     // the default touch events and convert them into pointer events.
@@ -45,40 +46,51 @@ void ofApp::setup()
     //  bool onPointerDown(ofx::PointerEventArgs& evt);
     //  bool onPointerMove(ofx::PointerEventArgs& evt);
     //  bool onPointerCancel(ofx::PointerEventArgs& evt);
+    //
+    // For this method, use:
 
     ofx::RegisterPointerEvents(this);
-}
 
+    // Alternatively, a single callback function of the form:
+    //
+    // void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
+    //
+    // ofx::RegisterPointerEvents(this);
 
-void ofApp::update()
-{
 }
 
 
 void ofApp::draw()
 {
+    ofSetColor(0);
+    for (auto& stroke: strokes)
+        stroke.second.draw();
 }
 
 
 void ofApp::onPointerUp(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerUp") << evt.toString();
+    strokes[evt.pointerId()].addVertex(evt.position().x,
+                                       evt.position().y);
 }
 
 
 void ofApp::onPointerDown(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerDown") << evt.toString();
+    strokes[evt.pointerId()] = ofPolyline();
+    strokes[evt.pointerId()].addVertex(evt.position().x,
+                                       evt.position().y);
 }
 
 
 void ofApp::onPointerMove(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerMove") << evt.toString();
+    strokes[evt.pointerId()].addVertex(evt.position().x,
+                                       evt.position().y);
 }
 
 
 void ofApp::onPointerCancel(ofx::PointerEventArgs& evt)
 {
-    ofLogVerbose("ofApp::pointerCancel") << evt.toString();
+    // Nothing to do.
 }
