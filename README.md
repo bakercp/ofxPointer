@@ -2,7 +2,7 @@
 
 ## Description
 
-This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevents/) specification to work with openFrameworks.
+This frameworks adapts the [W3C Pointer Event](http://www.w3.org/TR/pointerevents/) specification to work with openFrameworks. A compatibility layer for iOS includes support for high-frequency coalesced events, predicted events, event updates, tilt, pressure and other advanced
 
 ## Features
 
@@ -12,6 +12,8 @@ Simply put, `ofxPointer` merges pointer, touch and pen input into a single exten
 
 A typical program will now look like this:
 
+
+### All Platforms
 
 ```c++
 
@@ -70,7 +72,49 @@ public:
 
 ```
 
-For iOS compatibility, see see the simple and advanced iOS examples.
+Or even more simply, like this:
+
+```c++
+
+#pragma once
+
+
+#include "ofMain.h"
+#include "ofxPointer.h"
+
+
+class ofApp: public ofBaseApp
+{
+public:
+    void setup() override
+    {
+        // Register the pointer events.
+        ofx::RegisterPointerEvent(this);
+    }
+
+    void update() override
+    {
+        // Update
+    }
+
+
+    void draw() override
+    {
+        // Draw
+    }
+
+    // All pointer events are returned to a single callback.
+    void onPointerEvent(ofx::PointerEventArgs& evt)
+    {
+        ofLogNotice("ofApp::onPointerEvent") << evt;
+    }
+};
+
+```
+
+### iOS
+
+iOS Currently supports all advanced `UITouch` features including tiltX/Y, elevation, azimuth, precise location, pressure, predicted and coalesced events, estimated properties and estimated property updates. See the iOS examples for more.
 
 
 ## Getting Started
