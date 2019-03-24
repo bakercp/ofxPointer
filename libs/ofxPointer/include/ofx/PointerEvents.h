@@ -567,7 +567,7 @@ inline void to_json(nlohmann::json& j, const Point& v)
 }
 
 
-void from_json(const nlohmann::json& j, Point& v)
+inline void from_json(const nlohmann::json& j, Point& v)
 {
     nlohmann::json jp = j.value("position", nlohmann::json());
     nlohmann::json jpp = j.value("precise_position", nlohmann::json());
@@ -954,7 +954,7 @@ inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
 }
 
 
-void from_json(const nlohmann::json& j, PointerEventArgs& v)
+inline void from_json(const nlohmann::json& j, PointerEventArgs& v)
 {
     v = PointerEventArgs(nullptr,
                          j.value("event_type", EventArgs::EVENT_TYPE_UNKNOWN),
@@ -1338,7 +1338,7 @@ public:
 
     /// \brief Destroy the PointerStroke.
     ~PointerStroke();
-    
+
     /// \brief Add the given pointer event to the stroke.
     /// \returns true if the event was successfully added.
     bool add(const PointerEventArgs& e);
