@@ -420,6 +420,32 @@ PointerEventArgs::PointerEventArgs()
 }
 
 
+PointerEventArgs::PointerEventArgs(const std::string& eventType,
+                                   const PointerEventArgs& event):
+    PointerEventArgs(event.eventSource(),
+                     eventType,
+                     event.timestampMicros(),
+                     event.detail(),
+                     event.point(),
+                     event.pointerId(),
+                     event.deviceId(),
+                     event.pointerIndex(),
+                     event.sequenceIndex(),
+                     event.deviceType(),
+                     event.isCoalesced(),
+                     event.isPredicted(),
+                     event.isPrimary(),
+                     event.button(),
+                     event.buttons(),
+                     event.modifiers(),
+                     event.coalescedPointerEvents(),
+                     event.predictedPointerEvents(),
+                     event.estimatedProperties(),
+                     event.estimatedPropertiesExpectingUpdates())
+{
+}
+
+
 PointerEventArgs::PointerEventArgs(const void* eventSource,
                                    const std::string& eventType,
                                    uint64_t timestampMicros,

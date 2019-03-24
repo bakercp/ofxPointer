@@ -598,6 +598,12 @@ public:
     /// \brief Create a default PointerEventArgs.
     PointerEventArgs();
 
+    /// \brief Create a copy of the event with a new event type.
+    /// \param eventType The new event type.
+    /// \param event the event to copy.
+    PointerEventArgs(const std::string& eventType,
+                     const PointerEventArgs& event);
+
     /// \brief Create a PointerEventArgs with parameters.
     /// \param eventSource The event source if available.
     /// \param eventType The pointer event type.
