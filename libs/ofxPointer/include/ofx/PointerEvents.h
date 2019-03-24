@@ -703,13 +703,13 @@ public:
     /// \returns true if this event was predicted rather than measured.
     bool isPredicted() const;
 
-    /// \returns true if estimatedProperties().size() > 0.
-    bool isEstimated() const;
-
     /// \brief Determine if this pointer is the primary pointer.
     /// \returns true if this pointer is the primary pointer.
     /// \sa https://w3c.github.io/pointerevents/#the-primary-pointer
     bool isPrimary() const;
+
+    /// \returns true if estimatedProperties().size() > 0.
+    bool isEstimated() const;
 
     /// \brief Get the button id for this event.
     /// \returns the button id for this event.
@@ -878,6 +878,12 @@ private:
     /// \brief The type of device that generated this Point.
     std::string _deviceType = TYPE_UNKNOWN;
 
+    /// \brief Indicates if the event was delivered as a coalesced event.
+    bool _isCoalesced = false;
+
+    /// \brief Indicates if the event is predicted rather than measured.
+    bool _isPredicted = false;
+
     /// \brief Indicates if the pointer is a primary pointer.
     ///
     /// In a multi-pointer (e.g. multi-touch) scenario, the isPrimary property
@@ -888,12 +894,6 @@ private:
     ///
     /// \sa http://www.w3.org/TR/pointerevents/#the-primary-pointer
     bool _isPrimary = false;
-
-    /// \brief Indicates if the event was delivered as a coalesced event.
-    bool _isCoalesced = false;
-
-    /// \brief Indicates if the event is predicted rather than measured.
-    bool _isPredicted = false;
 
     /// \brief The current button associated with this event.
     int16_t _button = 0;

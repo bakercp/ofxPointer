@@ -552,15 +552,15 @@ bool PointerEventArgs::isPredicted() const
 }
 
 
-bool PointerEventArgs::isEstimated() const
-{
-    return !_estimatedProperties.empty();
-}
-
-
 bool PointerEventArgs::isPrimary() const
 {
     return _isPrimary;
+}
+
+
+bool PointerEventArgs::isEstimated() const
+{
+    return !_estimatedProperties.empty();
 }
 
 
@@ -739,7 +739,6 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 
     bool isCoalesced = false;
     bool isPredicted = false;
-
     bool isPrimary = (e.id == 0);
 
     std::size_t pointerId = 0;
@@ -1361,10 +1360,10 @@ void PointerDebugRenderer::draw(const PointerStroke& stroke) const
         ofColor c0, c1;
 
         // Here we color the points based on the point type.
-        if (e.isPredicted())
-            c0 = c1 = ofColor(_settings.predictedPointColor);
-        else if (e.isCoalesced())
+        if (e.isCoalesced())
             c0 = c1 = ofColor(_settings.coalescedPointColor, pressureFader * 255);
+        else if (e.isPredicted())
+            c0 = c1 = ofColor(_settings.predictedPointColor);
         else
             c0 = c1 = ofColor(_settings.pointColor, pressureFader * 255);
 
