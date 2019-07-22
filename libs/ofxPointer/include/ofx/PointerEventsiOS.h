@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2019 Christopher Baker <https://christopherbaker.net>
 //
-// SPDX-License-Identifier:	MIT
+// SPDX-License-Identifier: MIT
 //
 
 
@@ -19,7 +19,6 @@
 #include "ofAppBaseWindow.h"
 #include "ofAppRunner.h"
 #include "ofx/PointerEvents.h"
-
 
 
 /// \brief PointerView is a UIView subclass that intercepts and transforms touches as PointerEvents.

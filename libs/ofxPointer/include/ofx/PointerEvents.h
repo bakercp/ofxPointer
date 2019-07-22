@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2009 Christopher Baker <https://christopherbaker.net>
 //
-// SPDX-License-Identifier:	MIT
+// SPDX-License-Identifier: MIT
 //
 
 
@@ -19,7 +19,6 @@
 #include "ofAppRunner.h"
 #include "ofRectangle.h"
 #include "ofLog.h"
-
 
 
 namespace ofx {
@@ -539,6 +538,7 @@ inline glm::vec2 to_vec_2_temp(const nlohmann::json& j)
     return glm::vec2(j.value("x", float(0)),
                      j.value("y", float(0)));
 }
+
 
 // \todo This function is a replacement for automatic glm serialization using ofxSerializer.
 inline nlohmann::json to_json_temp(const glm::vec2& v)
