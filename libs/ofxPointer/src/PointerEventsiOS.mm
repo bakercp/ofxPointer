@@ -142,10 +142,14 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
 {
     _activePointerIndices[UITouchTypeDirect] = {};
     _activePointerIndices[UITouchTypeIndirect] = {};
-    _activePointerIndices[UITouchTypePencil] = {};
+#if defined(__IPHONE_9_1)
+    _activePointerIndices[UITouchTypeStylus] = {};
+#endif
     _primaryPointerIndices[UITouchTypeDirect] = -1;
     _primaryPointerIndices[UITouchTypeIndirect] = -1;
-    _primaryPointerIndices[UITouchTypePencil] = -1;
+#if defined(__IPHONE_9_1)
+    _primaryPointerIndices[UITouchTypeStylus] = -1;
+#endif
 }
 
 
@@ -412,7 +416,7 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
             break;
         }
 #if defined(__IPHONE_9_1)
-        case UITouchTypePencil:
+        case UITouchTypeStylus:
         {
             deviceType = PointerEventArgs::TYPE_PEN;
             // Azimuth angle. Valid only for stylus touch types. Zero radians points along the positive X axis.
