@@ -14,6 +14,7 @@
 #include "ofx/PointerEventsiOS.h"
 #include "ofx/PointerEvents.h"
 #include "ofMath.h"
+#include "ofLog.h"
 
 
 using namespace ofx;
@@ -111,7 +112,11 @@ bool dispatchPointerEvent(ofAppBaseWindow* window, PointerEventArgs& e)
     self = [super initWithFrame:frame];
     self.multipleTouchEnabled = true;
 
-    _window = ofxiOSGetOFWindow();
+    if (ofxiOSGetOFWindow())
+    {
+        _window = ofxiOSGetOFWindow();
+    }
+    else ofLogFatalError("PointerView::initWithFrame") << "Initializing with a null window. This probably means you are calling the function before the iOS window was initialized in the main() file.";
 
     if(_window->getWindowControllerType() == METAL_KIT
     || _window->getWindowControllerType() == GL_KIT)
@@ -588,15 +593,23 @@ void EnableAdvancedPointerEventsiOS()
 {
     if (!pointerView)
     {
+        float width = 0;
+        float height = 0;
+        
+        if (ofxiOSGetOFWindow())
+        {
+            width = ofxiOSGetOFWindow()->getWidth();
+            height = ofxiOSGetOFWindow()->getHeight();
+        }
+
         // Since iOS can only have one window, we initialize our PointerView on
         // that window.
         pointerView = [[PointerView alloc] initWithFrame:CGRectMake(0,
                                                                     0,
-                                                                    ofxiOSGetOFWindow()->getWidth(),
-                                                                    ofxiOSGetOFWindow()->getHeight())];
+                                                                    width,
+                                                                    height)];
 
         [[ofxiOSGetAppDelegate() uiViewController].view addSubview:pointerView];
-
     }
 }
 

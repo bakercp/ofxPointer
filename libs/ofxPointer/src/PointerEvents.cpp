@@ -6,9 +6,8 @@
 
 
 #include "ofx/PointerEvents.h"
-#include <cassert>
-#include "ofGraphics.h"
-#include "ofMesh.h"
+#include "ofAppBaseWindow.h"
+#include "ofMath.h"
 
 
 namespace ofx {
@@ -63,6 +62,12 @@ uint64_t EventArgs::timestampMillis() const
 uint64_t EventArgs::timestampMicros() const
 {
     return _timestampMicros;
+}
+
+
+double EventArgs::timestampSeconds() const
+{
+    return timestampMicros() / 1000000.0;
 }
 
 
@@ -390,6 +395,39 @@ const PointShape& Point::shape() const
 }
 
 
+Point Point::lerp(const Point& p0, const Point& p1, float amount)
+{
+    return Point(glm::lerp(p0.position(), p1.position(), amount),
+                 glm::lerp(p0.precisePosition(), p1.precisePosition(), amount),
+                 p0.shape(),
+                 glm::lerp(p0.pressure(), p1.pressure(), amount),
+                 glm::lerp(p0.tangentialPressure(), p1.tangentialPressure(), amount),
+                 glm::lerp(p0.twistDeg(), p1.twistDeg(), amount),
+                 glm::lerp(p0.tiltXDeg(), p1.tiltXDeg(), amount),
+                 glm::lerp(p0.tiltYDeg(), p1.tiltYDeg(), amount));
+}
+
+
+Point Point::transform(const Point& point, const glm::mat4& matrix)
+{
+    auto xform = [](const glm::vec2& vec, const glm::mat4& matrix)
+    {
+        glm::vec4 v = { vec.x, vec.y, 0.0f, 1.0f };
+        v = matrix * v;
+        return glm::vec2(v) / v.w;
+    };
+
+    return ofx::Point(xform(point.position(), matrix),
+                      xform(point.precisePosition(), matrix),
+                      point.shape(),
+                      point.pressure(),
+                      point.tangentialPressure(),
+                      point.twistDeg(),
+                      point.tiltXDeg(),
+                      point.tiltYDeg());
+};
+
+
 const std::string PointerEventArgs::TYPE_MOUSE    = "mouse";
 const std::string PointerEventArgs::TYPE_PEN      = "pen";
 const std::string PointerEventArgs::TYPE_TOUCH    = "touch";
@@ -427,6 +465,32 @@ PointerEventArgs::PointerEventArgs(const std::string& eventType,
                      event.timestampMicros(),
                      event.detail(),
                      event.point(),
+                     event.pointerId(),
+                     event.deviceId(),
+                     event.pointerIndex(),
+                     event.sequenceIndex(),
+                     event.deviceType(),
+                     event.isCoalesced(),
+                     event.isPredicted(),
+                     event.isPrimary(),
+                     event.button(),
+                     event.buttons(),
+                     event.modifiers(),
+                     event.coalescedPointerEvents(),
+                     event.predictedPointerEvents(),
+                     event.estimatedProperties(),
+                     event.estimatedPropertiesExpectingUpdates())
+{
+}
+
+
+PointerEventArgs::PointerEventArgs(const Point& point,
+                                   const PointerEventArgs& event):
+    PointerEventArgs(event.eventSource(),
+                     event.eventType(),
+                     event.timestampMicros(),
+                     event.detail(),
+                     point,
                      event.pointerId(),
                      event.deviceId(),
                      event.pointerIndex(),
@@ -629,6 +693,9 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
                         newEstimatedProperties.end(),
                         std::inserter(propertiesToUpdate, propertiesToUpdate.begin()));
 
+    std::vector<std::string> ptu;
+    ptu.assign(propertiesToUpdate.begin(), propertiesToUpdate.end());
+
     for (auto& property: propertiesToUpdate)
     {
         if (property == PointerEventArgs::PROPERTY_PRESSURE)
@@ -662,6 +729,8 @@ bool PointerEventArgs::updateEstimatedPropertiesWithEvent(const PointerEventArgs
         _estimatedPropertiesExpectingUpdates.erase(property);
     }
 
+    std::vector<std::string> epeu;
+    epeu.assign(_estimatedPropertiesExpectingUpdates.begin(), _estimatedPropertiesExpectingUpdates.end());
     return true;
 }
 
@@ -711,8 +780,8 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
             // Pointers don't use this event. We use gestures for this.
             break;
         case ofTouchEventArgs::down:
-            eventType = POINTER_DOWN;
             buttons |= (1 << OF_MOUSE_BUTTON_1);
+            eventType = POINTER_DOWN;
             break;
         case ofTouchEventArgs::up:
             eventType = POINTER_UP;
@@ -914,6 +983,41 @@ PointerEventArgs PointerEventArgs::toPointerEventArgs(const void* eventSource,
 }
 
 
+PointerEventArgs PointerEventArgs::transform(const ofx::PointerEventArgs& event,
+                                             const glm::mat4& matrix)
+{
+    auto coalesced = event.coalescedPointerEvents();
+    auto predicted = event.predictedPointerEvents();
+
+    for (ofx::PointerEventArgs& evt: coalesced)
+        evt = transform(evt, matrix);
+    
+    for (ofx::PointerEventArgs& evt: predicted)
+        evt = transform(evt, matrix);
+
+    return PointerEventArgs(event.eventSource(),
+                            event.eventType(),
+                            event.timestampMicros(),
+                            event.detail(),
+                            Point::transform(event.point(), matrix),
+                            event.pointerId(),
+                            event.deviceId(),
+                            event.pointerIndex(),
+                            event.sequenceIndex(),
+                            event.deviceType(),
+                            event.isCoalesced(),
+                            event.isPredicted(),
+                            event.isPrimary(),
+                            event.button(),
+                            event.buttons(),
+                            event.modifiers(),
+                            coalesced,
+                            predicted,
+                            event.estimatedProperties(),
+                            event.estimatedPropertiesExpectingUpdates());
+}
+
+
 PointerEvents::PointerEvents(ofAppBaseWindow* source): _source(source)
 {
     ofCoreEvents* eventSource = nullptr;
@@ -1004,6 +1108,10 @@ bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& 
         return true;
     }
 
+    
+
+
+
     // All pointer events get dispatched via pointerEvent.
     bool consumed = ofNotifyEvent(pointerEvent, e, _source);
 
@@ -1031,6 +1139,14 @@ bool PointerEvents::_dispatchPointerEvent(const void* source, PointerEventArgs& 
             consumed = ofNotifyEvent(pointerUpdate, e, _source);
         }
     }
+
+//    ofGetTargetFrameRate()
+//
+//    uint64_t samplinePeriod
+    uint64_t timetampMicros = e.timestampMicros();
+
+
+    _lastEventTimestampMicros = e.timestampMicros();
 
     return _consumeLegacyEvents || consumed;
 }
@@ -1070,498 +1186,6 @@ PointerEventsManager::PointerEventsManager()
 
 PointerEventsManager::~PointerEventsManager()
 {
-}
-
-
-
-PointerStroke::PointerStroke()
-{
-}
-
-
-PointerStroke::~PointerStroke()
-{
-}
-
-
-bool PointerStroke::add(const PointerEventArgs& e)
-{
-    if (_events.empty())
-        _pointerId = e.pointerId();
-
-    if (_pointerId != e.pointerId())
-        return false;
-
-    if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
-    {
-        auto riter = _events.rbegin();
-        while (riter != _events.rend())
-        {
-            if (riter->sequenceIndex() == e.sequenceIndex())
-            {
-                if (!riter->updateEstimatedPropertiesWithEvent(e))
-                    ofLogError("PointerStroke::add") << "Error updating matching property.";
-                return true;
-            }
-            ++riter;
-        }
-
-        return false;
-    }
-
-    // Remove predicted events.
-    _events.erase(std::remove_if(_events.begin(),
-                                 _events.end(),
-                                [](const PointerEventArgs& x) { return x.isPredicted(); }),
-                 _events.end());
-
-    // Add coalesced events, this includes the current event.
-    auto coalesced = e.coalescedPointerEvents();
-    _events.insert(_events.end(), coalesced.begin(), coalesced.end());
-
-    if (coalesced.empty())
-        ofLogError("PointerStroke::add") << "No coalesced events!";
-
-    // Add predicted events.
-    auto predicted = e.predictedPointerEvents();
-    _events.insert(_events.end(), predicted.begin(), predicted.end());
-
-    _minSequenceIndex = std::min(e.sequenceIndex(), _minSequenceIndex);
-    _maxSequenceIndex = std::max(e.sequenceIndex(), _maxSequenceIndex);
-
-    return true;
-}
-
-
-std::size_t PointerStroke::pointerId() const
-{
-    return _pointerId;
-}
-
-
-uint64_t PointerStroke::minSequenceIndex() const
-{
-    return _minSequenceIndex;
-}
-
-
-uint64_t PointerStroke::maxSequenceIndex() const
-{
-    return _maxSequenceIndex;
-}
-
-
-uint64_t PointerStroke::minTimestampMicros() const
-{
-    if (_events.empty())
-        return 0;
-
-    return _events.front().timestampMicros();
-}
-
-
-uint64_t PointerStroke::maxTimestampMicros() const
-{
-    if (_events.empty())
-        return 0;
-
-    return _events.back().timestampMicros();
-}
-
-
-bool PointerStroke::isFinished() const
-{
-    return !_events.empty() && (_events.back().eventType() == PointerEventArgs::POINTER_CANCEL
-                             || _events.back().eventType() == PointerEventArgs::POINTER_UP);
-}
-
-
-bool PointerStroke::isCancelled() const
-{
-    return !_events.empty() && _events.back().eventType() == PointerEventArgs::POINTER_CANCEL;
-}
-
-
-bool PointerStroke::isExpectingUpdates() const
-{
-    // Start at the end, because newer events are likely the ones with estimated
-    // properties.
-    auto riter = _events.rbegin();
-    while (riter != _events.rend())
-    {
-        if (!riter->estimatedProperties().empty())
-            return true;
-
-        ++riter;
-    }
-
-    return false;
-}
-
-
-std::size_t PointerStroke::size() const
-{
-    return _events.size();
-}
-
-
-bool PointerStroke::empty() const
-{
-    return _events.empty();
-}
-
-
-const std::vector<PointerEventArgs>& PointerStroke::events() const
-{
-    return _events;
-}
-
-
-PointerDebugRenderer::Settings::Settings():
-    pointColor(ofColor::blue),
-    coalescedPointColor(ofColor::red),
-    predictedPointColor(ofColor::darkGray)
-{
-}
-
-
-PointerDebugRenderer::PointerDebugRenderer()
-{
-}
-
-
-PointerDebugRenderer::PointerDebugRenderer(const Settings& settings):
-    _settings(settings)
-{
-}
-
-
-PointerDebugRenderer::~PointerDebugRenderer()
-{
-}
-
-
-void PointerDebugRenderer::setup(const Settings& settings)
-{
-    _settings = settings;
-}
-
-
-void PointerDebugRenderer::update()
-{
-    if (!_strokes.empty())
-    {
-        auto now = ofGetElapsedTimeMillis();
-
-        // Avoid rollover by subtracting from an unsigned now.
-        if (now < _settings.timeoutMillis)
-            return;
-
-        auto lastValidTime = now - _settings.timeoutMillis;
-
-        auto iter = _strokes.begin();
-
-        while (iter != _strokes.end())
-        {
-            if (iter->second.empty())
-                iter = _strokes.erase(iter);
-            else
-            {
-                iter->second.erase(std::remove_if(iter->second.begin(),
-                                                  iter->second.end(),
-                                                  [&](const PointerStroke& x)
-                                                  { return lastValidTime > x.events().back().timestampMillis(); }),
-                                    iter->second.end());
-                ++iter;
-            }
-        }
-    }
-}
-
-
-void PointerDebugRenderer::draw() const
-{
-    for (auto& strokes: _strokes)
-        for (auto& stroke: strokes.second)
-            draw(stroke);
-}
-
-
-void PointerDebugRenderer::draw(const PointerStroke& stroke) const
-{
-    auto nowMillis = ofGetElapsedTimeMillis();
-
-    auto lastValidTimeMillis = nowMillis - _settings.timeoutMillis;
-
-    if (nowMillis < _settings.timeoutMillis)
-        lastValidTimeMillis = 0;
-
-    ofMesh mesh;
-    mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-
-    bool useZ = false;
-    float R = _settings.strokeWidth;
-    auto fadeTimeMillis = std::min(uint64_t(50), _settings.timeoutMillis);
-
-    const auto& events = stroke.events();
-
-    for (std::size_t i = 0; i < events.size(); ++i)
-    {
-        const auto& e = events[i];
-
-        // Pen tip.
-        glm::vec3 p0 = { e.position().x, e.position().y, 0 };
-        glm::vec3 p1 = p0;
-
-        float az = e.point().azimuthRad();
-        float al = e.point().altitudeRad();
-
-        if (!ofIsFloatEqual(az, 0.0f) || !ofIsFloatEqual(al, 0.0f))
-        {
-            float cosAl = std::cos(al);
-            p1.x += R * std::cos(az) * cosAl;
-            p1.y += R * std::sin(az) * cosAl;
-
-            if (useZ)
-                p1.z += R * std::sin(al);
-        }
-        else
-        {
-            // If no altitude / azimuth are available, use tangents to simulate.
-            if (i > 0 && i < events.size() - 1)
-            {
-                std::size_t i1 = i - 1;
-                std::size_t i2 = i;
-                std::size_t i3 = i + 1;
-                const auto& p_1 = events[i1].position();
-                const auto& p_2 = events[i2].position();
-                const auto& p_3 = events[i3].position();
-                auto v1(p_1 - p_2); // vector to previous point
-                auto v2(p_3 - p_2); // vector to next point
-                v1 = glm::normalize(v1);
-                v2 = glm::normalize(v2);
-                glm::vec2 tangent = glm::length2(v2 - v1) > 0 ? glm::normalize(v2 - v1) : -v1;
-                glm::vec3 normal = glm::cross(glm::vec3(tangent, 0), { 0, 0, 1 });
-                auto pp0 = p_2 + normal * R / 2;
-                auto pp1 = p_2 - normal * R / 2;
-                p0 = { pp0.x, pp0.y, 0 };
-                p1 = { pp1.x, pp1.y, 0 };
-            }
-        }
-
-        // Here we combine the age of the line and the pressure to fade out
-        // the line via an opacity change.
-        float pressure = e.point().pressure();
-
-        double timeRemainingMillis = double(e.timestampMillis()) - double(lastValidTimeMillis);
-        float fader = ofMap(timeRemainingMillis, fadeTimeMillis, 0, 1, 0, true);
-        float pressureFader = pressure * fader;
-
-        ofColor c0, c1;
-
-        // Here we color the points based on the point type.
-        if (e.isCoalesced())
-            c0 = c1 = ofColor(_settings.coalescedPointColor, pressureFader * 255);
-        else if (e.isPredicted())
-            c0 = c1 = ofColor(_settings.predictedPointColor);
-        else
-            c0 = c1 = ofColor(_settings.pointColor, pressureFader * 255);
-
-        mesh.addVertex(p0);
-        mesh.addColor(c0);
-        mesh.addVertex(p1);
-        mesh.addColor(c1);
-    }
-
-    mesh.draw();
-}
-
-
-PointerDebugRenderer::Settings PointerDebugRenderer::settings() const
-{
-    return _settings;
-}
-
-
-void PointerDebugRenderer::clear()
-{
-    _strokes.clear();
-}
-
-
-void PointerDebugRenderer::add(const PointerEventArgs& e)
-{
-    // Ignore mouse just rolling around.
-    if (e.deviceType() == PointerEventArgs::TYPE_MOUSE
-    && e.eventType() == PointerEventArgs::POINTER_MOVE
-    && e.buttons() == 0)
-        return;
-
-    auto strokesIter = _strokes.find(e.pointerId());
-
-    if (e.eventType() == PointerEventArgs::POINTER_UPDATE)
-    {
-        bool foundIt = false;
-        if (strokesIter != _strokes.end())
-        {
-            for (auto& stroke: strokesIter->second)
-            {
-                foundIt = stroke.add(e);
-                if (foundIt)
-                    break;
-            }
-        }
-
-        if (!foundIt)
-            ofLogError("PointerDebugRenderer::add") << "The sequence to be updated was nowhere to be found. This probably should not happen.";
-
-        return;
-    }
-
-    // Process all events.
-    if (strokesIter == _strokes.end())
-    {
-        bool result;
-        std::tie(strokesIter, result) = _strokes.insert(std::make_pair(e.pointerId(), std::vector<PointerStroke>()));
-    }
-
-    if (strokesIter->second.empty() || strokesIter->second.back().isFinished())
-    {
-        strokesIter->second.push_back(PointerStroke());
-    }
-
-    // Get a reference to the current stroke.
-    auto& stroke = strokesIter->second.back();
-
-    if (!stroke.add(e))
-    {
-        ofLogError("PointerDebugRenderer::add") << "Could not add event.";
-    }
-}
-
-
-const std::map<std::size_t, std::vector<PointerStroke>>& PointerDebugRenderer::strokes() const
-{
-    return _strokes;
-}
-
-
-PointerEventCollection::PointerEventCollection()
-{
-}
-
-
-PointerEventCollection::~PointerEventCollection()
-{
-}
-
-
-std::size_t PointerEventCollection::size() const
-{
-    return _events.size();
-}
-
-
-bool PointerEventCollection::empty() const
-{
-    return _events.empty();
-}
-
-
-void PointerEventCollection::clear()
-{
-    _events.clear();
-    _eventsForPointerId.clear();
-}
-
-
-std::size_t PointerEventCollection::numPointers() const
-{
-    return _eventsForPointerId.size();
-}
-
-
-bool PointerEventCollection::hasPointerId(std::size_t pointerId)
-{
-    return _eventsForPointerId.find(pointerId) != _eventsForPointerId.end();
-}
-
-
-void PointerEventCollection::add(const PointerEventArgs& pointerEvent)
-{
-    _events.push_back(pointerEvent);
-
-    auto iter = _eventsForPointerId.find(pointerEvent.pointerId());
-
-    if (iter != _eventsForPointerId.end())
-        iter->second.push_back(&_events.back());
-    else
-        _eventsForPointerId[pointerEvent.pointerId()] = { &_events.back() };
-
-}
-
-
-void PointerEventCollection::removeEventsForPointerId(std::size_t pointerId)
-{
-    _eventsForPointerId.erase(pointerId);
-
-    auto iter = _events.begin();
-
-    while (iter != _events.end())
-    {
-        if (iter->pointerId() == pointerId)
-            iter = _events.erase(iter);
-        else
-            ++iter;
-    }
-}
-
-
-std::vector<PointerEventArgs> PointerEventCollection::events() const
-{
-    return _events;
-}
-
-
-std::vector<PointerEventArgs> PointerEventCollection::eventsForPointerId(std::size_t pointerId) const
-{
-    std::vector<PointerEventArgs> results;
-
-    auto iter = _eventsForPointerId.find(pointerId);
-
-    if (iter != _eventsForPointerId.end())
-    {
-        for (auto* event: iter->second)
-            results.push_back(*event);
-    }
-
-    return results;
-}
-
-
-const PointerEventArgs* PointerEventCollection::firstEventForPointerId(std::size_t pointerId) const
-{
-    auto iter = _eventsForPointerId.find(pointerId);
-
-    if (iter != _eventsForPointerId.end())
-    {
-        return iter->second.front();
-    }
-
-    return nullptr;
-}
-
-
-const PointerEventArgs* PointerEventCollection::lastEventForPointerId(std::size_t pointerId) const
-{
-    auto iter = _eventsForPointerId.find(pointerId);
-
-    if (iter != _eventsForPointerId.end())
-    {
-        return iter->second.back();
-    }
-
-    return nullptr;
 }
 
 

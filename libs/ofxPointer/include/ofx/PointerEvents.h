@@ -8,17 +8,11 @@
 #pragma once
 
 
-#include <map>
-#include <set>
-#include <string>
 #include "json.hpp"
-#include "ofEvents.h"
-#include "ofColor.h"
-#include "ofUtils.h"
-#include "ofAppBaseWindow.h"
 #include "ofAppRunner.h"
-#include "ofRectangle.h"
+#include "ofEvents.h"
 #include "ofLog.h"
+#include "ofVectorMath.h"
 
 
 namespace ofx {
@@ -40,7 +34,7 @@ public:
     /// \brief Create a default EventArgs.
     EventArgs();
 
-    /// \brief Create a BaseEventArgs with the given paramaters.
+    /// \brief Create a EventArgs with the given paramaters.
     /// \param eventSource The source of the event.
     /// \param eventType A string describing the type of the event.
     /// \param timestampMicros The timestamp of the event in microseconds.
@@ -64,6 +58,9 @@ public:
 
     /// \returns the timestamp of this event in microseconds.
     uint64_t timestampMicros() const;
+
+    /// \returns the timestamp of this event in seconds.
+    double timestampSeconds() const;
 
     /// \returns the optional event detail.
     uint64_t detail() const;
@@ -106,8 +103,10 @@ public:
     /// \brief The type of the point shape.
     enum class ShapeType
     {
-        ELLIPSE, /// \brief Interpret width, height and angle as a rotated ellipse.
-        RECTANGLE /// \brief Interpret width, height and angle as a rotated rectangle.
+        /// \brief Interpret width, height and angle as a rotated ellipse.
+        ELLIPSE,
+        /// \brief Interpret width, height and angle as a rotated rectangle.
+        RECTANGLE
     };
 
     /// \brief Create a default PointShape.
@@ -222,47 +221,10 @@ protected:
 };
 
 
-inline std::string to_string(PointShape::ShapeType v)
-{
-    switch (v)
-    {
-        case PointShape::ShapeType::ELLIPSE:
-            return "ELLIPSE";
-        case PointShape::ShapeType::RECTANGLE:
-            return "RECTANGLE";
-    }
-
-    return "ELLIPSE";
-}
-
-
-inline void to_json(nlohmann::json& j, const PointShape::ShapeType& v)
-{
-    j = to_string(v);
-}
-
-
-inline void from_json(const nlohmann::json& j, PointShape::ShapeType& v)
-{
-    std::string s = j.get<std::string>();
-    if (!s.empty())
-    {
-        if (s == to_string(PointShape::ShapeType::ELLIPSE))
-        {
-            v = PointShape::ShapeType::ELLIPSE;
-            return;
-        }
-        else if (s == to_string(PointShape::ShapeType::RECTANGLE))
-        {
-            v = PointShape::ShapeType::RECTANGLE;
-            return;
-        }
-    }
-
-    ofLogWarning("from_json") << "Unknown value: " << s;
-    v = PointShape::ShapeType::ELLIPSE;
-    return;
-}
+NLOHMANN_JSON_SERIALIZE_ENUM(PointShape::ShapeType, {
+    { PointShape::ShapeType::ELLIPSE, "ELLIPSE" },
+    { PointShape::ShapeType::RECTANGLE, "RECTANGLE" }
+})
 
 
 inline void to_json(nlohmann::json& j, const PointShape& v)
@@ -482,6 +444,31 @@ public:
         return ss.str();
     }
 
+    /// \brief Linearly interpolate between the values in two points.
+    ///
+    /// PointShape not interpolated, but copied from p0.
+    ///
+    /// Cached values are not interpolated, but will be recalculated.
+    ///
+    /// \param p0 The point associated with amount = 0.
+    /// \param p1 The point associated with amount = 1.
+    /// \param amount the value between [0, 1] that indicates the lerp amount.
+    /// \returns the interpolated Point.
+    static Point lerp(const Point& p0, const Point& p1, float amount);
+
+    /// \brief Transform the point's elments using a matrix.
+    ///
+    /// For example:
+    ///
+    ///     newPostion = matrix * point().position()
+    ///
+    /// This can be used to transform a pointer event into a non-screen space.
+    ///
+    /// \param event The point to transform.
+    /// \param matrix The affine transformation matrix.
+    /// \returns the transformed point.
+    /// \TODO transform elements that are not position (tiltX, tiltY, etc)?
+    static Point transform(const Point& point, const glm::mat4& inverseMatrix);
 
 private:
     /// \brief The position in screen coordinates.
@@ -602,6 +589,12 @@ public:
     /// \param eventType The new event type.
     /// \param event the event to copy.
     PointerEventArgs(const std::string& eventType,
+                     const PointerEventArgs& event);
+
+    /// \brief Create a copy of the event with a new point.
+    /// \param point The new point.
+    /// \param event the event to copy.
+    PointerEventArgs(const Point& point,
                      const PointerEventArgs& event);
 
     /// \brief Create a PointerEventArgs with parameters.
@@ -765,6 +758,20 @@ public:
     static PointerEventArgs toPointerEventArgs(const void* source,
                                                const ofMouseEventArgs& e);
 
+    /// \brief Transform the pointer event positions using a matrix.
+    ///
+    /// For example:
+    ///
+    ///     newPostion = matrix * evt.point().position()
+    ///
+    /// This can be used to transform a pointer event into a non-screen space.
+    ///
+    /// \param event The event to transform.
+    /// \param matrix The affine transformation matrix.
+    /// \returns the transformed event.
+    static PointerEventArgs transform(const ofx::PointerEventArgs& event,
+                                      const glm::mat4& matrix);
+
     /// \brief A debug utility for viewing the contents of PointerEventArgs.
     /// \returns A string representation of the PointerEventArgs.
     std::string toString() const
@@ -854,6 +861,7 @@ public:
     /// \brief Property key for tilt y.
     static const std::string PROPERTY_TILT_Y;
 
+
     friend std::ostream& operator << (std::ostream& os, const PointerEventArgs& e);
 
 private:
@@ -930,7 +938,6 @@ inline std::ostream& operator << (std::ostream& os, const PointerEventArgs& e)
     os << e.toString();
     return os;
 }
-
 
 
 inline void to_json(nlohmann::json& j, const PointerEventArgs& v)
@@ -1189,6 +1196,8 @@ protected:
     /// \brief The default source if the callback is missing.
     ofAppBaseWindow* _source = nullptr;
 
+    uint64_t _lastEventTimestampMicros = 0;
+
 };
 
 
@@ -1330,209 +1339,6 @@ void UnregisterPointerEvent(ListenerClass* listener, int prio = OF_EVENT_ORDER_A
 {
     UnregisterPointerEventForWindow<ListenerClass>(ofGetWindowPtr(), listener, prio);
 }
-
-
-/// \brief A PointerStroke is a collection of events with the same pointer id.
-///
-/// A pointer stroke begins with a pointerdown event and ends with a pointerup
-/// or pointercancel event.
-class PointerStroke
-{
-public:
-    /// \brief Construct a default PointerStroke.
-    PointerStroke();
-
-    /// \brief Destroy the PointerStroke.
-    ~PointerStroke();
-
-    /// \brief Add the given pointer event to the stroke.
-    /// \returns true if the event was successfully added.
-    bool add(const PointerEventArgs& e);
-
-    /// \returns the PointerId of this PointerStroke.
-    std::size_t pointerId() const;
-
-    /// \returns the minimum sequence index.
-    uint64_t minSequenceIndex() const;
-
-    /// \returns the maximum sequence index.
-    uint64_t maxSequenceIndex() const;
-
-    /// \returns the minimum timestamp in microseconds.
-    uint64_t minTimestampMicros() const;
-
-    /// \returns the maximum timestamp in microseconds.
-    uint64_t maxTimestampMicros() const;
-
-    /// \returns true if the last event is a pointerup or pointercancel event.
-    bool isFinished() const;
-
-    /// \returns true if the last event is a pointercancel.
-    bool isCancelled() const;
-
-    /// \returns true if any events are still expecting updates.
-    bool isExpectingUpdates() const;
-
-    /// \returns the number of events.
-    std::size_t size() const;
-
-    /// \returns true if size() == 0.
-    bool empty() const;
-
-    /// \returns the events.
-    const std::vector<PointerEventArgs>& events() const;
-
-private:
-    /// \brief The pointer id of all events in this stroke.
-    std::size_t _pointerId = -1;
-
-    /// \brief The minimum update sequence index.
-    uint64_t _minSequenceIndex = std::numeric_limits<uint64_t>::max();
-
-    /// \brief The maximum update sequence index.
-    uint64_t _maxSequenceIndex = std::numeric_limits<uint64_t>::lowest();
-
-    /// \brief All events associated with this stroke.
-    std::vector<PointerEventArgs> _events;
-
-};
-
-
-/// \brief A utility class for visualizing Pointer events.
-class PointerDebugRenderer
-{
-public:
-    struct Settings;
-
-    /// \brief Create a default debug renderer.
-    PointerDebugRenderer();
-
-    /// \brief Create a default debug renderer with the given settings.
-    /// \p settings The settings values to set.
-    PointerDebugRenderer(const Settings& settings);
-
-    /// \brief Destroy the renderer.
-    ~PointerDebugRenderer();
-
-    /// \brief Configure the PointerDebugRenderer with the given settings.
-    /// \p settings The settings values to set.
-    void setup(const Settings& settings);
-
-    /// \brief Update the strokes.
-    ///
-    /// This will remove strokes that have timed out.
-    void update();
-
-    /// \brief Draw the strokes.
-    void draw() const;
-
-    void draw(const PointerStroke& stroke) const;
-
-    /// \brief Reset all data.
-    void clear();
-
-    /// \returns the Settings.
-    Settings settings() const;
-
-    /// \brief A callback for all Pointer Events.
-    /// \param e The Pointer Event arguments.
-    void add(const PointerEventArgs& e);
-
-    // \returns the stroke map.
-    const std::map<std::size_t, std::vector<PointerStroke>>& strokes() const;
-
-    struct Settings
-    {
-        Settings();
-
-        /// \brief Set the amount of time before the stroke is removed.
-        uint64_t timeoutMillis = 5000;
-
-        /// \brief The maximum width of the stroke in pixels.
-        float strokeWidth = 100;
-
-        /// \brief The color of normal points.
-        ofColor pointColor;
-
-        /// \brief The color of coalesced points.
-        ofColor coalescedPointColor;
-
-        /// \brief The color of predicted points.
-        ofColor predictedPointColor;
-
-    };
-
-private:
-    /// \brief The Settings.
-    Settings _settings;
-
-    /// \brief A map of strokes.
-    std::map<std::size_t, std::vector<PointerStroke>> _strokes;
-
-};
-
-
-/// \brief A class for organiaing and querying collections of pointers.
-class PointerEventCollection
-{
-public:
-    /// \brief Create an empty PointerEventCollection.
-    PointerEventCollection();
-
-    /// \brief Destroy the PointerEventCollection.
-    virtual ~PointerEventCollection();
-
-    /// \returns the number of events in the collection.
-    std::size_t size() const;
-
-    /// \returns true if the size == 0.
-    bool empty() const;
-
-    /// \brief Clear all events in the collection.
-    void clear();
-
-    /// \returns the number of pointers currently tracked.
-    std::size_t numPointers() const;
-
-    /// \brief Determine if the PointerEventCollection has the given pointer event key.
-    /// \param pointerEventKey The pointer event key to query.
-    /// \returns true if the set already has the pointer event key.
-    bool hasPointerId(std::size_t pointerId);
-
-    /// \brief Add a pointer event to the set.
-    /// \param pointerEvent The pointer event to add.
-    void add(const PointerEventArgs& pointerEvent);
-
-    /// \brief Remove all events for the given pointerId.
-    /// \param pointerId The pointer events to remove.
-    void removeEventsForPointerId(std::size_t pointerId);
-
-    /// \returns all pointer events in the collection.
-    std::vector<PointerEventArgs> events() const;
-
-    /// \brief Get the pointer events for a given key.
-    /// \param pointerId The pointer id to query.
-    /// \returns the pointer events for the given key or an empty set if none.
-    std::vector<PointerEventArgs> eventsForPointerId(std::size_t pointerId) const;
-
-    /// \brief Get a pointer to the first event for a given pointer id.
-    /// \param pointerId The pointer id to query.
-    /// \returns a const pointer to the first event or nullptr if none.
-    const PointerEventArgs* firstEventForPointerId(std::size_t pointerId) const;
-
-    /// \brief Get a pointer to the last event for a given pointer id.
-    /// \param pointerId The pointer id to query.
-    /// \returns a const pointer to the last event or nullptr if none.
-    const PointerEventArgs* lastEventForPointerId(std::size_t pointerId) const;
-
-private:
-    /// \brief The set of pointer events in order of addition.
-    std::vector<PointerEventArgs> _events;
-
-    /// \brief A mapping between the pointer event keys and the pointer events.
-    std::map<std::size_t, std::vector<PointerEventArgs*>> _eventsForPointerId;
-
-};
 
 
 } // namespace ofx

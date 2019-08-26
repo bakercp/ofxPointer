@@ -14,5 +14,9 @@
 #include "ofx/PointerEventsiOS.h"
 #endif
 
+#if defined(TARGET_OSX)
+#include "ofx/PointerEventsMacOS.h"
+#endif
+
 /// \brief An alias for easier future core integration.
 typedef ofx::PointerEventArgs ofPointerEventArgs;

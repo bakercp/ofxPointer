@@ -67,6 +67,7 @@ namespace ofx {
 
 
 /// \brief This must be called to add the PointerView to the primary iOS window.
+/// \warning This will disable events that are automatically sent to ofBaseApp.
 void EnableAdvancedPointerEventsiOS();
 
 /// \brief This must be called to remove the PointerView from the primary iOS window.
