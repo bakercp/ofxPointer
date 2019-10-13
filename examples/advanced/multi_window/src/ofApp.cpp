@@ -10,7 +10,6 @@
 
 void ofApp::setup()
 {
-    ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetWindowTitle("ofApp");
 }
 

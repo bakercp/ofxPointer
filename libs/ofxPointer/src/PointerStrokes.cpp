@@ -807,4 +807,66 @@ const PointerEventArgs* PointerEventCollection::lastEventForPointerId(std::size_
 }
 
 
+PointerDebugRenderer::PointerDebugRenderer(): PointerDebugRenderer(Settings())
+{
+}
+
+
+PointerDebugRenderer::PointerDebugRenderer(const Settings& settings):
+    _strokeEventListener(_recorder.strokeEvent.newListener(this, &PointerDebugRenderer::onStrokeEvent))
+{
+    setup(settings);
+}
+
+
+PointerDebugRenderer::~PointerDebugRenderer()
+{
+}
+
+
+void PointerDebugRenderer::setup(const Settings& settings)
+{
+    _recorder.setup(settings.recorderSettings);
+    _renderer.setup(settings.rendererSettings);
+}
+
+
+void PointerDebugRenderer::update()
+{
+    // noop
+}
+
+
+void PointerDebugRenderer::draw() const
+{
+    for (const auto& strokes: _recorder.strokes())
+    {
+        for (const auto& stroke: strokes.second.strokes)
+        {
+            _renderer.draw(stroke);
+        }
+    }
+
+    for (const auto& stroke: _strokes)
+    {
+        _renderer.draw(stroke);
+    }
+}
+
+
+void PointerDebugRenderer::add(const PointerEventArgs& pointerEvent)
+{
+    _recorder.add(pointerEvent);
+}
+
+
+void PointerDebugRenderer::onStrokeEvent(PointerStrokeEventArgs& e)
+{
+    if (e.eventType() == PointerStrokeEventArgs::STROKE_END)
+    {
+        _strokes.push_back(e.stroke);
+    }
+}
+
+
 } // namespace ofx

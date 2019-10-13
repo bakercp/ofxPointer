@@ -10,15 +10,15 @@
 
 void ofApp::setup()
 {
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetWindowTitle("ofApp");
 }
 
 
 void ofApp::update()
 {
     for (auto& renderer: renderers)
+    {
         renderer.second.update();
+    }
 }
 
 
@@ -38,7 +38,13 @@ void ofApp::drawSecondWindow(ofEventArgs& args)
 
 void ofApp::onPointerEvent(ofx::PointerEventArgs& evt)
 {
-    renderers[reinterpret_cast<const ofAppBaseWindow*>(evt.eventSource())].add(evt);
+    // Send the pointer event to the renderer associated with the window source.
+
+    // Determine which window the event came from.
+    const ofAppBaseWindow* theWindow = reinterpret_cast<const ofAppBaseWindow*>(evt.eventSource());
+
+    // Add the event to the correct renderer.
+    renderers[theWindow].add(evt);
 }
 
 

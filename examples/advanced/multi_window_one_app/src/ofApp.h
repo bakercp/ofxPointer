@@ -24,6 +24,7 @@ public:
     // All pointer events for both windows arrive here.
     void onPointerEvent(ofx::PointerEventArgs& evt);
 
+    // Create a renderer for each window.
     std::map<const ofAppBaseWindow*, ofx::PointerDebugRenderer> renderers;
 
 };

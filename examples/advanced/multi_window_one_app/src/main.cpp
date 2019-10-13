@@ -17,7 +17,7 @@ int main()
     settings.setPosition(glm::vec2(300, 0));
     settings.resizable = true;
     auto mainWindow = ofCreateWindow(settings);
-
+    mainWindow->setWindowTitle("Main Window");
 
     settings.setSize(300, 300);
     settings.setPosition(glm::vec2(0, 0));
@@ -28,17 +28,23 @@ int main()
 
     auto mainApp = std::make_shared<ofApp>();
 
+    // Register pointer events for both windows.
     ofx::RegisterPointerEventForWindow(mainWindow.get(), mainApp.get());
     ofx::RegisterPointerEventForWindow(secondWindow.get(), mainApp.get());
 
     // Set up renderers for each window.
-    ofx::PointerDebugRenderer::Settings rendererSettings;
-    rendererSettings.strokeWidth = 50;
-    mainApp.get()->renderers[mainWindow.get()] = ofx::PointerDebugRenderer(rendererSettings);
-    rendererSettings.strokeWidth = 100;
-    rendererSettings.pointColor = ofColor::red;
-    mainApp.get()->renderers[secondWindow.get()] = ofx::PointerDebugRenderer(rendererSettings);
+    ofx::PointerDebugRenderer::Settings debugSettings;
 
+    // Set render settings for main window.
+    mainApp.get()->renderers[mainWindow.get()].setup(debugSettings);
+
+    // Set render settings for second window.
+    debugSettings.rendererSettings.minimumStrokeWidth = 25;
+    debugSettings.rendererSettings.maximumStrokeWidth = 50;
+
+    mainApp.get()->renderers[secondWindow.get()].setup(debugSettings);
+
+    // Connect windows.
     ofAddListener(secondWindow->events().draw,
                   mainApp.get(),
                   &ofApp::drawSecondWindow);

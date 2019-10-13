@@ -485,4 +485,40 @@ private:
 };
 
 
+class PointerDebugRenderer
+{
+public:
+    struct Settings;
+
+    PointerDebugRenderer();
+    PointerDebugRenderer(const Settings& settings);
+    
+    virtual ~PointerDebugRenderer();
+
+    void setup(const Settings& settings);
+
+    void update();
+    void draw() const;
+
+    void add(const PointerEventArgs& pointerEvent);
+
+    void onStrokeEvent(PointerStrokeEventArgs& e);
+
+    struct Settings
+    {
+        PointerStrokeRecorder::Settings recorderSettings;
+        PointerStrokeRenderer::Settings rendererSettings;
+    };
+
+private:
+
+    std::vector<PointerStroke> _strokes;
+
+    PointerStrokeRecorder _recorder;
+    PointerStrokeRenderer _renderer;
+
+    ofEventListener _strokeEventListener;
+};
+
+
 } // namespace ofx

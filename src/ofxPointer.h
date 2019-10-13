@@ -7,6 +7,7 @@
 
 #pragma once
 
+
 #include "ofConstants.h"
 #include "ofx/PointerEvents.h"
 
@@ -17,6 +18,10 @@
 #if defined(TARGET_OSX)
 #include "ofx/PointerEventsMacOS.h"
 #endif
+
+
+#include "ofx/PointerStrokes.h"
+
 
 /// \brief An alias for easier future core integration.
 typedef ofx::PointerEventArgs ofPointerEventArgs;

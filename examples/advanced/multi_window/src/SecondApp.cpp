@@ -13,9 +13,8 @@ void SecondApp::setup()
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetWindowTitle("SecondApp");
 
-
     ofx::PointerDebugRenderer::Settings settings;
-    settings.pointColor = ofColor::red;
+    settings.rendererSettings.pointColor = ofColor::red;
     renderer.setup(settings);
 }
 

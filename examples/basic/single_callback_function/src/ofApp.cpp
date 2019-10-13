@@ -10,7 +10,7 @@
 
 void ofApp::setup()
 {
-    ofSetBackgroundColor(255);
+    ofSetBackgroundColor(80);
     ofSetLogLevel(OF_LOG_VERBOSE);
 
     // Calling ofx::RegisterPointerEvent, will register a single callback with
