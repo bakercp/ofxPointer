@@ -283,7 +283,7 @@ bool PointerStroke::intersectsWith(const PointerStroke& stroke) const
             if (glm::all(glm::equal(thisPointLast, thatPointLast)))
                 return false;
 
-            glm::vec2 intersection;
+            glm::vec2 intersection(0);
 
             bool didIntersect = ofLineSegmentIntersection(thisPoint,
                                                           thisPointLast,

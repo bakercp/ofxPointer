@@ -397,14 +397,16 @@ const PointShape& Point::shape() const
 
 Point Point::lerp(const Point& p0, const Point& p1, float amount)
 {
-    return Point(glm::lerp(p0.position(), p1.position(), amount),
-                 glm::lerp(p0.precisePosition(), p1.precisePosition(), amount),
+    return Point(glm::mix(p0.position(), p1.position(), amount),
+                 glm::mix(p0.precisePosition(), p1.precisePosition(), amount),
                  p0.shape(),
-                 glm::lerp(p0.pressure(), p1.pressure(), amount),
-                 glm::lerp(p0.tangentialPressure(), p1.tangentialPressure(), amount),
-                 glm::lerp(p0.twistDeg(), p1.twistDeg(), amount),
-                 glm::lerp(p0.tiltXDeg(), p1.tiltXDeg(), amount),
-                 glm::lerp(p0.tiltYDeg(), p1.tiltYDeg(), amount));
+                 glm::mix(p0.pressure(), p1.pressure(), amount),
+                 glm::mix(p0.tangentialPressure(),
+                          p1.tangentialPressure(),
+                          amount),
+                 glm::mix(p0.twistDeg(), p1.twistDeg(), amount),
+                 glm::mix(p0.tiltXDeg(), p1.tiltXDeg(), amount),
+                 glm::mix(p0.tiltYDeg(), p1.tiltYDeg(), amount));
 }
 
 
